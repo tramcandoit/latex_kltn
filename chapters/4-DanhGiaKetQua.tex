@@ -340,6 +340,12 @@ Cấu hình của Retrain Pipeline được thực thi với các tham số sau:
 Tập dữ liệu huấn luyện mô hình bao gồm toàn bộ tập \textbf{Train/Test}, dữ liệu mới dùng cho tái huấn luyện mô hình được trích từ tập \textbf{Out-of-time Test Set}. Chi tiết được mô tả tại Bảng \ref{tab:dataset_split}.
 
 \subsection{Đánh giá hiệu năng hệ thống MLSecOps}
+Trong phần này, nhóm tiến hành đánh giá hiệu năng hệ thống MLSecOps trong quá trình thực thi pipeline huấn luyện và tái huấn luyện mô hình. Việc đánh giá tập trung vào mức tiêu thụ tài nguyên hệ thống của từng bước trong pipeline nhằm làm rõ đặc tính tính toán, xác định các bước có nguy cơ trở thành nút thắt hiệu năng, đồng thời cung cấp cơ sở cho việc tối ưu và mở rộng hệ thống trong tương lai.
+
+Hai chỉ số hiệu năng chính được theo dõi là mức sử dụng CPU và bộ nhớ của các pod trong hệ thống. Các chỉ số này được Prometheus thu thập trong suốt quá trình thực thi pipeline và được trực quan hóa thông qua các dashboard Grafana, cho phép quan sát trực tiếp sự biến động tài nguyên theo thời gian.
+
+Cụ thể, mức sử dụng CPU được đo bằng chỉ số container_cpu_usage_rate, phản ánh số nhân CPU mà mỗi pod sử dụng trung bình tại một thời điểm. Trong khi đó, mức sử dụng bộ nhớ được đo bằng container_memory_working_set, đại diện cho lượng bộ nhớ thực tế mà pod đang chiếm giữ trong quá trình xử lý. Việc lựa chọn hai chỉ số này giúp phản ánh chính xác cường độ tính toán và nhu cầu lưu trữ dữ liệu của từng bước trong pipeline MLSecOps.
+
 \label{sec:4.2.1}
 %TODO
 \begin{table}[!htbp]
@@ -385,14 +391,14 @@ Tập dữ liệu huấn luyện mô hình bao gồm toàn bộ tập \textbf{Tr
 \end{table}
 
 
-
-Hai chỉ số hiệu năng trong lúc quy trình MLSecOps thực thi mà nhóm theo dõi là CPU và memory. Các chỉ số này được Prometheus thu thập trong quá trình thực thi quy trình huấn luyện mô hình, và được trực quan hóa bằng Grafana. Cụ thể hai chỉ số được theo dõi là rate container cpu usage seconds - cho biết mức nhân CPU mà pod đang sử dụng trung bình, và container memory working set bytes - đo lường bộ nhớ 
-được pod tiêu thụ tại một thời điểm.
-
-Mục tiêu của nhóm khi lựa chọn hai chỉ số này là để có cái nhìn định lượng về mỗi bước trong quy trình MLSecOps đang tính toán bao nhiêu và giữ bao nhiêu dữ liệu, qua đó có thể xác định được bottleneck và tối ưu tài nguyên.
-
-\subsubsection{Mức nhân CPU pod sử dụng trung bình}
+\subsubsection{Mức nhân CPU pod sử dụng}
 \paragraph{Huấn luyện mô hình}
+
+Hình \ref{fig:chap4-grafana-cpu} minh họa mức sử dụng CPU của các pod trong quá trình huấn luyện mô hình. Biểu đồ cho thấy mức tiêu thụ CPU thay đổi rõ rệt giữa các bước trong pipeline, phản ánh sự khác biệt về cường độ tính toán của từng tác vụ.
+
+Quan sát từ biểu đồ cho thấy các bước liên quan đến kiểm tra tấn công lật nhãn (security check) và huấn luyện mô hình có mức sử dụng CPU cao hơn đáng kể so với các bước còn lại. Đặc biệt, bước security check thể hiện mức sử dụng CPU cao và duy trì ổn định trong suốt thời gian thực thi, cho thấy đây là bước có cường độ xử lý lớn và có khả năng trở thành nút thắt hiệu năng của pipeline nếu không được cấp phát tài nguyên phù hợp.
+
+Ngược lại, các bước như chuẩn bị dữ liệu hoặc so sánh mô hình có mức sử dụng CPU thấp và thời gian thực thi ngắn, cho thấy các bước này không tạo áp lực đáng kể lên tài nguyên tính toán của hệ thống.
 
 \begin{figure}[!htbp]
     \centering
@@ -401,11 +407,17 @@ Mục tiêu của nhóm khi lựa chọn hai chỉ số này là để có cái 
     \label{fig:chap4-grafana-cpu}
 \end{figure}
 
-Hình \ref{fig:chap4-grafana-cpu} thể hiện mức nhân CPU mà pod trong hệ thống MLSecOps sử dụng trung bình theo thời gian trong quá trình huấn luyện mô hình. Trong biểu đồ này, trục hoành biểu diễn mốc thời gian, trong khi tục tung biểu diễn mức sử dụng CPU của từng container được đo theo đơn vị nhân CPU. Các đường trong biểu đồ tương ứng với một pod trong từng bước của quy trình MLSecOps.
-
-Bảng \ref{tab:cpu_usage_per_pod} trình bày mức sử dụng CPU của từng pod tương ứng với các bước trong pipeline MLsecOps. Kết quả cho thấy bước security check và train brf là hai bước tiêu thụ nhiều tài nguyên CPU nhất. Trong đó, bước security check tiêu thụ CPU cao nhất (0.31 nhân), cho ta thấy đây là bước có cường độ tính toán cao và có khả năng trở thành nút thắt hiệu năng của pipeline. Các bước khác như get base data và train-xgb có mức sử dụng CPU thấp và thời gian thực thi ngắn, cho thấy các bước này không tạo áp lực đáng kể lên tài nguyên hệ thống.
-
 \paragraph{Tái huấn luyện mô hình}
+Hình \ref{fig:chap4-grafana-cpu} minh họa mức sử dụng CPU của các pod trong hệ thống MLSecOps trong kịch bản tái huấn luyện mô hình. Nhìn chung, xu hướng sử dụng CPU cũng tương tự như quá trình huấn luyện ban đầu, tuy nhiên có sự thay đổi nhẹ về mức độ tiêu thụ tài nguyên giữa các bước. Một số bước thể hiện mức sử dụng CPU thấp hơn do dữ liệu đầu vào phần lớn đã có sẵn, trong khi các bước huấn luyện mô hình và tiền xử lý vẫn duy trì mức sử dụng CPU đáng kể.
+
+Kết quả này cho thấy pipeline MLSecOps có khả năng tận dụng lại các thành phần đã được xử lý trước đó, giúp giảm chi phí tính toán trong các lần tái huấn luyện, đồng thời vẫn đảm bảo tính toàn vẹn và an toàn của quy trình.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.6]{img/chapter4/cpu-retrain.png}
+    \caption{Biểu đồ mức nhân CPU pod sử dụng trung bình khi tái huấn luyện mô hình}
+    \label{fig:chap4-grafana-cpu}
+\end{figure}
 
 % \begin{table}[h!]
 % \centering
@@ -433,19 +445,30 @@ Bảng \ref{tab:cpu_usage_per_pod} trình bày mức sử dụng CPU của từn
 % \end{tabular}
 % \end{table}
 
-
-\subsubsection{Bộ nhớ pod tiêu thụ}
+\subsubsection{Bộ nhớ pod sử dụng}
+\paragraph{Huấn luyện mô hình}
+Hình \ref{fig:chap4-mem-train} minh họa mức sử dụng bộ nhớ của các pod trong kịch bản huấn luyện mô hình. Biểu đồ cho thấy mức tiêu thụ bộ nhớ có sự khác biệt rõ rệt giữa các bước trong pipeline, phản ánh đặc điểm về xử lý và lượng dữ liệu được nạp vào bộ nhớ của từng tác vụ.
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.6]{img/chapter4/grafana-memory-time-series.png}
-    \caption{Biểu đồ bộ nhớ pod tiêu thụ tại từng thời điểm}
-    \label{fig:chap4-grafana-memory}
+    \includegraphics[scale=0.6]{img/chapter4/mem-train.png}
+    \caption{Biểu đồ bộ nhớ pod tiêu thụ trong quá trình huấn luyện mô hình}
+    \label{fig:chap4-mem-train}
 \end{figure}
 
-Hình \ref{fig:chap4-grafana-memory} thể hiện mức sử dụng bộ nhớ của các pod trong quy trình MLSecOps theo thời gian. Trong biểu đồ này, trục hoành biểu diễn mốc thời gian, trong khi trục tung biểu diễn lượng bộ nhớ mà mỗi pod sử dụng, tính theo đơn vị megabyte. Các đường trong biểu đồ tương ứng với một pod trong từng bước của quy trình huấn luyện dữ liệu của hệ thống MLSecOps.
+Ta có thể thấy, bước security check và huấn luyện mô hình yêu cầu lượng bộ nhớ đáng kể và duy trì mức sử dụng cao trong suốt thời gian thực thi.
 
-Bảng \ref{tab:memory_usage_per_pod} trình bày mức sử dụng bộ nhớ của từng pod tương ứng với các bước trong pipeline MLsecOps. Trong đó, bước security check tiêu thụ lượng bộ nhớ lớn nhất, với giá trị cao nhất khoảng 1.6 GB và duy trì ổn định trong suốt quá trình thực thi. Bước train brf cũng sử dụng lượng bộ nhớ đáng kể do phải lưu trữ dữ liệu huấn luyện và tham số mô hình. Các bước còn lại như preprocess data, train-xgb và get base data có mức sử dụng bộ nhớ thấp hơn và không tạo áp lực đáng kể lên tài nguyên hệ thống.
+\paragraph{Tái huấn luyện mô hình}
+Hình \ref{fig:chap4-mem-retrain} cho thấy mức sử dụng bộ nhớ của các pod trong kịch bản tái huấn luyện mô hình. Nhìn chung, xu hướng tiêu thụ bộ nhớ trong giai đoạn này tương tự quá trình huấn luyện ban đầu, tuy nhiên mức sử dụng bộ nhớ ở một số bước có sự thay đổi nhẹ.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.6]{img/chapter4/mem-retrain.png}
+    \caption{Biểu đồ bộ nhớ pod tiêu thụ trong quá trình tái huấn luyện mô hình}
+    \label{fig:chap4-mem-retrain}
+\end{figure}
+
+Cụ thể, các bước chuẩn bị dữ liệu thể hiện mức sử dụng bộ nhớ thấp và ổn định, do phần lớn dữ liệu đầu vào đã được xử lý và lưu trữ từ các lần huấn luyện trước. Ngược lại, bước security check tiếp tục là bước tiêu thụ bộ nhớ lớn nhất trong pipeline, với mức sử dụng bộ nhớ cao và duy trì ổn định trong suốt thời gian thực thi.
 
 % \begin{table}[h!]
 % \centering
@@ -472,8 +495,6 @@ Bảng \ref{tab:memory_usage_per_pod} trình bày mức sử dụng bộ nhớ c
 % \hline
 % \end{tabular}
 % \end{table}
-
-Phân tích trên về mức sử dụng CPU và bộ nhớ của các bước trong pipeline MLsecOps cho thấy tài nguyên hệ thống được sử dụng không đồng đều giữa các bước. Một số bước chỉ tiêu thụ lượng tài nguyên nhỏ, trong khi một số bước khác có yêu cầu tính toán và lưu trữ dữ liệu lớn hơn đáng kể. Nhìn chung, các phân tích này cung cấp cơ sở cho việc điều chỉnh cấu hình tài nguyên và cải thiện khả năng mở rộng của hệ thống MLsecOps.
 
 
 \subsection{Đánh giá hiệu quả của \ac{dag} trong hệ thống MLSecOps}
