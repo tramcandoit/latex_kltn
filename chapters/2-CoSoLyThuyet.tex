@@ -1,0 +1,538 @@
+\section{Bài toán phát hiện gian lận trong lĩnh vực tài chính}
+\subsection{Giới thiệu}
+Trong thời đại thanh toán điện tử phát triển mạnh mẽ như hiện nay, đi kèm với sự tiện lợi và nhanh chóng chính là nguy cơ tiềm ẩn về bảo mật và tấn công dữ liệu. Theo đó, gian lận tài chính trong lĩnh vực thanh toán điện tử trở thành một vấn đề nan giải mà các tổ chức tài chính và ngân hàng phải đối diện và giải quyết.
+
+Gian lận tài chính trong lĩnh vực thanh toán điện tử là hành vi cố tình sử dụng các phương tiện, hệ thống số để tấn công hệ thống thanh toán điện tử của ngân hàng hoặc tổ chức tài chính. Mục đích của việc này là nhằm chiếm đoạt tài sản, trục lợi, gây thiệt hại đến các tổ chức và cá nhân.
+
+Các hình thức gian lận phổ biến trong thanh toán điện tử:
+
+\begin{itemize}
+    \item Giả mạo danh tính: Đăng ký tài khoản ngân hàng bằng thông tin, giấy tờ giả. Dữ liệu đăng ký có thể được làm giả hoàn toàn hoặc làm giả một phần bằng cách đánh cắp thông tin từ người khác.
+    \item Gian lận giao dịch: Tạo các giao dịch ảo để rút tiền, chuyển khoản bất hợp pháp.
+\end{itemize}
+
+Trong đó, giả mạo danh tính để tạo tài khoản ngân hàng có mức độ rủi ro tương đối cao và thường làm tiền đề cho một chuỗi các hành vi gian lận sau đó, bao gồm cả việc gian lận giao dịch.
+
+\subsection{Các phương pháp phát hiện gian lận}
+Với mục tiêu nhận diện và phát hiện các gian lận trong lĩnh vực tài chính, cụ thể là thanh toán điện tử, đã có nhiều kỹ thuật được nghiên cứu và áp dụng. Nhìn chung, đây là một quá trình không hề dễ dàng đối với các ngân hàng và tổ chức tài chính, đòi hỏi sự phối hợp chặt chẽ giữa yếu tố con người và yếu tố công nghệ.
+
+Con người đóng vai trò đánh giá và xử lý các ngoại lệ trong quá trình phân tích, phát hiện gian lận. Trong các tình huống mà công nghệ không thể đánh giá một cách chắc chắn, hệ thống sẽ tạo ra các ngoại lệ mà cần con người can thiệp để ra quyết định. Con người cũng chính là yếu tố tạo nên công nghệ.
+
+Công nghệ là một yếu tố mạnh mẽ giúp các tổ chức tài chính và ngân hàng phát hiện gian lận một cách tự động, nhanh chóng và ở quy mô lớn. Một số thành phần của yếu tố công nghệ như:
+
+\begin{itemize}
+    \item Hệ thống chấm điểm rủi ro 
+    \item Hệ thống dựa trên quy tắc (Rule-based)
+    \item Học máy phát hiện bất thường
+    \item Tự động phản ứng khi phát hiện bất thường
+\end{itemize}
+
+Một quy trình phát hiện gian lận đầy đủ sẽ luôn có sự phối hợp của nhiều thành phần công nghệ. Tuy nhiên, trong bối cảnh các hình thức gian lận tài chính ngày càng phức tạp và liên tục thay đổi, các phương pháp truyền thống như hệ thống dựa trên quy tắc còn tồn tại nhiều hạn chế. Việc nghiên cứu, ứng dụng học máy trở thành một xu hướng của công nghệ hiện đại, giúp nâng cao khả năng phát hiện các mẫu gian lận và mang lại hiệu suất tốt.
+
+Phần tiếp theo của bài báo cáo sẽ trình bày về một số phương pháp học máy được ứng dụng vào bài toán phát hiện gian lận trong lĩnh vực tài chính.
+
+
+\section{Lý thuyết cơ bản về học máy}
+
+\subsection{Khái niệm}
+
+Học máy (\ac{ml}) là một lĩnh vực con của trí tuệ nhân tạo, tập trung vào việc nghiên cứu và phát triển các thuật toán cho phép máy tính tự động học các quy luật từ dữ liệu mà không cần được lập trình một cách tường minh. Thông qua quá trình huấn luyện trên dữ liệu lịch sử, mô hình học máy có khả năng đưa ra dự đoán hoặc quyết định đối với các dữ liệu mới.
+
+Mục tiêu cốt lõi của học máy là xây dựng các mô hình có khả năng tổng quát hóa tốt, tức là đạt hiệu suất cao không chỉ trên tập dữ liệu huấn luyện mà còn trên các dữ liệu chưa từng xuất hiện trước đó. Học máy hiện nay được ứng dụng rộng rãi trong nhiều lĩnh vực như nhận dạng mẫu, xử lý ngôn ngữ tự nhiên, thị giác máy tính, tài chính, y tế,...
+
+\subsection{Phân loại}
+
+Các phương pháp học máy có thể được phân loại theo nhiều tiêu chí khác nhau nhằm làm rõ đặc điểm và phạm vi ứng dụng của từng nhóm phương pháp. Trong phần này, học máy được phân loại dựa trên phương thức học và chức năng của thuật toán.
+
+\paragraph{a. Phân loại dựa trên phương thức học}
+
+Dựa trên cách thức mô hình học từ dữ liệu, các phương pháp học máy thường được chia thành các nhóm sau:
+
+\begin{itemize}
+    \item \textbf{Học có giám sát (Supervised Learning):}  
+    Mô hình được huấn luyện trên tập dữ liệu có nhãn, trong đó mỗi mẫu dữ liệu đầu vào đi kèm với một nhãn đầu ra xác định. Các bài toán phổ biến trong nhóm này bao gồm hồi quy và phân loại.
+
+    \item \textbf{Học không giám sát (Unsupervised Learning):}  
+    Dữ liệu huấn luyện không có nhãn, mô hình có nhiệm vụ khám phá các cấu trúc tiềm ẩn trong dữ liệu như phân cụm hoặc giảm chiều dữ liệu.
+
+    \item \textbf{Học bán giám sát (Semi-supervised Learning):}  
+    Kết hợp giữa dữ liệu có nhãn và không có nhãn nhằm cải thiện hiệu suất học khi số lượng dữ liệu có nhãn bị hạn chế.
+
+    \item \textbf{Học tăng cường (Reinforcement Learning):}  
+    Mô hình học thông qua quá trình tương tác với môi trường và nhận phần thưởng hoặc hình phạt dựa trên hành động của mình.
+\end{itemize}
+
+\paragraph{b. Phân loại dựa trên chức năng}
+
+Dựa trên chức năng của thuật toán và mục tiêu của bài toán, các phương pháp học máy có thể được phân thành một số nhóm chính sau:
+
+\begin{itemize}
+    \item \textbf{Hồi quy (Regression):}  
+    Là nhóm thuật toán học máy có chức năng dự đoán giá trị đầu ra liên tục dựa trên các đặc trưng đầu vào. Các mô hình hồi quy thường được sử dụng trong các bài toán ước lượng, dự báo và phân tích mối quan hệ giữa các biến, trong đó có thể kể đến các thuật toán tiêu biểu như Linear Regression, Logistic Regression và Stepwise Regression.
+
+    \item \textbf{Phân loại (Classification):}  
+    Là nhóm thuật toán học máy có nhiệm vụ gán nhãn rời rạc cho dữ liệu đầu vào dựa trên các đặc trưng quan sát được. Nhóm này được áp dụng rộng rãi trong các bài toán nhận dạng, phát hiện và ra quyết định, với các thuật toán đại diện có thể kể đến như Linear Classifier, \ac{svm}, Kernel \ac{svm} và \ac{src}.
+
+    \item \textbf{Học Bayes (Bayesian Learning):}  
+    Là nhóm thuật toán dựa trên lý thuyết xác suất Bayes nhằm mô hình hóa sự không chắc chắn và thực hiện suy luận xác suất cho các nhãn đầu ra. Các thuật toán tiêu biểu trong nhóm này bao gồm Naive Bayes và Gaussian Naive Bayes.
+
+    \item \textbf{Phân cụm (Clustering):}  
+    Là nhóm thuật toán học không giám sát nhằm nhóm các mẫu dữ liệu tương đồng vào cùng một cụm dựa trên tiêu chí khoảng cách hoặc phân bố xác suất. Các thuật toán phân cụm phổ biến có thể kể đến như k-Means clustering, k-Medians và \ac{em}.
+
+    \item \textbf{Mạng nơ-ron nhân tạo (Artificial Neural Networks):}  
+    Là nhóm thuật toán lấy cảm hứng từ cấu trúc của hệ thần kinh sinh học, có khả năng học các mối quan hệ phi tuyến phức tạp trong dữ liệu. Các thuật toán đại diện có thể kể đến như Perceptron, Softmax Regression, Multi-layer Perceptron và thuật toán lan truyền ngược sai số (Backpropagation).
+
+    \item \textbf{Học kết hợp (Ensemble Learning):}  
+    Là nhóm phương pháp kết hợp nhiều mô hình học máy cơ sở để xây dựng một mô hình tổng hợp có độ chính xác, độ ổn định và khả năng tổng quát hóa cao hơn so với từng mô hình đơn lẻ. Các phương pháp học kết hợp phổ biến bao gồm Boosting, AdaBoost và Random Forest.
+\end{itemize}
+
+\subsection{Ensemble Learning}
+
+\paragraph{a. Khái niệm}
+
+Ensemble Learning là hướng tiếp cận trong học máy nhằm kết hợp nhiều mô hình học máy cơ sở (base learners) để tạo ra một mô hình tổng hợp có hiệu suất tốt hơn so với từng mô hình riêng lẻ. Ý tưởng chính của Ensemble Learning là tận dụng sự đa dạng giữa các mô hình để giảm sai số, tăng độ ổn định và cải thiện khả năng tổng quát hóa.
+
+Trong thực tế, các mô hình cơ sở thường được sử dụng trong ensemble learning là các mô hình đơn giản, dễ huấn luyện và có khả năng biểu diễn phi tuyến. Trong đó, \textbf{decision tree} (cây quyết định) là một trong những mô hình được sử dụng phổ biến nhất nhờ cấu trúc linh hoạt, khả năng diễn giải tốt và chi phí tính toán thấp.
+
+Các phương pháp ensemble learning phổ biến có thể được chia thành ba nhóm chính: Bagging, Boosting và Stacking.
+
+\paragraph{b. XGBoost}
+
+Extreme Gradient Boosting (XGBoost) là một thuật toán ensemble learning mạnh mẽ dựa trên phương pháp boosting, trong đó các mô hình cơ sở là các \textbf{decision tree}. XGBoost xây dựng một chuỗi các decision tree theo cách tuần tự, sao cho mỗi mô hình mới được huấn luyện nhằm khắc phục các lỗi của các mô hình trước đó.
+
+Quy trình xây dựng mô hình XGBoost có thể được mô tả như sau:
+\begin{itemize}
+    \item Đầu tiên, một decision tree được huấn luyện trên toàn bộ tập dữ liệu huấn luyện.
+    \item Sau đó, thuật toán lặp lại quá trình xây dựng decision tree trong nhiều vòng lặp.
+    \item Ở mỗi vòng lặp, mô hình tập trung nhiều hơn vào các mẫu dữ liệu đã bị dự đoán sai bởi các decision tree trước đó.
+    \item Kết quả dự đoán cuối cùng là sự kết hợp có trọng số của các decision tree trong mô hình.
+\end{itemize}
+
+Nhờ cơ chế học tuần tự này, XGBoost có khả năng học được các mẫu dữ liệu phức tạp và thường đạt hiệu suất cao trong nhiều bài toán học máy.
+
+\paragraph{c. Random Forest}
+
+Random Forest là một thuật toán ensemble learning dựa trên phương pháp bagging, trong đó nhiều \textbf{decision tree} được huấn luyện độc lập với nhau. Mỗi decision tree được xây dựng từ một tập dữ liệu huấn luyện được lấy mẫu ngẫu nhiên có hoàn lại từ tập dữ liệu ban đầu.
+
+Quy trình hoạt động của Random Forest bao gồm các bước chính sau:
+\begin{itemize}
+    \item Tạo nhiều tập dữ liệu con thông qua bootstrap sampling.
+    \item Huấn luyện một decision tree độc lập trên mỗi tập dữ liệu con.
+    \item Tại mỗi nút chia của decision tree, chỉ một tập con ngẫu nhiên các đặc trưng được xem xét.
+    \item Kết quả dự đoán cuối cùng được xác định thông qua bỏ phiếu đa số trong trường hợp phân loại.
+\end{itemize}
+
+Cách tiếp cận này giúp Random Forest giảm phương sai so với decision tree đơn lẻ và cải thiện tính ổn định của mô hình.
+
+\paragraph{d. Balanced Random Forest}
+
+Balanced Random Forest là một biến thể của Random Forest được đề xuất nhằm cải thiện hiệu suất trong các bài toán phân loại với dữ liệu mất cân bằng. Phương pháp này vẫn sử dụng \textbf{decision tree} làm mô hình cơ sở, nhưng có sự điều chỉnh trong quá trình lấy mẫu dữ liệu huấn luyện cho từng decision tree.
+
+Cụ thể, Balanced Random Forest hoạt động theo nguyên tắc:
+\begin{itemize}
+    \item Đối với mỗi decision tree, một tập dữ liệu con được tạo ra sao cho số lượng mẫu của các lớp được cân bằng hơn.
+    \item Các decision tree được huấn luyện độc lập trên các tập dữ liệu con đã được cân bằng.
+    \item Kết quả dự đoán cuối cùng được tổng hợp từ các decision tree tương tự như Random Forest truyền thống.
+\end{itemize}
+
+Nhờ chiến lược này, Balanced Random Forest giúp cải thiện khả năng nhận diện lớp thiểu số trong khi vẫn giữ được các ưu điểm về độ ổn định và khả năng tổng quát hóa của Random Forest.
+
+
+
+\section{Lý thuyết cơ bản về tấn công đầu độc dữ liệu}
+\subsection{Giới thiệu}
+Sự thành công của một mô hình học máy phụ thuộc phần lớn vào chất lượng nguồn dữ liệu đầu vào. Do đó, dữ liệu luôn là mục tiêu mà các đối tượng tấn công nhắm đến.
+
+Tấn công đầu độc dữ liệu là dạng tấn công nhắm vào tập dữ liệu huấn luyện của mô hình học máy. Trong đó, dữ liệu gốc có thể bị thêm, sửa, xóa, dẫn đến sự sai lệch trong kết quả đầu ra của mô hình.
+
+\subsection{Phân nhóm}
+\paragraph{a. Có mục tiêu (Targeted):} Tấn công đầu độc dữ liệu có mục tiêu là loại tấn công có chủ đích nhằm điều khiển mô hình cho ra kết quả sai lệch trên một mẫu hoặc một nhóm dữ liệu cụ thể.
+
+\paragraph{b. Không mục tiêu (Non-targeted):} Tấn công đầu độc dữ liệu không mục tiêu là loại tấn công không nhắm vào một mẫu cụ thể nào, mà sẽ can thiệp và gây nhiễu ngẫu nhiên trên toàn bộ tập dữ liệu. Điều này gây ra sự suy giảm tổng thể của mô hình.
+
+Trong ngữ cảnh tấn công đầu độc dữ liệu của mô hình phát hiện gian lận tài chính, các kịch bản thường gặp ở mỗi loại như sau:
+\begin{itemize}
+    \item Đối với tấn công có mục tiêu: Kẻ tấn công thường làm sai lệch hoặc chèn thêm các dữ liệu gian lận nhưng được gán nhãn là không gian lận. Mục đích là để khi kẻ tấn công thực hiện đăng ký tài khoản giả mạo, mô hình sẽ cho rằng đây là dữ liệu bình thường.
+    \item Đối với tấn công có mục tiêu: Kẻ tấn công chèn nhiều dữ liệu nhiễu vào đầu vào của mô hình, như gãn nhãn sai hoặc đặc trưng sai. Mục đích là để mô hình học trên dữ liệu kém chất lượng, từ đó cho ra kết quả dự đoán gian lận kém.
+\end{itemize}
+
+\subsection{Một số loại tấn công thường gặp}
+\begin{itemize}
+    \item Lật nhãn (Label flipping): Lật nhãn làm rối loạn ranh giới phân loại của mô hình.
+    \item Thêm dữ liệu (Data injection): Chèn vào nhiều dữ liệu giả mạo để làm suy giảm kết quả của mô hình.
+    \item Tấn công nhãn thật (Clean label attack): Nhãn không bị lật, nhưng giá trị của các đặc trưng bị thay đổi, từ đó hiệu năng chung của mô hình cũng bị suy giảm.
+\end{itemize}
+
+\section{Container và điều phối container}
+\subsection{Container}
+\paragraph{a. Khái niệm}
+Trước khi có sự xuất hiện của container, các ứng dụng thường được triển khai trên các máy ảo. Việc này dễ gây hao phí vì không tận dụng tốt được tài nguyên điện toán. Ngoài ra, việc phát triển ứng dụng giữa nhiều lập trình viên gặp không ít khó khăn, do sự khác biệt về kiến trúc của máy tính, cũng như sự khó đồng nhất về môi trường để khởi chạy ứng dụng.
+
+Container là một đơn vị phần mềm tiêu chuẩn, trong đó, mã nguồn và các phụ thuộc (dependencies) được đóng gói để thuận tiện cho việc phát triển, vận chuyển và triển khai. Container đảm bảo với một ứng dụng đã được đóng gói, nó sẽ luôn được chạy giống hệt nhau ở mọi môi trường mà không cần quan tâm đến hạ tầng. 
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.8]{img/chapter2/container-architecture.png}
+    \caption{Kiến trúc của ứng dụng container \cite{what_is_container} }
+    \label{fig:chap2-container-architecture}
+\end{figure}
+
+Hình \ref{fig:chap2-container-architecture} thể hiện kiến trúc của nhiều ứng dụng container. Trong đó, mỗi ứng dụng A, B, C,... cùng được đóng gói dưới dạng một container riêng biệt và cùng chạy trên một hạ tầng với cùng một hệ điều hành. Mỗi container không chứa toàn bộ hệ điều hành, mà chỉ cùng chia sẻ nhân (kernel). Do đó, container được xem là nhẹ hơn nhiều so với máy ảo. Một container runtime đóng vai trò trung gian giao tiếp giúp các container chạy được trên hệ điều hành của máy chủ. Đây là thành phần có vai trò tạo, thực thi, cung cấp API để quản lý container. Một vài container runtime phổ biến như: Docker, CRI-O, containerd,...
+
+Tóm lại, khái niệm container ra đời đã tạo nên bước tiến mới trong việc phát triển và triển khai ứng dụng. Container giúp đảm bảo nguyên tắc "Build once, run anywhere" - Tức là chỉ xây dựng một lần và có thể chạy trên bất kỳ hạ tầng nào, từ môi trường cục bộ như máy tính cá nhân của lập trình viên đến môi trường thực tế mà khách hàng tương tác. Container góp phần còn xây dựng nên kiến trúc của hạ tầng hiện đại, đặc biệt là trong ngữ cảnh ứng dụng vi dịch vụ (microservice).
+
+\paragraph{b. Docker}
+Docker là một nền tảng phần mềm mã nguồn mở, được giới thiệu lần đầu vào năm 2013. Docker đóng gói, phân phối và chạy ứng dụng trong các container.
+
+Một vài khái niệm liên quan đến Docker:
+\begin{itemize}
+    \item Dockerfile: Tệp văn bản mô tả các câu lệnh và cấu hình để Docker xây dựng nên một Docker image; bao gồm môi trường chạy, thư viện, mã nguồn và các tham số của ứng dụng.
+    \item Docker image: Là một mẫu (template) đóng gói toàn bộ môi trường chạy ứng dụng, bao gồm mã nguồn, thư viện, cấu hình và các phụ thuộc cần thiết khác để tạo nên Docker container.
+    \item Docker container: Là phiên bản đang chạy của một Docker Image.
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.3]{img/chapter2/docker-flow.png}
+    \caption{Mối quan hệ giữa Dockerfile, Docker image và Docker container}
+    \label{fig:chap2-docker-flow}
+\end{figure}
+
+Hình \ref{fig:chap2-docker-flow} mô tả mối quan hệ giữa Dockerfile, Docker image và Docker container. Theo đó, Dockerfile xây dựng nên Docker image, Docker image sau đó được chạy để tạo thành Docker container, cũng chính là môi trường thực thi của ứng dụng.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.3]{img/chapter2/docker-architecture.png}
+    \caption{Kiến trúc của Docker \cite{docker_overview} }
+    \label{fig:chap2-docker-architecture}
+\end{figure}
+
+Docker được xây dựng theo kiến trúc Client-Server, minh họa trong hình \ref{fig:chap2-docker-architecture}, gồm các thành phần như sau:
+\begin{itemize}
+    \item Docker client: Là nơi mà người dùng tương tác với Docker daemon thông qua các lệnh như docker run, docker build, docker pull.
+    \item Docker host: Là nơi chứa Docker daemon, thành phần chịu trách nhiệm quản lý hệ thống container. Docker host thực hiện các nhiệm vụ như nhận và xử lý yêu cầu từ Docker client, lưu trữ các Docker image đã được build hoặc pull về từ Registry, tạo và quản lý các Docker container được chạy từ các image tương ứng.
+    \item Registry: Là nơi lưu trữ image, ví dụ như Docker Hub.
+\end{itemize}
+
+Bên cạnh đó, Docker còn có một hệ sinh thái phần mềm vô cùng đa dạng. Docker cùng với các nền tảng như Kubernetes, Helm chart,... tạo thành một chuỗi công cụ cho việc đóng gói, phân phối, quản lý và vận hành ứng dụng.
+
+\subsection{Điều phối Container}
+\paragraph{a. Giới thiệu}
+Khi ứng dụng được triển khai ở phạm vi nhỏ và vừa, container có thể đáp ứng tốt với nhu cầu vận hành. Tuy nhiên, khi quy mô của ứng dụng ngày càng được mở rộng, số lượng container lên đến hàng chục nghìn, thậm chí là hàng trăm nghìn container, thì việc quản lý một cách thủ công trở nên không khả thi. Lúc này, hệ thống cần đến một nền tảng điều phối container để đảm bảo cho việc triển khai, giám sát, mở rộng được hoạt động một cách tự động và hiệu quả.
+
+Nền tảng điều phối container là một hệ thống giúp tự động hóa toàn bộ vòng đời vận hành của container. Việc này bao gồm triển khai, phân bổ tài nguyên vào các container, cân bằng tải, mở rộng hoặc thu hẹp theo nhu cầu, giám sát trạng thái và tự phục hồi khi xảy ra lỗi.
+
+Hiện nay có nhiều nền tảng điều phối container được sử dụng trong thực tế, chẳng hạn như Docker Swarm, Apache Mesos hay Kubernetes. Trong đó, Kubernetes đã trở thành nền tảng phổ biến và mạnh mẽ nhất nhờ khả năng mở rộng linh hoạt, tính ổn định cao và hệ sinh thái vô cùng phong phú.
+
+\paragraph{b. Kubernetes}
+Kubernetes là một nền tảng mã nguồn mở do Google phát triển, dùng để điều phối container và hỗ trợ triển khai, quản lý ứng dụng container trong môi trường phân tán. Kubernetes phát huy sức mạnh khi hệ thống phải vận hành số lượng lớn container, giúp đơn giản hoá việc quản lý các ứng dụng phức tạp chạy trên nhiều máy chủ.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.3]{img/chapter2/k8s-architecture.png}
+    \caption{Kiến trúc của Kubernetes \cite{k8s_architecture} }
+    \label{fig:chap2-k8s-architecture}
+\end{figure}
+
+Một vài khái niệm liên quan đến Kubernetes:
+\begin{itemize}
+    \item Pod: Là đơn vị triển khai nhỏ nhất trong Kubernetes. Mỗi pod chứa một hoặc nhiều container, chúng cùng chia sẻ tài nguyên điện toán, thành phần lưu trữ và mạng.
+    
+    \item Node: Là máy chủ vật lý hoặc máy ảo nơi các Pod được chạy.
+    
+    \item Cluster: Tập hợp nhiều node hoạt động cùng nhau và cùng được quản lý được gọi là một cluster.
+\end{itemize}
+
+
+Hình \ref{fig:chap2-k8s-architecture} mô tả kiến trúc của Kubernetes, bao gồm hai thành phần chính là Control Plane và Worker Nodes.
+\begin{itemize}
+    \item Control Plane:
+    \begin{itemize}
+        \item kube-api-server: Trung tâm giao tiếp giữa người dùng và cluster.
+        \item etcd: Nơi lưu trữ toàn bộ trạng thái của cluster.
+        \item scheduler: Thành phần quyết định pod sẽ được chạy trên node nào.
+        \item controller-manager và cloud-controller-manager: Thành phần theo dõi trạng thái cluster và tự động xử lý các tác vụ như scale, phục hồi, cập nhật node từ cloud provider.
+    \end{itemize}
+    \item Worker Nodes:
+    \begin{itemize}
+        \item kubelet: Thành phần quản lý pod trên node.
+        \item kube-proxy: Thành phần xử lý lưu lượng mạng đến các pod và node.
+        \item Các pod chạy trong môi trường do container runtime cung cấp.
+    \end{itemize}
+\end{itemize}
+
+\section{Điện toán đám mây}
+\subsection{Tổng quan điện toán đám mây}
+\paragraph{a. Khái niệm}
+
+Điện toán đám mây (Cloud Computing) là dịch vụ cung cấp tài nguyên về công nghệ thông tin thông qua Internet, chẳng hạn như máy chủ, kho lưu trữ, cơ sở dữ liệu, kết nối mạng và phần mềm.
+
+Nếu như ở phương pháp truyền thống, cá nhân hay doanh nghiệp phải tự đầu tư các thiết bị phần cứng, cũng như tự quản lý và bảo trì thiết bị mạng; thì điện toán đám mây mang đến nhiều sự tiện lợi hơn. Theo đó, người dùng có thể truy cập và sử dụng tài nguyên điện toán từ xa theo nhu cầu, dùng bao nhiêu trả tiền bấy nhiêu. Ngoài ra, điện toán đám mây cũng mang đến khả năng mở rộng linh hoạt và tính sẵn sàng cao.
+\paragraph{b. Các mô hình dịch vụ}
+Điện toán đám mây thường được chia thành ba mô hình dịch vụ chính:
+\begin{itemize}
+    \item Infrastructure as a Service (IaaS): Bao gồm các tài nguyên hạ tầng cơ bản như máy chủ ảo, kho lưu trữ và mạng. Người dùng có toàn quyền kiểm soát hệ điều hành và ứng dụng, trong khi nhà cung cấp chịu trách nhiệm quản lý phần cứng.
+    \item Platform as a Service (PaaS): Cung cấp môi trường để lập trình viên phát triển, triển khai và quản lý ứng dụng mà không cần quan tâm đến hạ tầng bên dưới.
+    \item Software as a Service (SaaS): Cung cấp các ứng dụng hoàn chỉnh thông qua Internet. Người dùng chỉ cần sử dụng dịch vụ mà không cần quản lý hạ tầng hay nền tảng.
+\end{itemize}
+
+\paragraph{c. Các mô hình triển khai}
+Điện toán đám mây thường được triển khai theo các mô hình sau:
+\begin{itemize}
+    \item Public Cloud: Được nhà cung cấp chia sẻ cho nhiều người dùng.
+    \item Private Cloud: Được triển khai dành riêng cho một tổ chức, giúp tăng cường bảo mật và khả năng kiểm soát.
+    \item Hybrid Cloud: Là sự kết hợp giữa Public Cloud và Private Cloud.
+\end{itemize}
+
+\subsection{Amazon Web Service}
+\paragraph{a. Giới thiệu}
+\ac{aws} là nền tảng điện toán đám mây do Amazon cung cấp, với hơn 200 dịch vụ và là nền tảng được sử dụng rộng rãi nhất thế giới.
+\paragraph{b. Một số dịch vụ}
+Trong phạm vi khóa luận, một số dịch vụ \ac{aws} được sử dụng bao gồm:
+\begin{itemize}
+    \item Nhóm dịch vụ mạng và hạ tầng:
+    \begin{itemize}
+        \item Amazon \ac{vpc}: Cho phép xây dựng mạng ảo riêng biệt trên \ac{aws}, các tài nguyên của hệ thống được cách ly.
+        \item Subnet: Đóng vai trò như mạng con của \ac{vpc}.
+        \item Internet gateway: Cho phép các tài nguyên trong vùng mạng có thể kết nối ra Internet.
+        \item NAT gateway: Cho phép các tài nguyên trong vùng mạng có thể truy cập Internet một chiều, đồng thời đảm bảo tính bảo mật.
+    \end{itemize}
+    \item Nhóm dịch vụ điện toán và điều phối container:
+    \begin{itemize}
+        \item Amazon \ac{eks}: Là nền tảng điều phối container, với Controle Plane do \ac{aws} quản lý.
+        \item Amazon \ac{ec2}: Là dịch vụ máy ảo, đồng thời cũng đóng vai trò là các worker node cho cụm \ac{eks}.
+    \end{itemize}
+    \item Nhóm dịch vụ kho lưu trữ và cơ sở dữ liệu:
+    \begin{itemize}
+        \item Amazon \ac{s3}: Là một dịch vụ có chức năng như một hệ thống tệp.
+        \item Amazon \ac{rds}: Cung cấp cơ sở dữ liệu quan hệ.
+        \item Amazon DynamoDB: Cung cấp cơ sở dữ liệu phi quan hệ.
+    \end{itemize} 
+    \item Nhóm dịch vụ quản lý truy cập và bảo mật:
+    \begin{itemize}
+        \item Amazon \ac{iam}: Quản lý người dùng, vai trò và phân quyền truy cập đến các tài nguyên trên \ac{aws}.
+        \item AWS Secret Manager: Lưu trữ và quản lý các thông tin nhạy cảm một cách an toàn, chẳng hạn như mật khẩu cơ sở dữ liệu và token.
+    \end{itemize}
+    \item Các dịch vụ khác:
+    \begin{itemize}
+        \item Amazon \ac{ecr}: Kho lưu trữ các container image của hệ thống, hỗ trợ cho quá trình xây dựng và triển khai các ứng dụng container.
+        \item Amazon Route 53: Là dịch vụ quản lý \ac{dns}, hỗ trợ định tuyến và truy cập vào các dịch vụ của hệ thống thông qua tên miền.
+    \end{itemize}
+\end{itemize}
+
+\section{Triển khai hạ tầng dưới dạng mã}
+\subsection{Tổng quan triển khai hạ tầng dưới dạng mã}
+Triển khai hạ tầng dưới dạng mã (\ac{iac}) là phương pháp quản lý và triển khai hạ tầng công nghệ thông tin thông qua các tệp cấu hình có thể dễ dàng đọc và kiểm soát. Nói cách khác, hạ tầng sẽ được biểu diễn bằng mã, qua đó mang lại sự minh bạch và rõ ràng để người dùng có thể nắm được bức tranh về hạ tầng hiện tại.
+
+IaC mang đến nhiều lợi ích:
+\begin{itemize}
+    \item Đảm bảo tính nhất quán và khả năng tái lập hạ tầng.
+    \item Giảm thiếu sai sót của con người do cấu hình hạ tầng thủ công.
+    \item Lưu trữ \ac{iac} trên các nền tảng quản lý phiên bản mã nguồn, ví dụ như GitHub, giúp hỗ trợ việc kiểm tra, đánh giá và phê duyệt các thay đổi hạ tầng trước khi áp dụng vào môi trường thực thế.
+\end{itemize}
+
+\subsection{Terraform}
+Terraform là một công cụ \ac{iac} mã nguồn mở do Hashicorp phát triển. Terraform khai báo hạ tầng thông qua một ngôn ngữ gọi là \ac{hcl}. Terraform hỗ trợ triển khai hạ tầng cho rất nhiều nhà cung cấp dịch vụ, trong đó có \ac{aws}.
+
+Một điểm mạnh quan trọng của Terraform chính là khả năng quản lý trạng thái hạ tầng thông qua tệp state, cho phép theo dõi và đồng bộ trạng thái thực tế của hạ tầng hệ thống với cấu hình đã khai báo. Tính năng này còn phát huy tác dụng khi có nhiều thành viên cùng thao tác, giúp tránh xung đột cho hạ tầng.
+
+\section{Quét bảo mật}
+\subsection{Tổng quan quét bảo mật}
+Quét bảo mật là quá trình kiểm tra và đánh giá các thành phần của hệ thống nhằm phát hiện sớm các lỗ hổng, cấu hình sai hoặc các rủi ro bảo mật tiềm ẩn trước khi hệ thống được đưa vào vận hành. Quét bảo mật không chỉ áp dụng cho mã nguồn của ứng dụng mà còn mở rộng sang \ac{iac} và container image.
+Quét bảo mật thường được phân thành hai nhóm chính:
+\begin{itemize}
+    \item Quét bảo mật tĩnh (\ac{sast}): Là quét bảo mật trước khi hệ thống được triển khai, cho phép phát hiện sớm các lỗ hổng và cấu hình sai ngay từ giai đoạn phát triển.
+    \item Quét bảo mật động (\ac{dast}): Là quét bảo mật trên hệ thống đang chạy, giúp kiểm tra hành vi thực tế của ứng dụng nhằm phát hiện các điểm yếu và rủi ro chỉ xuất hiện khi hệ thống hoạt động.
+\end{itemize}
+
+\subsection{Checkov}
+Checkov là công cụ quét bảo mật tĩnh mã nguồn mở, được phát triển bởi Bridgecrew. Checkov được thiết kế dành riêng cho \ac{iac} và hỗ trợ nhiều \ac{iac} phổ biến như Terraform, \ac{aws} CloudFormation và Kubernetes manifest. Checkov phân tích các tệp cấu hình hạ tầng và phát hiện các cấu hình không an toàn, vi phạm chính sách bảo mật.
+
+\subsection{Trivy}
+Trivy là công cụ quét bảo mật tĩnh mã nguồn mở, được phát triển bởi Aqua Security. Ứng dụng chính của Trivy là dùng cho quét bảo mật các container image. Trivy hoạt động bằng cách phân tích các thành phần bên trong container image nhằm phát hiện các lỗ hổng bảo mật đã được công bố (\ac{cve}), các thư viện lỗi thời, cũng như các cấu hình không an toàn.
+
+
+\section{Giám sát hệ thống và trực quan hóa dữ liệu}
+\subsection{Tổng quan giám sát hệ thống}
+Giám sát hệ thống là quá trình theo dõi, thu thập và phân tích các chỉ số tài nguyên và vận hành của hệ thống nhằm đánh giá trạng thái hiệu năng và mức độ ổn định. Giám sát hệ thống đóng vai trò quan trọng trong việc phát hiện sớm các sự cố, đánh giá khả năng mở rộng và hỗ trợ tối ưu tài nguyên.
+\subsection{Prometheus}
+Prometheus là một công cụ giám sát hệ thống mã nguồn mở, được thiết kế đặc biệt cho các hệ thống phân tán và môi trường container. Prometheus hoạt động theo cơ chế thu thập dữ liệu chủ động (pull-based), trong đó các chỉ số hệ thống được lấy định kỳ thông qua các endpoint.
+
+Prometheus lưu trữ dữ liệu chỉ số hệ thống dưới dạng chuỗi thời gian (time-series). Ngoài ra, Prometheus còn hỗ trợ ngôn ngữ truy vấn PromQL, qua đó cho phép người dùng truy vấn, phân tích và tổng hợp các chỉ số một cách linh hoạt và nhanh chóng. Nhờ khả năng tích hợp tốt với Kubernetes, Prometheus được sử dụng rộng rãi để giám sát trạng thái của pod, node và các dịch vụ trong cụm.
+
+\subsection{Grafana}
+Grafana là nền tảng trực quan hóa dữ liệu mã nguồn mở. Grafana hỗ trợ kết nối với nhiều nguồn dữ liệu khác nhau, trong đó Prometheus là một trong những nguồn phổ biến nhất. Các chỉ số giám sát được hiển thị dưới dạng biểu đồ và bảng điều khiển (dashboard). Thông qua các dashboard này, người dùng có thể theo dõi trực quan trạng thái và hiệu năng của hệ thống theo thời gian thực.
+
+\section{Tích hợp liên tục và triển khai liên tục}
+
+\subsection{Tổng quan}
+
+Tích hợp liên tục (\ac{ci}) và triển khai liên tục (\ac{cd}) là tập hợp các thực hành trong phát triển phần mềm hiện đại nhằm tự động hóa quá trình xây dựng, kiểm thử và triển khai ứng dụng. Mục tiêu của \ac{cicd} là rút ngắn vòng đời phát triển phần mềm, giảm thiểu lỗi phát sinh do tích hợp thủ công và nâng cao độ tin cậy của hệ thống.
+
+\textbf{\ac{ci}} là thực hành trong đó mã nguồn từ nhiều lập trình viên được tích hợp thường xuyên vào một nhánh chung. Mỗi lần tích hợp đều được kiểm tra tự động thông qua các bước như biên dịch, chạy kiểm thử và phân tích mã nguồn, nhằm phát hiện lỗi sớm trong quá trình phát triển.
+
+\textbf{\ac{cd}} là bước tiếp theo của \ac{ci}, cho phép tự động triển khai các thay đổi lên môi trường chạy thực tế mà không cần can thiệp thủ công.
+
+Việc áp dụng \ac{cicd} mang lại nhiều lợi ích như tăng tốc độ phát triển, cải thiện chất lượng phần mềm, giảm rủi ro khi triển khai và tăng khả năng mở rộng của hệ thống.
+
+\subsection{GitHub Actions}
+
+GitHub Actions là nền tảng \ac{cicd} được tích hợp trực tiếp vào hệ sinh thái GitHub, cho phép tự động hóa các quy trình phát triển phần mềm dựa trên các sự kiện (events) xảy ra trong kho quản lý phiên bản mã nguồn, chẳng hạn như khi có thay đổi mã, tạo pull request hoặc phát hành phiên bản mới.
+
+Một số khái niệm phổ biến trong Github Action:
+\begin{itemize}
+    \item \textbf{Workflow:}  
+    Là tập hợp các bước tự động được định nghĩa bằng tệp cấu hình YAML và được lưu trữ trong kho mã nguồn.
+    
+    \item \textbf{Event:}  
+    Là các sự kiện kích hoạt workflow, ví dụ như \textit{push}, \textit{pull request} hoặc \textit{release}.
+    
+    \item \textbf{Job:}  
+    Là một tập các bước (steps) được thực thi tuần tự hoặc song song trong workflow.
+    
+    \item \textbf{Action:}  
+    Là các đơn vị công việc có thể tái sử dụng, được xây dựng sẵn hoặc do người dùng tự định nghĩa.
+\end{itemize}
+
+Nhờ khả năng tích hợp chặt chẽ với GitHub, GitHub Actions giúp đơn giản hóa việc thiết lập quy trình \ac{cicd}, đặc biệt phù hợp với các dự án sử dụng GitHub làm nền tảng quản lý mã nguồn.
+
+\subsection{Argo Workflows}
+
+Argo Workflows là một công cụ mã nguồn mở dùng để điều phối và tự động hóa các quy trình công việc (workflows) phức tạp trên nền tảng Kubernetes. Argo Workflows cho phép định nghĩa các workflow dưới dạng các đồ thị có hướng không chu trình (\ac{dag}), trong đó mỗi bước được triển khai dưới dạng một container.
+
+Các đặc điểm chính của Argo Workflows bao gồm:
+\begin{itemize}
+    \item \textbf{Dựa trên Kubernetes:}  
+    Mỗi bước trong workflow được chạy như một Kubernetes Pod, giúp tận dụng khả năng mở rộng và quản lý tài nguyên của Kubernetes.
+    
+    \item \textbf{Workflow dạng \ac{dag}:}  
+    Cho phép mô tả các quy trình phức tạp với các bước thực thi tuần tự hoặc song song.
+    
+    \item \textbf{Khả năng mở rộng và linh hoạt:}  
+    Phù hợp cho các quy trình xử lý dữ liệu, huấn luyện mô hình học máy và các quy trình tự động hóa phức tạp.
+\end{itemize}
+
+Trong bối cảnh \ac{cicd} hiện đại, Argo Workflows thường được sử dụng để xây dựng các quy trình triển khai và xử lý tác vụ trên môi trường Kubernetes, đóng vai trò quan trọng trong các kiến trúc dựa trên đám mây (cloud-native) và hệ thống phân tán.
+
+
+
+\section{Quản lý mô hình học máy}
+
+\subsection{Tổng quan}
+
+Trong các hệ thống học máy hiện đại, việc xây dựng mô hình chỉ là một phần của toàn bộ vòng đời phát triển. Bên cạnh quá trình huấn luyện, các mô hình học máy cần được theo dõi, đánh giá, lưu trữ, triển khai và cập nhật một cách có hệ thống. Tập hợp các hoạt động này thường được gọi chung là quản lý mô hình học máy.
+
+Quản lý mô hình học máy nhằm giải quyết các thách thức phát sinh trong suốt vòng đời của mô hình, bao gồm:
+\begin{itemize}
+    \item Theo dõi các thí nghiệm huấn luyện và tham số mô hình
+    \item So sánh hiệu suất giữa các phiên bản mô hình khác nhau
+    \item Lưu trữ và quản lý phiên bản mô hình
+    \item Hỗ trợ triển khai và tái huấn luyện mô hình
+\end{itemize}
+
+Trong bối cảnh các hệ thống học máy ngày càng phức tạp và có sự lặp lại nhiều lần trong quá trình thử nghiệm, việc sử dụng các công cụ quản lý mô hình giúp tăng tính tái lập, cải thiện khả năng cộng tác và giảm rủi ro khi đưa mô hình vào môi trường vận hành thực tế. Các công cụ này thường là một phần quan trọng của quy trình MLOps, kết nối giữa phát triển mô hình học máy và vận hành hệ thống.
+
+\subsection{MLflow}
+
+MLflow là một nền tảng mã nguồn mở được thiết kế để hỗ trợ quản lý toàn bộ vòng đời của mô hình học máy. MLflow cung cấp các thành phần tiêu chuẩn nhằm theo dõi thí nghiệm, quản lý mô hình và hỗ trợ triển khai trong nhiều môi trường khác nhau.
+
+Các thành phần chính của MLflow:
+\begin{itemize}
+    \item \textbf{MLflow Tracking:}  
+    Cho phép ghi lại và theo dõi các thông tin liên quan đến thí nghiệm huấn luyện như tham số, chỉ số đánh giá và các tệp kết quả. Thành phần này giúp so sánh hiệu suất giữa các lần huấn luyện khác nhau một cách trực quan.
+
+    \item \textbf{MLflow Models:}  
+    Định nghĩa một định dạng chuẩn để lưu trữ mô hình học máy, cho phép triển khai mô hình trên nhiều nền tảng và công cụ khác nhau.
+
+    \item \textbf{MLflow Model Registry:}  
+    Hỗ trợ quản lý vòng đời của mô hình thông qua việc lưu trữ, gắn nhãn và kiểm soát phiên bản các mô hình đã được huấn luyện.
+\end{itemize}
+
+Nhờ khả năng tích hợp linh hoạt với nhiều thư viện học máy phổ biến và các nền tảng triển khai khác nhau, MLflow đã trở thành một công cụ quan trọng trong việc quản lý mô hình học máy, đặc biệt trong các hệ thống yêu cầu tính mở rộng, tái lập và cộng tác cao.
+
+
+\section{MLOps và MLSecOps}
+
+\subsection{Vòng đời mô hình học máy}
+
+Vòng đời mô hình học máy (Machine Learning Lifecycle) mô tả toàn bộ các giai đoạn mà một mô hình học máy trải qua, từ khi xác định bài toán cho đến khi được triển khai và vận hành trong môi
+trường thực tế. Việc quản lý hiệu quả vòng đời này là yếu tố then chốt để đảm bảo mô hình duy trì được hiệu suất, tính ổn định và khả năng thích ứng trước sự thay đổi của dữ liệu.
+
+\paragraph{a. Các giai đoạn}
+
+Một vòng đời mô hình học máy điển hình thường bao gồm các giai đoạn sau:
+\begin{itemize}
+    \item \textbf{Xác định bài toán:}  
+    Phân tích yêu cầu nghiệp vụ, xác định mục tiêu dự đoán và tiêu chí đánh giá mô hình.
+    
+    \item \textbf{Thu thập và tiền xử lý dữ liệu:}  
+    Thu thập dữ liệu từ nhiều nguồn, làm sạch dữ liệu, xử lý dữ liệu thiếu và chuẩn hóa dữ liệu để phục vụ quá trình huấn luyện.
+    
+    \item \textbf{Huấn luyện và đánh giá mô hình:}  
+    Lựa chọn thuật toán, huấn luyện mô hình và đánh giá hiệu suất dựa trên các chỉ số phù hợp.
+    
+    \item \textbf{Triển khai mô hình:}  
+    Đưa mô hình vào môi trường vận hành để phục vụ dự đoán hoặc hỗ trợ ra quyết định.
+    
+    \item \textbf{Giám sát và cập nhật:}  
+    Theo dõi hiệu suất mô hình theo thời gian, phát hiện suy giảm chất lượng và tiến hành huấn luyện lại khi cần thiết.
+\end{itemize}
+
+Các giai đoạn này thường mang tính lặp đi lặp lại và tạo thành một chu trình khép kín.
+
+\paragraph{b. Vai trò của con người trong vòng đời mô hình học máy}
+
+Mặc dù nhiều giai đoạn trong vòng đời mô hình học máy có thể được tự động hóa, con người vẫn đóng vai trò trung tâm trong việc định hướng, giám sát và ra quyết định. Cụ thể, con người chịu trách nhiệm xác định bài toán, lựa chọn dữ liệu, đánh giá kết quả mô hình và đảm bảo mô hình đáp ứng các yêu cầu về đạo đức, pháp lý và nghiệp vụ.
+
+Ngoài ra, con người còn tham gia vào việc phân tích các tình huống bất thường, diễn giải kết quả mô hình và điều chỉnh hệ thống khi xuất hiện các rủi ro hoặc sai lệch không mong muốn.
+
+\subsection{MLOps}
+
+\paragraph{a. Khái niệm}
+
+MLOps là cách tiếp cận nhằm tự động hóa và chuẩn hóa toàn bộ
+vòng đời mô hình học máy, từ tiền xử lý dữ liệu, huấn luyện, đánh giá cho đến triển khai và giám sát trong môi trường vận hành. MLOps cho phép tích hợp các bước này thành một quy trình liền mạch, giúp rút ngắn thời gian đưa mô hình vào sản xuất và nâng cao tính ổn định của hệ thống~[2].
+
+\paragraph{b. Vai trò}
+
+MLOps đóng vai trò quan trọng trong việc:
+\begin{itemize}
+    \item Tự động hóa quy trình huấn luyện và triển khai mô hình
+    \item Giảm chi phí vận hành và lỗi phát sinh do thao tác thủ công
+    \item Nâng cao khả năng tái lập và theo dõi các phiên bản mô hình
+    \item Giúp mô hình thích ứng nhanh với dữ liệu mới trong môi trường thực tế
+\end{itemize}
+
+Trong nhiều lĩnh vực như tài chính, MLOps góp phần giúp các hệ thống học máy, chẳng hạn hệ
+thống phát hiện gian lận, thích ứng tốt hơn với dữ liệu giao dịch liên tục thay đổi và cải thiện khả
+năng phản ứng trước các hành vi gian lận mới.
+
+\paragraph{c. Thách thức}
+
+Mặc dù mang lại nhiều lợi ích, MLOps vẫn tồn tại một số hạn chế. Phần lớn các phương pháp MLOps hiện nay tập trung vào hiệu quả vận hành và tự động hóa quy trình, trong khi các yếu tố liên quan đến bảo mật và an toàn của mô hình chưa được xem xét một cách toàn diện.
+
+\subsection{MLSecOps}
+
+\paragraph{a. Khái niệm}
+
+MLSecOps được đề xuất như một bước phát triển tiếp theo của MLOps, nhằm tích hợp các yếu tố bảo mật xuyên suốt vòng đời mô hình học máy~[4]. MLSecOps mở rộng phạm vi của MLOps bằng cách đưa các biện pháp an ninh mạng vào từng giai đoạn, từ dữ liệu đầu vào cho đến quá trình huấn luyện và triển khai mô hình.
+
+\paragraph{b. Vai trò}
+
+MLSecOps đóng vai trò quan trọng trong việc:
+\begin{itemize}
+    \item Bảo vệ dữ liệu huấn luyện khỏi các hành vi thao túng hoặc xâm nhập trái phép
+    \item Giám sát tính toàn vẹn của mô hình trong quá trình huấn luyện và vận hành
+    \item Phát hiện và cảnh báo các hành vi bất thường trong hệ thống học máy
+    \item Nâng cao độ tin cậy và an toàn của các hệ thống học máy trong môi trường thực tế
+\end{itemize}
+
+Trong bối cảnh các mô hình học máy ngày càng được triển khai rộng rãi, MLSecOps góp phần đảm bảo rằng hệ thống không chỉ hoạt động hiệu quả mà còn an toàn trước các mối đe dọa an ninh.
+
+\paragraph{c. Thách thức}
+
+Các hệ thống học máy hiện nay phải đối mặt với nhiều rủi ro bảo mật, trong đó có các hình thức tấn công như tấn công đầu độc dữ liệu (data poisoning attack)~[3], tấn công adversarial examples
+hay khai thác mô hình (model extraction). Những mối đe dọa này có thể làm suy giảm nghiêm trọng hiệu suất và độ tin cậy của mô hình.
+
+Mặc dù MLSecOps đã nhận được sự quan tâm trong một số lĩnh vực như y tế, an ninh mạng hay \ac{iot}, các nghiên cứu và ứng dụng thực tế vẫn còn hạn chế và chưa hình thành một khuôn khổ toàn
+diện. Điều này cho thấy MLSecOps vẫn là một lĩnh vực đang phát triển và cần được nghiên cứu sâu hơn trong thời gian tới.

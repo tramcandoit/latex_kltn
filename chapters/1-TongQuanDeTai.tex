@@ -1,0 +1,82 @@
+\section{Đặt vấn đề}
+
+% Trí tuệ nhân tạo \ac{ai}. Lorem Ipsum\footnote{\url{https://www.lipsum.com/}} is simply dummy text of the printing and typesetting industry\cite{8777334}. Lorem Ipsum includes:
+% \begin{itemize}
+%   \item What is Lorem Ipsum?
+%   \item Where does it come from?
+%   \item Why do we use it?
+% \end{itemize}
+
+% Lần đầu sử dụng từ viết tắt sẽ ra thế này: \ac{ml}, những lần sau sẽ ra thế này \ac{ml}
+
+Trong những năm gần đây, sự phát triển mạnh mẽ của công nghệ thông tin đã tạo nên vô số thay đổi trong lĩnh vực tài chính. Sự phổ biến của giao dịch điện tử, thanh toán trực tuyến và ngân hàng số đã mang đến nhiều lợi ích như nâng cao tính tiện lợi và mở rộng khả năng tiếp cận dịch vụ cho khách hàng. Tuy nhiên, đi kèm với đó là sự gia tăng của các hành vi gian lận, gây thiệt hại lớn cho tổ chức tài chính. Vì thế, việc nghiên cứu và phát triển các giải pháp phát hiện gian lận ngày càng trở thành một nhu cầu cấp thiết.
+
+Nhiều hệ thống phát hiện gian lận trong lĩnh vực tài chính đã được xây dựng dựa trên các phương pháp truyền thống, chẳng hạn như hệ thống dựa trên quy tắc (rule-based) hoặc đánh giá một cách thủ công. Tuy nhiên, phương pháp này bộc lộ hạn chế khi phải xử lý khối lượng dữ liệu khổng lồ và các kịch bản gian lận liên tục thay đổi. Vì vậy, việc ứng dụng các kỹ thuật học máy - \ac{ml} vào bài toán phát hiện gian lận đã trở thành một hướng tiếp cận hiệu quả, giúp tự động hóa quá trình phát hiện và nâng cao độ chính xác.
+
+Mặc dù mang lại nhiều lợi ích, các mô hình học máy cũng đối mặt với những thách thức về bảo mật, đặc biệt là các hình thức tấn công nhắm vào dữ liệu huấn luyện như tấn công đầu độc dữ liệu và lật nhãn. Bên cạnh đó, quá trình triển khai và vận hành mô hình học máy trong môi trường thực tế đòi hỏi một quy trình quản lý chặt chẽ, tự động và an toàn. 
+
+Từ những vấn đề trên, khóa luận này hướng đến việc xây dựng hệ thống phát hiện gian lận trong lĩnh vực tài chính, cụ thể là gian lận mở tài khoản ngân hàng, dựa trên \ac{ml}, triển khai theo mô hình MLSecOps. Hệ thống được thiết kế thành một quy trình khép kín, tích hợp bước kiểm tra dữ liệu đầu vào để loại bỏ nhiễu hoặc dữ liệu độc hại ngay từ giai đoạn tiền huấn luyện, đồng thời tự động hóa toàn bộ quy trình từ huấn luyện đến triển khai. Nhờ vậy, mô hình không chỉ đạt hiệu quả cao về mặt kỹ thuật, mà còn thích ứng kịp thời với dữ liệu mới và an toàn trước các rủi ro, góp phần lấp đầy khoảng trống nghiên cứu hiện tại.
+
+\section{Các nghiên cứu liên quan}
+Nhiều nghiên cứu đã ứng dụng các kỹ thuật học máy vào bài toán phát hiện gian lận trong lĩnh vực tài chính... Tuy nhiên, nghiên cứu này chủ yếu tập trung vào khía cạnh mô hình và dữ liệu, chưa xem xét các vấn đề liên quan đến triển khai và bảo mật trong môi trường vận hành thực tế.
+
+Bên cạnh đó, một số công trình nghiên cứu đã áp dụng các nguyên tắc MLOps trong lĩnh vực tài chính nhằm tự động hóa quá trình huấn luyện, triển khai và giám sát mô hình... Tuy nhiên, các nghiên cứu này chủ yếu tập trung vào khía cạnh vận hành và hiệu năng của hệ thống, trong khi các rủi ro bảo mật của mô hình học máy chưa được phân tích sâu.
+
+Ngoài ra, một số nghiên cứu đã chỉ ra rằng các mô hình học máy phát hiện gian lận có thể bị suy giảm nghiêm trọng hiệu năng khi chịu các hình thức tấn công đầu độc dữ liệu, đặc biệt là tấn công lật nhãn. Điều này cho thấy việc chỉ tập trung vào độ chính xác của mô hình là chưa đủ, mà cần có các cơ chế bảo vệ trong suốt vòng đời của hệ thống học máy.
+
+Từ các nghiên cứu trên có thể nhận thấy rằng, mặc dù học máy và MLOps đã mang lại nhiều cải tiến cho bài toán phát hiện gian lận tài chính, các khía cạnh bảo mật vẫn chưa được chú trọng một cách toàn diện. Đây chính là khoảng trống nghiên cứu mà cách tiếp cận MLSecOps hướng đến giải quyết trong khóa luận này.
+
+
+\section{Mục tiêu nghiên cứu}
+Mục tiêu tổng quát của khóa luận là xây dựng một hệ thống phát hiện gian lận trong lĩnh vực tài chính, cụ thể là gian lận trong quá trình mở tài khoản ngân hàng, dựa trên các kỹ thuật học máy và được triển khai theo mô hình MLSecOps.
+\begin{itemize}
+  \item Nghiên cứu và lựa chọn các mô hình học máy phù hợp cho bài toán phát hiện gian lận với dữ liệu mất cân bằng trong lĩnh vực tài chính.
+  \item Nghiên cứu và tích hợp phương pháp phát hiện tấn công lật nhãn nhằm giảm thiểu tác động của các hình thức tấn công đầu độc dữ liệu trong giai đoạn huấn luyện mô hình.
+  \item Xây dựng quy trình phát hiện gian lận theo hướng MLSecOps, bao phủ toàn bộ vòng đời mô hình học máy từ xử lý dữ liệu, huấn luyện, đánh giá đến triển khai và giám sát.
+  \item Đánh giá hiệu quả của mô hình học máy và hệ thống MLSecOps thông qua các kịch bản mô phỏng.
+\end{itemize}
+
+\section{Đối tượng và phạm vi nghiên cứu}
+\subsection{Đối tượng nghiên cứu}
+Đối tượng nghiên cứu của khóa luận bao gồm: 
+\begin{itemize}
+  \item Các mô hình học máy được ứng dụng trong bài toán phát hiện gian lận tài chính.
+  \item Các kỹ thuật xử lý dữ liệu và đánh giá mô hình học máy trong bối cảnh dữ liệu mất cân bằng.
+  \item Các hình thức tấn công nhắm vào dữ liệu huấn luyện của mô hình học máy, đặc biệt là tấn công đầu độc dữ liệu và tấn công lật nhãn.
+  \item Quy trình MLSecOps nhằm quản lý toàn bộ vòng đời của mô hình học máy, từ thu thập và tiền xử lý dữ liệu, huấn luyện, đánh giá đến triển khai và vận hành.
+  \item Các công cụ và nền tảng hỗ trợ triển khai hệ thống MLSecOps, bao gồm: 
+  \begin{itemize}
+    \item Quy trình tích hợp liên tục và triển khai liên tục (\ac{cicd})
+    \item Các công cụ quét bảo mật
+    \item Công nghệ container và điều phối container
+    \item Các công cụ quản lý vòng đời mô hình học máy và giám sát hệ thống
+  \end{itemize}
+\end{itemize}
+
+\subsection{Phạm vi nghiên cứu}
+Đề tài này tập trung vào xây dựng hệ thống phát hiện gian lận trong lĩnh vực tài chính dựa trên \ac{ml} và triển khai theo hướng MLSecOps. Phạm vi nghiên cứu của khóa luận bao gồm:
+\begin{itemize}
+  \item Tập trung vào bài toán phát hiện gian lận trong giai đoạn đăng ký và mở tài khoản ngân hàng.
+  \item Phạm vi nghiên cứu về bảo mật của mô hình học máy chủ yếu tập trung vào hình thức tấn công lật nhãn (label flipping) trong dữ liệu huấn luyện.
+  \item Hệ thống được triển khai và đánh giá trong môi trường mô phỏng, không áp dụng trực tiếp cho các hệ thống tài chính thực tế.
+\end{itemize}
+
+\section{Các đóng góp chính của đề tài}
+Các đóng góp chính của đề tài bao gồm:
+\begin{itemize}
+  \item Đề xuất và triển khai một hệ thống phát hiện gian lận trong lĩnh vực tài chính, cụ thể là gian lận mở tài khoản ngân hàng, dựa trên các mô hình học máy và được tổ chức theo khung MLSecOps. 
+  \item Xây dựng quy trình MLSecOps khép kín, tích hợp các bước kiểm tra dữ liệu và bảo mật trong toàn bộ vòng đời mô hình học máy, từ tiền xử lý dữ liệu, huấn luyện đến triển khai và vận hành. 
+  \item Đề xuất và tích hợp phương pháp phát hiện tấn công lật nhãn trong dữ liệu huấn luyện, góp phần giảm thiểu tác động của các hình thức tấn công đầu độc dữ liệu đến hiệu năng mô hình. 
+  \item Áp dụng các công cụ \ac{cicd}, công nghệ container và điều phối container để tự động hóa quy trình huấn luyện, tái huấn luyện và triển khai mô hình học máy.
+\end{itemize}
+
+\section{Cấu trúc Khoá luận tốt nghiệp}
+\label{sec:CauTruc}
+Khóa luận với đề tài "XÂY DỰNG HỆ THỐNG PHÁT HIỆN GIAN LẬN TRONG LĨNH VỰC TÀI CHÍNH DỰA TRÊN MLSECOPS" được trình bày bao gồm 6 chương. Nội dung tóm tắt từng chương được trình bày như sau:
+\begin{itemize}
+    \item \textbf{Chương 1: Tổng quan đề tài.}
+    \item \textbf{Chương 2: Cơ sở lý thuyết.}
+    \item \textbf{Chương 3: Phương pháp thực hiện}
+    \item \textbf{Chương 4: Thực nghiệm và đánh giá kết quả}
+    \item \textbf{Chương 5: Kết luận và phát triển.}
+\end{itemize}

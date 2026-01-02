@@ -1,0 +1,47 @@
+\section{Kết luận}
+Nhóm sinh viên đã xây dựng một hệ thống MLSecOps hoàn chỉnh theo hướng end-to-end cho bài toán phát hiện gian lận tài chính, bao phủ toàn bộ vòng đời của mô hình học máy từ huấn luyện, tái huấn luyện cho đến triển khai và vận hành.
+
+\subsection{Kết quả về mô hình học máy và phát hiện tấn công lật nhãn}
+Nhóm sinh viên đã hoàn thành việc nghiên cứu và xây dựng 2 mô hình học máy phục vụ cho bài toán phát hiện gian lận trong lĩnh vực tài chính: XGBoost và \ac{brf}. 
+
+Trong điều kiện dữ liệu huấn luyện không bị lật nhãn, mô hình XGBoost đạt Recall 66.12\% và AUC-ROC 0.87 trên tập kiểm thử, trong khi mô hình \ac{brf} đạt Recall 79.94\% và AUC-ROC 0.88. Kết quả này cho thấy \ac{brf} có khả năng phát hiện các trường hợp gian lận tốt hơn về mặt Recall, đặc biệt phù hợp với bài toán mà việc bỏ sót gian lận cần được hạn chế. Khi số lượng mẫu bị lật nhãn trong tập huấn luyện tăng lên, hiệu năng của cả hai mô hình đều suy giảm, thể hiện qua sự giảm dần của các chỉ số Recall và AUC-ROC. Điều này cho thấy tấn công lật nhãn có ảnh hưởng đáng kể đến chất lượng mô hình học máy và khẳng định tầm quan trọng của việc kiểm soát và bảo vệ dữ liệu huấn luyện trong các hệ thống phát hiện gian lận.
+
+Bên cạnh việc đánh giá tác động của tấn công lật nhãn đến hiệu năng mô hình, khóa luận đã áp dụng phương pháp phát hiện dữ liệu bị lật nhãn theo hướng model-based, trong đó dự đoán của các mô hình học máy được sử dụng làm cơ sở để đánh giá mức độ bất thường của dữ liệu huấn luyện. Phương pháp mà nhóm triển khai có khả năng tập trung phát hiện nhãn sai trong một tập con tương đối nhỏ, phù hợp với các kịch bản human-in-the-loop trong thực tế, nơi nguồn lực kiểm tra dữ liệu thường bị giới hạn.
+
+Nhìn chung, việc áp dụng phương pháp phát hiện lật nhãn dựa trên mô hình trong khóa luận cho thấy tính khả thi và hiệu quả khi được tích hợp vào pipeline MLSecOps. Phương pháp giúp hỗ trợ giám sát chất lượng dữ liệu huấn luyện và cung cấp tín hiệu cảnh báo sớm trước các kịch bản tấn công dữ liệu.
+\subsection{Kết quả về hệ thống MLSecOps}
+Nhóm sinh viên đã thiết kế và triển khai thành công một hệ thống phát hiện gian lận tài chính theo hướng MLSecOps, trong đó quy trình phát triển, huấn luyện, triển khai và vận hành mô hình học máy được tích hợp trong một quy trình thống nhất. Hạ tầng được xây dựng nhằm đảm bảo tính tự động, khả năng kiểm soát và khả năng mở rộng trong quá trình vận hành.
+
+Hệ thống MLSecOps đã hỗ trợ tự động hóa các pipeline chính, bao gồm pipeline huấn luyện mô hình, tái huấn luyện và phục vụ mô hình. Các pipeline này được tổ chức theo từng bước rõ ràng, cho phép tách biệt các thành phần xử lý dữ liệu, huấn luyện và triển khai, đồng thời hạn chế ảnh hưởng lẫn nhau trong quá trình vận hành. 
+
+Bên cạnh đó, các quy trình \ac{cicd} cho mã nguồn, ứng dụng và hạ tầng được tích hợp vào hệ thống, giúp kiểm soát tốt các thay đổi và giảm thiểu sai sót trong quá trình triển khai. Việc áp dụng các quy trình triển khai tự động không chỉ góp phần hỗ trợ cho việc tái lập hệ thống khi cần thiết mà còn tăng cường mức độ an toàn cho hạ tầng thông qua việc chuẩn hóa cấu hình, kiểm soát thay đổi và hạn chế các thao tác thủ công tiềm ẩn rủi ro bảo mật.
+
+Nhóm sinh viên cũng đã xây dựng các dịch vụ giám sát tài nguyên và hiệu năng hệ thống trong quá trình thực thi pipeline MLSecOps. Các dịch vụ này cho phép theo dõi mức sử dụng tài nguyên tính toán của từng pod theo thời gian, bao gồm các chỉ số về CPU và bộ nhớ trong suốt quá trình huấn luyện và vận hành mô hình. Nhìn chung, việc tích hợp các dịch vụ giám sát tài nguyên và hiệu năng góp phần nâng cao khả năng quan sát và kiểm soát hệ thống, đồng thời cung cấp cơ sở cho việc tối ưu và mở rộng hệ thống MLSecOps trong các giai đoạn phát triển tiếp theo.
+
+\subsection{Ý nghĩa thực tiễn}
+Ý nghĩa thực tiễn quan trọng nhất của khóa luận không chỉ nằm ở việc xây dựng một hệ thống phát hiện gian lận tài chính, mà ở cách tiếp cận MLSecOps được áp dụng để quản lý và vận hành mô hình học máy theo hướng end-to-end. Trong đó, các yếu tố phát triển, huấn luyện, triển khai, giám sát và bảo mật được tích hợp trong một quy trình thống nhất, phù hợp với yêu cầu vận hành của các hệ thống học máy trong thực tế.
+
+Kiến trúc MLSecOps được xây dựng trong khóa luận mang tính tổng quát và không phụ thuộc vào một bài toán hay mô hình học máy cụ thể. Mặc dù bài toán phát hiện gian lận tài chính được sử dụng làm trường hợp nghiên cứu, các thành phần trong hệ thống như pipeline huấn luyện, tái huấn luyện, triển khai, giám sát tài nguyên và giám sát chất lượng dữ liệu đều có thể được áp dụng cho các bài toán học máy khác với yêu cầu tương tự.
+
+Nhìn chung, khóa luận cung cấp một mô hình tham khảo cho việc xây dựng và vận hành các hệ thống học máy theo hướng MLSecOps, có thể được áp dụng cho nhiều bài toán khác nhau trong thực tế. Điều này góp phần khẳng định vai trò của MLSecOps như một hướng tiếp cận cần thiết trong quá trình triển khai các hệ thống học máy ở quy mô lớn và dài hạn.
+
+\section{Hướng phát triển}
+\subsection{Mở rộng mô hình học máy và phương pháp phát hiện tấn công lật nhãn}
+Trong các nghiên cứu tiếp theo, hệ thống có thể được mở rộng bằng cách tích hợp thêm các mô hình học máy khác nhằm cải thiện hiệu quả phát hiện gian lận, đặc biệt trong bối cảnh dữ liệu có tính mất cân bằng cao.
+
+Đối với phương pháp phát hiện tấn công lật nhãn, hệ thống có thể được kết hợp với các kỹ thuật nâng cao hơn như học bán giám sát, hoặc các phương pháp huấn luyện đối kháng (adversarial learning) nhằm tăng khả năng nhận diện các mẫu dữ liệu bị tấn công.
+
+\subsection{Mở rộng kịch bản tấn công bảo mật}
+Trong phạm vi khóa luận, nhóm sinh viên tập trung nghiên cứu kịch bản tấn công lật nhãn dữ liệu huấn luyện và đánh giá tác động của kịch bản này đến hiệu năng mô hình học máy. Tuy nhiên, trong thực tế, các hệ thống học máy có thể phải đối mặt với nhiều dạng tấn công bảo mật khác nhau trong suốt vòng đời vận hành. 
+
+Trong các nghiên cứu tiếp theo, hệ thống MLSecOps có thể được mở rộng để xem xét và đánh giá thêm các kịch bản tấn công dữ liệu khác, chẳng hạn như các hình thức đầu độc dữ liệu tinh vi hơn, tấn công trong giai đoạn thu thập dữ liệu hoặc các kịch bản tấn công làm suy giảm chất lượng dữ liệu theo thời gian. Việc mở rộng các kịch bản này sẽ giúp đánh giá toàn diện hơn mức độ an toàn của hệ thống trước các rủi ro liên quan đến dữ liệu.
+
+\subsection{Tối ưu tài nguyên và mở rộng}
+Trong hệ thống hiện tại, cụm Kubernetes triển khai trên nền tảng đám mây đã được cấu hình cơ chế tự động mở rộng tài nguyên ở mức node, cho phép hệ thống điều chỉnh tài nguyên tính toán theo tải thực tế trong quá trình vận hành pipeline MLSecOps. Cơ chế này giúp đảm bảo khả năng xử lý khi tải tăng cao, đồng thời tối ưu chi phí khi nhu cầu sử dụng giảm. 
+
+Trong các nghiên cứu tiếp theo, hệ thống có thể được mở rộng theo hướng tối ưu tài nguyên ở mức chi tiết hơn, chẳng hạn như điều chỉnh tài nguyên ở cấp pod. Việc phân tích sâu hơn hành vi sử dụng tài nguyên của từng thành phần có thể giúp thiết lập các cấu hình tài nguyên phù hợp hơn, tránh tình trạng cấp phát dư thừa hoặc thiếu hụt tài nguyên.
+
+\subsection{Nâng cao giám sát và cảnh báo}
+Trong hệ thống hiện tại, các dịch vụ giám sát đã được triển khai nhằm theo dõi tài nguyên và trạng thái vận hành của pipeline MLSecOps. Tuy nhiên, trong các nghiên cứu tiếp theo, hệ thống có thể được mở rộng để nâng cao khả năng giám sát ở cả mức hệ thống và mức mô hình, từ đó cung cấp thông tin đầy đủ và kịp thời hơn cho quá trình vận hành. 
+
+Một hướng phát triển quan trọng là mở rộng các chỉ số giám sát liên quan đến chất lượng dữ liệu và hiệu năng mô hình theo thời gian. Việc theo dõi sự thay đổi của các chỉ số này có thể giúp phát hiện sớm các dấu hiệu bất thường như suy giảm hiệu năng, từ đó hỗ trợ đưa ra các biện pháp xử lý phù hợp.

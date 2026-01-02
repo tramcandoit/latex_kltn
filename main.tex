@@ -1,0 +1,74 @@
+% Define metadata
+\documentclass{template/thesis}
+\Title{XÂY DỰNG HỆ THỐNG PHÁT HIỆN GIAN LẬN TRONG LĨNH VỰC TÀI CHÍNH DỰA TRÊN MLSECOPS}
+\Title[en]{DEVELOPMENT OF A FINANCIAL FRAUD DETECTION BASED ON MLSECOPS FRAMEWORK}
+
+\ThesisType{KHOÁ LUẬN TỐT NGHIỆP}
+
+\University{ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH}
+\CollegeOrDept{{TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN}}
+\Faculty{KHOA MẠNG MÁY TÍNH VÀ TRUYỀN THÔNG}
+
+
+\Author{BÙI THỊ NGỌC TRĂM}{22521497}
+\Author{NGUYỄN QUỐC AN}{22520023}
+
+\Degree{Cử nhân}
+\Major{MẠNG MÁY TÍNH VÀ TRUYỀN THÔNG DỮ LIỆU}
+% \MajorCode{123}
+\ThesisYear{2025}
+\ThesisLocation{TP. HỒ CHÍ MINH}
+
+\Supervisor{ThS. Nguyễn Khánh Thuật}
+
+\hypersetup{
+	pdfencoding=auto,
+	pdfauthor={Tên tác giả},
+	pdfsubject={Chủ đề đề tài},
+	pdftitle={Tên tiêu đề đề tài},
+	pdfkeywords={}
+}
+
+\begin{document}
+\firstbeforepreface
+\secondbeforepreface
+\setcounter{page}{1}
+\newpage
+\afterpreface
+
+\chapter{Tổng quan đề tài}
+\label{c:tongquandetai}
+\input{chapters/1-TongQuanDeTai}
+
+\chapter{Cơ sở lý thuyết}
+\label{c:cosolythuyet}
+\input{chapters/2-CoSoLyThuyet}
+
+% \chapter{Phân tích và thiết kế hệ thống}
+% \label{c:phantichthietke}
+% \input{chapters/3-PhanTichThietKe}
+
+\chapter{Phương pháp thực hiện}
+\label{c:phuongphapthuchien}
+\input{chapters/3-PhuongPhapThucHien}
+
+\chapter{Thực nghiệm và đánh giá kết quả}
+\label{c:danhgiaketqua}
+\input{chapters/4-DanhGiaKetQua}
+
+\chapter{Kết luận và hướng phát triển}
+\label{c:ketluanphattrien}
+\input{chapters/5-KetLuanPhatTrien}
+
+\appendix
+\renewcommand{\cftchappresnum}{Phụ lục }
+\addtocontents{toc}{\protect\renewcommand{\protect\cftchappresnum}{Phụ lục }}
+\input{chapters/appendix}
+
+\begingroup
+\setlength{\emergencystretch}{8em}
+\justifying\printbibliography[title=Tài liệu tham khảo]
+\endgroup
+\addcontentsline{toc}{chapter}{Tài liệu tham khảo}
+
+\end{document}

@@ -1,0 +1,1355 @@
+Chương này trình bày tổng quan kiến trúc hệ thống phát hiện gian lận tài chính triển khai theo hướng MLSecOps, bao gồm luồng hoạt động tổng thể, kiến trúc triển khai trên Kubernetes và hạ tầng đám mây. Bên cạnh đó, chương này cũng mô tả quá trình xây dựng mô hình phát hiện gian lận từ khâu phân tích dữ liệu, tiền xử lý, huấn luyện, so sánh và lựa chọn mô hình, đến phát hiện tấn công lật nhãn. Cuối cùng, chương này trình bày quy trình triển khai hệ thống, tích hợp \ac{cicd}, điều phối container, giám sát, phục vụ mô hình và cơ chế tái huấn luyện mô hình.
+
+\section{Tổng quan kiến trúc hệ thống}
+
+Hệ thống phát hiện gian lận tài chính đề xuất trong khóa luận này được thiết kế theo hướng MLSecOps. Về mặt tổng thể, kiến trúc hệ thống bao gồm ba thành phần chính, tương ứng với ba nhóm chức năng: 
+\begin{itemize}
+    \item Luồng hoạt động tổng thể của hệ thống phát hiện gian lận
+    \item Kiến trúc triển khai các ứng dụng trên \ac{eks}
+    \item Hạ tầng triển khai trên nền tảng điện toán đám mây
+\end{itemize}. 
+Các thành phần nêu trên được minh họa lần lượt trong Hình \ref{fig:chap3-detail-cicd.png}, Hình \ref{fig:chap3-charts-diagram.png} và Hình \ref{fig:chap3-mlsecops-iac.png}.
+
+\subsection{Luồng hoạt động tổng thể của hệ thống phát hiện gian lận}
+Luồng hoạt động tổng thể của hệ thống phát hiện gian lận tài chính được thiết kế theo hướng MLSecOps nhằm quản lý thống nhất toàn bộ vòng đời của mô hình học máy, từ phát triển, huấn luyện cho đến triển khai và vận hành.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.27]{img/chapter3/chap3-detail-cicd.png}
+    \caption{Luồng hoạt động tổng thể của hệ thống phát hiện gian lận}
+    \label{fig:chap3-detail-cicd.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.32]{img/chapter3/chap3-charts-diagram.png}
+    \caption{Luồng triển khai ứng dụng và dịch vụ trên cụm Kubernetes}
+    \label{fig:chap3-charts-diagram.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.35]{img/chapter3/chap3-mlsecops-iac-diagram.png}
+    \caption{Kiến trúc tổng quan luồng triển khai hạ tầng AWS}
+    \label{fig:chap3-mlsecops-iac.png}
+\end{figure}
+
+
+Các thành phần chính trong luồng hoạt động này bao gồm:
+\begin{itemize}
+    \item Quy trình \ac{cicd} cho mã nguồn xử lý dữ liệu và huấn luyện mô hình: Đóng vai trò tự động hóa các bước kiểm tra và chuẩn bị môi trường, đồng thời đảm bảo các thay đổi được xem xét và phê duyệt trước khi đưa vào các giai đoạn tiếp theo.
+    \item Quy trình huấn luyện mô hình: Thực hiện việc xây dựng mô hình phát hiện gian lận dựa trên dữ liệu huấn luyện ban đầu. Quy trình này bao gồm các bước xử lý dữ liệu, huấn luyện và đánh giá mô hình nhằm lựa chọn mô hình phù hợp.
+    \item Quy trình tái huấn luyện mô hình: Cho phép cập nhật và cải thiện mô hình khi có dữ liệu mới phát sinh trong quá trình vận hành. 
+    \item Quy trình phục vụ mô hình: Đưa mô hình đã được lựa chọn vào môi trường vận hành dưới dạng dịch vụ, cho phép các ứng dụng gửi yêu cầu dự đoán và nhận kết quả. Quy trình này đồng thời tạo ra dữ liệu vận hành làm đầu vào cho các chu kỳ tái huấn luyện tiếp theo.
+\end{itemize}
+
+\subsection{Kiến trúc triển khai các ứng dụng trên EKS}
+
+Quy trình MLSecOps và các ứng dụng được xây dựng trên nền tảng điều phối container - Kubernetes, đóng vai trò là môi trường thực thi trung tâm cho toàn bộ hệ thống. Kiến trúc này cho phép triển khai, vận hành và quản lý các thành phần của MLSecOps đảm bảo khả năng mở rộng và tính linh hoạt. Các thành phần chính trong kiến trúc này bao gồm:
+
+\begin{itemize}
+    \item Cụm Kubernetes: Là môi trường thực thi trung tâm của hệ thống, chịu trách nhiệm điều phối tài nguyên và vận hành các dịch vụ phục vụ cho quy trình MLSecOps.
+    \item Quy trình CI/CD cho Argo CD Application: Đảm nhiệm việc quản lý và đồng bộ các định nghĩa Application từ GitHub xuống cụm Kubernetes. 
+    \item Ứng dụng điều phối workflow: Thực hiện điều phối và thực thi các pipeline trong hệ thống, bao gồm huấn luyện, tái huấn luyện và các tác vụ liên quan đến vòng đời mô hình học máy.
+    \item Ứng dụng quản lý vòng đời mô hình học máy: Lưu trữ, theo dõi và quản lý các phiên bản mô hình cùng với thông tin huấn luyện và đánh giá, phục vụ cho việc so sánh và lựa chọn mô hình triển khai.
+    \item Dịch vụ giám sát hệ thống và trực quan hóa dữ liệu: Theo dõi trạng thái vận hành của các dịch vụ và pipeline, hỗ trợ quan sát và đánh giá hiệu năng của hệ thống.
+    \item Ngoài ra còn có thành phần Ingress giúp quản lý luồng truy cập từ bên ngoài vào các dịch vụ trong cụm Kubernetes, thành phần quản lý chứng chỉ và bảo mật truy cập góp phần đảm bảo an toàn cho quá trình giao tiếp giữa người dùng và hệ thống.
+\end{itemize}
+
+% \begin{figure}[!htbp]
+%     \centering
+%     \includegraphics[scale=0.32]{img/chapter3/chap3-charts-diagram.png}
+%     \caption{Luồng triển khai ứng dụng và dịch vụ trên cụm Kubernetes}
+%     \label{fig:chap3-charts-diagram.png}
+% \end{figure}
+
+\subsection{Hạ tầng triển khai trên nền tảng điện toán đám mây}
+Hạ tầng triển khai của hệ thống phát hiện gian lận tài chính được xây dựng trên nền tảng điện toán đám mây của AWS với mục tiêu đảm bảo khả năng mở rộng và tính sẵn sàng cao.
+
+\begin{itemize}
+    \item Quy trình CI/CD cho triển khai hạ tầng dưới dạng mã: Đóng vai trò trong việc quản lý, kiểm soát và tự động hóa các thay đổi liên quan đến hạ tầng. Các thay đổi phải trải qua các bước kiểm tra và phê duyệt trước khi được áp dụng lên môi trường triển khai.
+    \item Hạ tầng được triển khai dưới dạng mã (\ac{iac}): Phần lớn hạ tầng của hệ thống được triển khai tự động, giúp đảm bảo tính nhất quán, khả năng tái lập và dễ dàng quản lý.
+    \item Hạ tầng triển khai thủ công: Một phần nhỏ các dịch vụ được khởi tạo thủ công.
+\end{itemize}
+
+% \begin{figure}[!htbp]
+%     \centering
+%     \includegraphics[scale=0.35]{img/chapter3/mlsecops-iac-diagram.png}
+%     \caption{Kiến trúc tổng quan luồng triển khai hạ tầng AWS}
+%     \label{fig:chap3-mlsecops-iac.png}
+% \end{figure}
+
+\section{Xây dựng mô hình phát hiện gian lận}
+\subsection{Giới thiệu bộ dữ liệu}
+\label{subsec:introduce-dataset}
+
+Trong phạm vi đề tài này, chúng tôi sử dụng bộ dữ liệu Bank Account Fraud Dataset Suite (NeurIPS 2022). Tệp cơ sở (Base) của bộ dữ liệu bao gồm 1 triệu mẫu và 32 đặc trưng (được mô tả trong Bảng \ref{tab:dataset_feature_describe}), mỗi mẫu đại diện cho một đơn đăng ký mở tài khoản ngân hàng được tạo bằng CTGAN (Conditional Tabular Generative Adversarial Network). Mô hình sinh dữ liệu CTGAN được huấn luyện trên một bộ dữ liệu thật đã được ẩn danh, vì vậy các mẫu được tạo ra không gắn với bất kỳ cá nhân nào trong thực tế, nhưng vẫn giữ được đặc trưng thống kê của dữ liệu thật.
+
+% \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\begin{table}[!htbp]
+    \centering
+    \caption{Mô tả các đặc trưng trong bộ dữ liệu gốc}
+    \label{tab:dataset_feature_describe}
+    \renewcommand{\arraystretch}{0.8}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} ll}
+        \toprule
+        \textbf{Tên đặc trưng} & \textbf{Mô tả} \\
+        \midrule
+        month & Tháng thực hiện hồ sơ \\
+        income & Thu nhập hằng năm (chia quantile) \\
+        name\_email\_similarity & Độ tương đồng giữa tên và email \\
+        prev\_address\_months\_count & Số tháng ở địa chỉ trước đó \\
+        current\_address\_months\_count & Số tháng ở địa chỉ hiện tại \\
+        \addlinespace
+        customer\_age & Tuổi của người đăng kí chia theo nhóm 10 năm \\
+        days\_since\_request & Số ngày từ lúc gửi yêu cầu \\
+        intended\_balcon\_amount & Số tiền ban đầu đề nghị \\
+        payment\_type & Loại kế hoạch thanh toán \\
+        zip\_count\_4w & Số hồ sơ cùng mã zip trong 4 tuần \\
+        \addlinespace
+        velocity\_6h & Số hồ sơ tạo trong 6 giờ gần nhất \\
+        velocity\_24h & Số hồ sơ tạo trong 24 giờ gần nhất \\
+        velocity\_4w & Số hồ sơ tạo trong 4 tuần gần nhất \\
+        bank\_branch\_count\_8w & Số hồ sơ tại chi nhánh liên quan trong 8 tuần \\
+        date\_of\_birth\_distinct\_emails\_4w & Số email có trùng ngày sinh trong 4 tuần \\
+        \addlinespace
+        employment\_status & Tình trạng việc làm \\
+        credit\_risk\_score & Điểm rủi ro tín dụng \\
+        email\_is\_free & Loại tên miền email (free/paid) \\
+        housing\_status & Tình trạng chỗ ở \\
+        phone\_home\_valid & Tính hợp lệ của số điện thoại cố định \\
+        \addlinespace
+        phone\_mobile\_valid & Tính hợp lệ của số điện thoại di động \\
+        bank\_months\_count & Tuổi tài khoản ngân hàng (tháng) \\
+        has\_other\_cards & Có thẻ khác từ cùng ngân hàng \\
+        proposed\_credit\_limit & Hạn mức tín dụng đề xuất \\
+        foreign\_request & Yêu cầu từ quốc gia khác \\
+        \addlinespace
+        source & Nguồn trực tuyến của hồ sơ \\
+        session\_length\_in\_minutes & Thời lượng phiên truy cập (phút) \\
+        device\_os & Hệ điều hành thiết bị \\
+        keep\_alive\_session & Tuỳ chọn giữ phiên đăng nhập \\
+        device\_distinct\_emails\_8w & Email khác nhau từ thiết bị trong 8 tuần \\
+        \addlinespace
+        device\_fraud\_count & Số hồ sơ gian lận liên quan đến thiết bị \\
+        fraud\_bool & Nhãn gian lận (1 gian lận, 0 hợp lệ) \\
+        \bottomrule
+    \end{tabular*}
+\end{table}
+
+Dữ liệu gồm 7 tháng, 6 tháng đầu tiên được dùng đế Train/Test, 1 tháng cuối cùng được dùng để giả lập dữ liệu thực tế đưa vào mô hình trên production (Bảng \ref{tab:dataset_split}).
+
+\begin{table}[!htbp]
+    \centering
+    \caption{Bảng phân chia tập dữ liệu sử dụng trong thực nghiệm}
+    \label{tab:dataset_split}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} 
+        >{\raggedright\arraybackslash}p{0.18\textwidth} 
+        >{\raggedright\arraybackslash}p{0.15\textwidth} 
+        >{\centering\arraybackslash}p{0.20\textwidth} 
+        >{\raggedright\arraybackslash}p{0.37\textwidth}}
+        \toprule
+        \textbf{Tập dữ liệu} & \textbf{Mô tả} & \textbf{Số điểm dữ liệu} & \textbf{Ghi chú} \\
+        \midrule
+        Train/Test & Tháng 0--6 & 903.157 & Dùng để huấn luyện mô hình sử dụng Train/Test split truyền thống \\
+        \addlinespace[10pt] % Tạo khoảng cách giữa 2 hàng cho thoáng
+        Out-of-time Test Set & Tháng 7 & 96.843 & Dùng để mô phỏng dữ liệu từ người dùng khi triển khai mô hình \\
+        \bottomrule
+    \end{tabular*}
+\end{table}
+
+
+\subsection{Phân tích khám phá dữ liệu (\ac{eda})}
+
+
+Hình \ref{fig:chap3-fraud-distribution.png} là một biểu đồ cột thể hiện sự phân bố của các đơn đăng ký mở tài khoản theo hai nhãn gian lận và không gian lận. Dữ liệu cho thấy sự mất cân bằng lớp nghiêm trọng khi lớp gian lận chỉ chiếm xấp xỉ 1\% tổng số mẫu, đây là một đặc điểm thường bắt gặp trong các bài toán phát hiện gian lận. Để giải quyết vấn đề này, người ta thường áp dụng kỹ thuật gán trọng số (class weighting), ưu tiên trọng số cao hơn cho lớp thiểu số trong quá trình huấn luyện mô hình.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.5]{img/chapter3/chap3-fraud-distribution.png}
+    \caption{Tỉ lệ nhãn gian lận trong tập dữ liệu}
+    \label{fig:chap3-fraud-distribution.png}
+\end{figure}
+
+
+Hình \ref{fig:chap3-missing-values.png} trình bày tỷ lệ giá trị thiếu (missing values) ở một số thuộc tính trong tập dữ liệu. Sự xuất hiện của giá trị thiếu có thể gây nhiễu, làm giảm độ chính xác và ảnh hưởng tiêu cực đến khả năng hội tụ của mô hình trong quá trình huấn luyện. Để đảm bảo tính toàn vẹn và chất lượng của dữ liệu đầu vào, chúng tôi sẽ lược bỏ các điểm dữ liệu chứa giá trị thiếu trước khi đưa vào huấn luyện.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.6]{img/chapter3/chap3-missing-values.png}
+    \caption{Tỉ lệ giá trị thiếu của một số đặc trưng}
+    \label{fig:chap3-missing-values.png}
+\end{figure}
+
+Hình \ref{fig:chap3-corr-matrix.png} biểu diễn ma trận tương quan (Correlation Matrix) giữa các biến định lượng trong tập dữ liệu. Việc phân tích này nhằm phát hiện hiện tượng đa cộng tuyến (multicollinearity), khi hai hoặc nhiều biến độc lập có mối quan hệ tuyến tính mạnh với nhau. Các cặp đặc trưng có hệ số tương quan cao, cụ thể là lớn hơn 0.8 thường mang thông tin dư thừa, không đóng góp thêm giá trị cho việc học của mô hình mà ngược lại có thể gây nhiễu và làm giảm tính ổn định của các hệ số hồi quy. Các đặc trưng vi phạm ngưỡng tương quan này thường được loại bỏ trong quá trình tiền xử lý dữ liệu.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter3/chap3-corr-matrix.png}
+    \caption{Ma trận tương quan}
+    \label{fig:chap3-corr-matrix.png}
+\end{figure}
+
+\subsection{Tiền xử lý dữ liệu}
+\label{subsec:preprocess-data}
+
+Quá trình tiền xử lý dữ liệu đóng vai trò then chốt trong việc xây dựng mô hình học máy hiệu quả. Dựa trên những quan sát từ quá trình Phân tích khám phá dữ liệu (\ac{eda}) và đặc thù của bộ dữ liệu Bank Account Fraud, chúng tôi tiến hành xử lý dữ liệu trước khi đưa vào huấn luyện như sau:
+\begin{itemize}
+    \item Loại bỏ các đặc trưng chứa nhiều nhiễu, hoặc có độ tương quan cao với các đặc trưng khác: bank\_months\_count, prev\_address\_months\_count, velocity\_4w
+    \item Loại bỏ các điểm dữ liệu chứa giá trị thiếu tại các đặc trưng: current\_address\_months\_count, session\_length\_in\_minutes, device\_distinct\_emails\_8w, intended\_balcon\_amount
+    \item Mã hoá đặc trưng phân loại: Các đặc trưng phân loại (dạng chuỗi kí tự) được chuyển đổi sang dạng số bằng kỹ thuật Label Encoding. Phương pháp này gán mỗi nhãn phân loại thành một giá trị nguyên, cho phép mô hình tiếp nhận và xử lý các đặc trưng phân loại một cách trực tiếp mà không cần mở rộng chiều dữ liệu, đặc biệt hiệu quả với các đặc trưng có độ đa dạng cao.
+    \item Chuẩn hoá đặc trưng số: Các đặc trưng số được chuẩn hoá bằng StandardScaler nhằm đưa chúng về cùng thang đo với trung bình bằng 0 và độ lệch chuẩn bằng 1. Việc chuẩn hoá giúp đồng nhất đơn vị đo lường giữa các biến, đảm bảo mọi đặc trưng đều đóng góp bình đẳng vào quá trình học của mô hình, đồng thời giúp thuật toán hội tụ nhanh và ổn định hơn.
+\end{itemize}
+
+\subsection{Huấn luyện mô hình}
+\label{subsec:train-model}
+
+\subsubsection{Chuẩn bị dữ liệu huấn luyện}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.6]{img/chapter3/chap3-split-data.png}
+    \caption{Đoạn mã chuẩn bị dữ liệu huấn luyện}
+    \label{fig:chap3-split-data.png}
+\end{figure}
+
+Sau khi hoàn tất bước tiền xử lý, tập dữ liệu được tách thành hai phần gồm tập huấn luyện và tập kiểm tra nhằm phục vụ cho quá trình xây dựng và đánh giá mô hình.
+
+Biến mục tiêu fraud\_bool được tách riêng làm nhãn \texttt{y}, các biến còn lại được sử dụng làm tập đặc trưng đầu vào \texttt{X}. Các thuộc tính dạng phân loại cũng được chuyển về kiểu category.
+
+Tập dữ liệu sau đó được chia theo tỷ lệ 70\% cho tập huấn luyện và 30\% cho tập kiểm tra. Dữ liệu được chia ngẫu nhiên, đồng thời đảm bảo tỷ lệ các nhãn được giữ nguyên trong cả tập huấn luyện và tập kiểm tra (stratify=y). Tham số random\_state = 42 được sử dụng để đảm bảo khả năng tái lập kết quả.
+
+\subsubsection{Huấn luyện mô hình XGBoost}
+\label{subsubsec:train-xgb}
+
+Trước tiên, thư viện XGBClassifier được import từ gói xgboost để sử dụng mô hình XGBoost cho bài toán phân loại nhị phân.
+
+Tiếp theo, để xử lý hiện tượng mất cân bằng lớp, tham số scale\_pos\_weight được sử dụng để điều chỉnh trọng số cho lớp gian lận. Tham số này được tính toán dựa trên tỷ lệ số lượng mẫu thuộc lớp không gian lận và lớp gian lận trong tập huấn luyện theo công thức:
+
+\begin{equation}
+\text{scale\_pos\_weight} = \frac{N_{\text{negative}}}{N_{\text{positive}}}
+\end{equation}
+
+Trong đó, $N_{\text{negative}}$ là số lượng mẫu thuộc lớp không gian lận (nhãn 0) và $N_{\text{positive}}$ là số lượng mẫu thuộc lớp gian lận (nhãn 1) trong tập huấn luyện. Việc sử dụng tham số này giúp giảm ảnh hưởng của lớp đa số và cải thiện khả năng phát hiện lớp thiểu số.
+
+Sau khi xác định giá trị scale\_pos\_weight, mô hình XGBoost được khởi tạo và huấn luyện với các tham số chính gồm:
+\begin{itemize}
+    \item n\_estimators = 100: số lượng cây quyết định được sử dụng trong mô hình.
+    \item eval\_metric = 'logloss': chỉ số đánh giá được sử dụng trong quá trình huấn luyện.
+    \item scale\_pos\_weight: trọng số điều chỉnh cho lớp gian lận.
+    \item random\_state = 42: đảm bảo khả năng tái lập kết quả.
+\end{itemize}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.92]{img/chapter3/chap3-xgboost.png}
+    \caption{Đoạn mã huấn luyện mô hình XGBoost}
+    \label{fig:chap3-xgboost.png}
+\end{figure}
+
+\subsubsection{Huấn luyện mô hình Balanced Random Forest}
+\label{subsubsec:train-brf}
+
+Ở bước khởi tạo, lớp BalancedRandomForestClassifier được import từ thư viện imblearn. Đây là thư viện mở rộng của scikit-learn, hỗ trợ các thuật toán chuyên biệt cho dữ liệu mất cân bằng.
+
+Sau đó, mô hình Balanced Random Forest được khởi tạo và huấn luyện với các tham số chính như sau:
+\begin{itemize}
+    \item n\_estimators = 100: xác định số lượng cây quyết định được xây dựng trong mô hình. Mỗi cây được huấn luyện độc lập trên một tập con dữ liệu.
+    \item sampling\_strategy = 'auto': chỉ định chiến lược lấy mẫu tự động nhằm cân bằng số lượng mẫu giữa hai lớp trong quá trình huấn luyện mỗi cây quyết định.
+    \item max\_depth = None: không giới hạn độ sâu của cây quyết định, cho phép cây phát triển cho đến khi thỏa điều kiện dừng nội bộ của thuật toán.
+    \item random\_state = 42: đảm bảo khả năng tái lập kết quả.
+\end{itemize}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.92]{img/chapter3/chap3-brf.png}
+    \caption{Đoạn mã huấn luyện mô hình Balanced Random Forest}
+    \label{fig:chap3-brf.png}
+\end{figure}
+
+
+\subsection{Phương pháp phát hiện tấn công lật nhãn}
+\label{subsec:label-flip-detection}
+\subsubsection{Đặt vấn đề và giới thiệu phương pháp}
+Để giảm thiểu rủi ro và tác động xấu của loại tấn công này vào dữ liệu huấn luyện, trong phần này, nhóm sinh viên đề xuất một phương pháp phát hiện tấn công lật nhãn dựa trên dự đoán của mô hình học máy. Ý tưởng chính của phương pháp này là khai thác sự không tương đồng giữa nhãn quan sát được trong dữ liệu và xác suất dự đoán mà mô hình đưa ra. Bên cạnh đó, phương pháp còn dựa vào sự khác biệt trong kết quả dự đoán giữa các mô hình học máy khác nhau, cũng như mức độ tự tin của mô hình khi đưa ra dự đoán đối với các điểm dữ liệu nằm gần ranh giới giữa hai lớp.
+
+\subsubsection{Tổng quan phương pháp}
+Trong phần này, nhóm sinh viên trình bày chi tiết phương pháp phát hiện tấn công lật nhãn được sử dụng trong quy trình MLSecOps đề xuất. Phương pháp được xây dựng dựa trên kết quả dự đoán của hai mô hình học máy, kết hợp nhiều tiêu chí nhằm đánh giá mức độ bất thường của từng điểm dữ liệu. Bởi vì phương pháp này dựa trên kết quả dự đoán của các mô hình học máy đã được huấn luyện, cho nên sẽ giả định là tập dữ liệu ban đầu dùng để huấn luyện mô hình là đáng tin cậy và chưa bị tấn công lật nhãn.
+
+\begin{itemize}
+    \item Bước 1: Làm sạch dữ liệu, loại bỏ đặc trưng gây nhiễu, mã hoá và chuẩn hoá để đưa vào đầu vào mô hình
+    \item Bước 2: Sử dụng mô hình XGBoost và Random Forest để xác định xác suất dự đoán gian lận của từng điểm dữ liệu
+    \item Bước 3: Từ kết quả dự đoán và nhãn hiện có của dữ liệu, ba chỉ số được tính cho mỗi điểm dữ liệu:
+    \begin{itemize}
+        \item \textit{Mức độ mâu thuẫn giữa nhãn và dự đoán (\ac{ple}):} nếu nhãn hiện tại là không gian lận nhưng mô hình dự đoán xác suất gian lận cao (hoặc ngược lại), thì điểm dữ liệu đó có khả năng bị lật nhãn cao hơn.
+        \item \textit{Mức độ khác nhau giữa hai mô hình (Disagreement):} nếu hai mô hình đưa ra kết quả dự đoán rất khác nhau, điểm dữ liệu đó được xem là không ổn định và có khả năng chứa nhãn sai.
+        \item \textit{Mức độ không chắc của dự đoán (Boundary):} các điểm dữ liệu có xác suất dự đoán nằm gần ranh giới giữa hai lớp thường khó phân loại và dễ bị gán nhãn sai.
+    \end{itemize}
+    \item Bước 4: Kết hợp các chỉ số trên để tính toán điểm nghi ngờ lật nhãn (suspicion score) cho từng điểm dữ liệu. Điểm số càng cao cho thấy khả năng nhãn của điểm dữ liệu đó đã bị lật càng lớn.
+    \item Bước 5: Sắp xếp các điểm dữ liệu theo mức độ nghi ngờ lật nhãn và lựa chọn một tỷ lệ cố định các điểm có điểm số cao nhất để đưa vào tập dữ liệu nghi ngờ bị tấn công lật nhãn.
+\end{itemize}
+
+Mã giả cho thuật toán phát hiện lật nhãn được mô tả trong bảng \ref{tab:pseudocode_detect_label_flip}.
+
+\begin{table}[!htbp]
+\centering
+\caption{Pseudo-code phát hiện lật nhãn}
+\label{tab:pseudocode_detect_label_flip}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.9\textwidth}}
+    \toprule
+    \textbf{Input:} $D = \{(x_i, y_i)\}_{i=1}^{N}$; mô hình $M_1, M_2$; tham số $r$ \\
+    \midrule
+    \textbf{Output:} $\hat{s} \in \{0,1\}^{N}$ \\
+    \midrule
+    
+    \textbf{for} $i = 1$ \textbf{to} $N$ \\
+    \quad $p_i^{(1)} \leftarrow M_1.\text{predict\_proba}(x_i)$ \\
+    \quad $p_i^{(2)} \leftarrow M_2.\text{predict\_proba}(x_i)$ \\
+    \quad $p_i \leftarrow \dfrac{p_i^{(1)} + p_i^{(2)}}{2}$ \\
+    \quad \textbf{if} $y_i = 0$ \textbf{then} $PLE_i \leftarrow p_i$ \\
+    \quad \textbf{else} $PLE_i \leftarrow 1 - p_i$ \\
+    \quad $Disagree_i \leftarrow \left| p_i^{(1)} - p_i^{(2)} \right|$ \\
+    \quad $Boundary_i \leftarrow 1 - 2 \cdot \left| p_i - 0.5 \right|$ \\
+    \quad $Boundary_i \leftarrow \text{clip}(Boundary_i, 0, 1)$ \\
+    \quad $Score_i \leftarrow w_1 \cdot PLE_i + w_2 \cdot Disagree_i + w_3 \cdot Boundary_i$ \\
+    \textbf{end for} \\
+    
+    \midrule
+    Sắp xếp các điểm dữ liệu theo $Score_i$ giảm dần \\
+    $K \leftarrow \lceil r \cdot N \rceil$ \\
+    Khởi tạo $\hat{s}_i \leftarrow 0$ với mọi $i$ \\
+    Gán $\hat{s}_i \leftarrow 1$ cho các điểm dữ liệu thuộc top-$K$ \\
+    \textbf{return} $\hat{s}$ \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+
+\paragraph{a. Dữ liệu đầu vào của thuật toán}
+\[
+D = \{(x_i, y_i)\}_{i=1}^{N}
+\]
+
+Trong đó, $N$ là tổng số điểm dữ liệu. Mỗi điểm dữ liệu thứ $i$ bao gồm vector đặc trưng
+$x_i$ và nhãn quan sát tương ứng $y_i$.
+
+$M_1, M_2$ là hai mô hình học máy xác suất đã được huấn luyện trước. Trong thực nghiệm, $M_1$ là mô hình XGBoost và $M_2$ là mô hình Random Forest. Hai mô hình này có khả năng trả về xác suất dự đoán cho lớp gian lận.
+
+$r \in (0,1)$ là tham số xác định tỷ lệ dữ liệu nghi ngờ được lựa chọn sau bước xếp hạng. Cụ thể, sau khi các điểm dữ liệu được sắp xếp theo mức độ nghi ngờ lật nhãn, thuật toán chỉ giữ lại $K = \lceil r \cdot N \rceil$ điểm dữ liệu có điểm số cao nhất để đưa vào tập nghi ngờ, phù hợp với giới hạn kiểm tra thủ công trong quy trình human-in-the-loop.
+
+\paragraph{b. Dự đoán xác xuất từ các mô hình học máy}
+Trong bước này, hai mô hình học máy xác suất độc lập $M_1$ và $M_2$ được sử dụng để dự đoán xác suất gian lận cho từng điểm dữ liệu $x_i$. Cụ thể, với mỗi điểm dữ liệu, mô hình $M_1$ và $M_2$ lần lượt đưa ra các xác suất dự đoán $p_i^{(1)}$ và $p_i^{(2)}$.
+
+Để giảm ảnh hưởng của sai lệch từ từng mô hình riêng lẻ và tăng tính ổn định của kết quả dự đoán, xác suất trung bình $p_i$ được tính bằng trung bình cộng của hai giá trị trên:
+\[
+p_i = \frac{p_i^{(1)} + p_i^{(2)}}{2}
+\]
+Giá trị $p_i$ được sử dụng làm xác suất dự đoán đại diện cho điểm dữ liệu $x_i$ trong các bước tính toán tiếp theo.
+
+\paragraph{c. Tính toán chỉ số \ac{ple}}
+Chỉ số \ac{ple} được sử dụng để đo mức độ mâu thuẫn giữa nhãn quan sát $y_i$ của dữ liệu và xác suất dự đoán $p_i$ của mô hình. Chỉ số này phản ánh mức độ không hợp lý của nhãn hiện tại dựa trên kết quả dự đoán.
+
+PLE được tính như sau:
+\[
+PLE_i =
+\begin{cases}
+p_i, & \text{nếu } y_i = 0 \\
+1 - p_i, & \text{nếu } y_i = 1
+\end{cases}
+\]
+
+Trong đó, giá trị $PLE_i$ càng lớn cho thấy nhãn của điểm dữ liệu thứ $i$ càng mâu thuẫn với dự đoán của mô hình và do đó có khả năng cao đã bị lật nhãn.
+
+\paragraph{d. Đánh giá mức độ bất đồng giữa các mô hình}
+Bên cạnh chỉ số \ac{ple}, thuật toán còn đánh giá mức độ khác nhau trong kết quả dự đoán giữa hai mô hình thông qua chỉ số Disagreement. Chỉ số này được tính bằng độ chênh lệch tuyệt đối giữa xác suất dự đoán của hai mô hình:
+\[
+Disagree_i = \left| p_i^{(1)} - p_i^{(2)} \right|
+\]
+
+Giá trị $Disagree_i$ lớn cho thấy hai mô hình đưa ra các nhận định khác nhau cho cùng một điểm dữ liệu, đây thường là dấu hiệu của dữ liệu không ổn định hoặc dữ liệu có khả năng chứa nhãn sai.
+
+\paragraph{e. Đánh giá mức độ gần ranh giới phân lớp}
+Thuật toán tiếp tục đánh giá mức độ gần ranh giới phân lớp của từng điểm dữ liệu thông qua chỉ số Boundary. Chỉ số này được xây dựng dựa trên khoảng cách giữa xác suất dự đoán $p_i$ và giá trị 0.5:
+\[
+Boundary_i = 1 - 2 \cdot \left| p_i - 0.5 \right|
+\]
+
+Giá trị Boundary sau đó được giới hạn trong khoảng $[0,1]$ bằng hàm \textit{clip} để đảm bảo tính ổn định trong quá trình tổng hợp:
+\[
+Boundary_i = \text{clip}(Boundary_i, 0, 1)
+\]
+
+Các điểm dữ liệu có giá trị $p_i$ gần 0.5 sẽ có $Boundary_i$ cao, cho thấy chúng nằm gần ranh giới phân lớp và thường khó phân loại hơn.
+
+
+\paragraph{f. Tổng hợp điểm nghi ngờ lật nhãn}
+
+Sau khi tính toán các chỉ số \ac{ple}, Disagree và Boundary, thuật toán kết hợp các chỉ số này để tạo thành điểm nghi ngờ lật nhãn cho từng điểm dữ liệu. Điểm tổng hợp này được tính theo công thức:
+\[
+Score_i = w_1 \cdot PLE_i + w_2 \cdot Disagree_i + w_3 \cdot Boundary_i
+\]
+
+Trong đó, $w_1$, $w_2$ và $w_3$ là các trọng số điều chỉnh mức độ đóng góp của từng chỉ số và thỏa mãn điều kiện:
+\[
+w_1 + w_2 + w_3 = 1
+\]
+
+Giá trị $Score_i$ càng lớn thì mức độ nghi ngờ nhãn của điểm dữ liệu thứ $i$ bị lật càng cao.
+
+\paragraph{g. Lựa chọn các điểm dữ liệu nghi ngờ lật nhãn}
+Cuối cùng, các điểm dữ liệu được sắp xếp theo giá trị $Score_i$ theo thứ tự giảm dần.
+Thuật toán chỉ lựa chọn một số lượng giới hạn các điểm dữ liệu có mức độ nghi ngờ cao nhất, phù hợp với khả năng kiểm tra thủ công trong thực tế.
+
+Cụ thể, số lượng điểm dữ liệu được chọn được xác định bởi:
+\[
+K = \lceil r \cdot N \rceil
+\]
+trong đó $r$ là tham số giới hạn tỷ lệ dữ liệu được đưa vào quy trình kiểm tra human-in-the-loop. Các điểm dữ liệu thuộc top-$K$ giá trị $Score_i$ cao nhất sẽ được đánh dấu là nghi ngờ bị lật nhãn và đưa vào tập dữ liệu cần kiểm tra.
+
+\section{Triển khai hệ thống MLSecOps}
+
+\subsection{Xây dựng hạ tầng trên nền tảng đám mây}
+Ở phạm vi khóa luận này, nhóm sinh viên triển khai hạ tầng của hệ thống trên nền tảng điện toán đám mây, kết hợp giữa triển khai hạ tầng dưới dạng mã (\ac{iac}) và triển khai thủ công một số dịch vụ.
+
+\subsubsection{Triển khai hạ tầng dưới dạng mã}
+\label{section-deploy-iac}
+\paragraph{a. Công cụ}
+Trong phần triển khai hạ tầng dưới dạng mã, nhóm sinh viên lựa chọn Terraform làm công cụ chính để xây dựng và quản lý hạ tầng trên nền tảng điện toán đám mây \ac{aws}.
+
+Ngoài ra, để phục vụ cho việc quản lý trạng thái hạ tầng, nhóm sinh viên sử dụng HashiCorp Cloud làm backend cho Terraform. Backend này cho phép lưu trữ tập trung tệp trạng thái (state), đồng thời hỗ trợ cơ chế khóa trạng thái nhằm tránh xung đột khi có nhiều thay đổi được thực hiện đồng thời.
+
+\paragraph{b. Các dịch vụ được triển khai}
+Nhóm sinh viên triển khai và quản lý dưới dạng mã các thành phần hạ tầng cốt lõi của hệ thống, bao gồm:
+\begin{itemize}
+    \item \ac{vpc}: Tạo và cấu hình \ac{vpc} với dải địa chỉ IP riêng, cho phép cô lập hạ tầng của hệ thống khỏi các tài nguyên khác, đồng thời đảm bảo kiểm soát luồng truy cập mạng.
+    \item \ac{az}: Hạ tầng được triển khai trải trên 2 \ac{az} nhằm tăng tính sẵn sàng của hệ thống.
+    \item Public subnet: Trong mỗi \ac{az} có các public subnet nhằm triển khai các thành phần cần truy cập Internet. Các public subnet này được gắn với Internet Gateway thông qua bảng định tuyến công khai (public route table), cho phép các tài nguyên bên trong có thể giao tiếp với bên ngoài.
+    \item Private subnet: Trong mỗi \ac{az} có các private subnet, bao gồm các node trong cụm \ac{eks}. Các subnet này không cho phép truy cập trực tiếp từ Internet, giúp tăng cường mức độ bảo mật cho hệ thống.
+    \item Internet gateway: Đóng vai trò trung gian giao tiếp giữa \ac{vpc} và Internet.
+    \item NAT gateway: Đối với các tài nguyên nằm trong private subnet, NAT Gateway cho phép các node \ac{eks} truy cập Internet theo chiều ra ngoài, trong khi vẫn không cho phép truy cập trực tiếp từ Internet vào các tài nguyên này.
+    \item Bảng định tuyến: Các route table được cấu hình để đảm bảo public subnet có thể truy cập Internet thông qua Internet Gateway và private subnet có thể truy cập Internet thông qua NAT Gateway.
+    \item Security group: Các security group được sử dụng để kiểm soát luồng truy cập mạng giữa các thành phần trong hệ thống.
+    \item RDS: Terraform tạo và quản lý cơ sở dữ liệu quan hệ (PostgreSQL). Cơ sở dữ liệu này đóng vai trò là Backend cho dịch vụ MLFlow.
+    \item DynamoDB: Đóng vai trò làm cơ sở dữ liệu phi quan hệ cho ứng dụng phía client.
+    \item EKS Control Plane: Terraform tạo EKS Control Plane. AWS đảm nhiệm phần quản lý thành phần này.
+    \item EKS Nodegroup: Các node của cụm EKS được triển khai trong private subnet, được cấu hình với cơ chế Auto Scaling nhằm tự động điều chỉnh số lượng node theo tải hệ thống.
+    \item IAM: Một số IAM Role và Policy phục vụ cho hạ tầng cốt lõi của hệ thống, như IAM Role cho EKS Control Plane, EKS Node Group và các quyền truy cập tài nguyên AWS của cụm EKS, được tạo và quản lý bằng Terraform nhằm đảm bảo tính nhất quán và khả năng tái lập.
+\end{itemize}
+
+\paragraph{c. Cấu trúc mã Terraform}
+Cấu trúc mã Terraform bao gồm các tệp chính như sau:
+
+\begin{itemize}
+    \item \texttt{provider.tf}: Khai báo các provider và cấu hình backend từ xa trên Terraform Cloud để lưu trữ và quản lý trạng thái hạ tầng.
+    
+    \item \texttt{variables.tf}: Khai báo toàn bộ các biến cấu hình đầu vào cho hệ thống, bao gồm thông tin vùng triển khai, cấu hình mạng (CIDR, \ac{az}), cấu hình cụm EKS, node group, các addon của Kubernetes và các tham số liên quan đến dịch vụ RDS.
+    
+    \item \texttt{locals.tf}: Định nghĩa các biến cục bộ phục vụ cho quá trình triển khai.
+    
+    \item \texttt{main.tf}: Là tệp đóng vai trò chính, khai báo các tài nguyên hạ tầng của hệ thống.
+    
+    \item \texttt{eks\_iam\_role.tf}: Khai báo các \ac{iam} Role và Policy cần thiết cho EKS Control Plane, EKS Node Group và các thành phần liên quan.
+    
+    \item \texttt{elb\_controller.tf}: Khai báo IAM Role, Policy và cấu hình Pod Identity cho AWS Load Balancer Controller, đồng thời triển khai các thành phần ingress-nginx và cert-manager thông qua Helm.
+    
+    \item \texttt{cluster\_autoscaler.tf}: Triển khai metrics-server và cluster-autoscaler bằng Helm nhằm tự động điều chỉnh số lượng node trong cụm EKS dựa trên tải hệ thống.
+    
+    \item \texttt{AWSLoadBalancerControllerIAMPolicy.json}: Chứa định nghĩa policy IAM phục vụ cho AWS Load Balancer Controller và các thành phần liên quan.
+\end{itemize}
+
+\subsubsection{Triển khai hạ tầng thủ công}
+\paragraph{a. Các dịch vụ được triển khai}
+Bên cạnh hạ tầng được triển khai dưới dạng mã, nhóm sinh viên cũng triển khai một số dịch vụ theo cách thủ công. Cụ thể, các dịch vụ được triển khai thủ công bao gồm:
+\begin{itemize}
+    \item \ac{s3}: Đóng vai trò là kho lưu trữ trung tâm cho dữ liệu và kết quả trong toàn bộ quy trình MLSecOps.
+    \item \ac{ecr}: Được sử dụng để lưu trữ và quản lý các Docker image của hệ thống.
+    \item Route53: Được sử dụng để quản lý DNS và định tuyến tên miền cho các dịch vụ được triển khai trong hệ thống.
+    \item Secrets Manager: Được sử dụng để lưu trữ và quản lý thông tin đăng nhập vào cơ sở dữ liệu.
+    \item \ac{iam}: Một số IAM Role được tạo thủ công để phục vụ cho các dịch vụ và ứng dụng lớp vận hành, chẳng hạn như IAM Role cho GitHub Actions.
+\end{itemize}
+
+\subsubsection{Kết quả triển khai}
+Sau khi thực thi các cấu hình Terraform và tạo thủ công các dịch vụ, hạ tầng của hệ thống MLSecOps đã được triển khai thành công trên nền tảng AWS:
+\begin{itemize}
+    \item Hình ảnh triển khai thành công VPC (\ref{fig:chap4-aws-console-vpc})
+    \item Hình ảnh triển khai thành công subnet (\ref{fig:chap4-aws-console-vpc})
+    \item Hình ảnh triển khai thành công Internet gateway (\ref{fig:chap4-aws-igw})
+    \item Hình ảnh triển khai thành công NAT gateway (\ref{fig:chap4-aws-ngw})
+    \item Hình ảnh triển khai thành công bảng định tuyến (\ref{fig:chap4-aws-rtb})
+    \item Hình ảnh triển khai thành công RDS (\ref{fig:chap4-aws-rds})
+    \item Hình ảnh triển khai thành công DynamoDB (\ref{fig:chap4-aws-dynamodb})
+    \item Hình ảnh triển khai thành công cụm EKS (\ref{fig:chap4-aws-eks})
+    \item Hình ảnh triển khai thành công các EKS node (\ref{fig:chap4-aws-eks-node})
+    \item Hình ảnh triển khai thành công IAM (\ref{fig:chap4-aws-iam})
+    \item Hình ảnh triển khai thành công S3 (\ref{fig:chap4-aws-s3})
+    \item Hình ảnh triển khai thành công ECR (\ref{fig:chap4-aws-ecr})
+    \item Hình ảnh triển khai thành công Route53 (\ref{fig:chap4-aws-route53})
+    \item Hình ảnh triển khai thành công Secret Manager (\ref{fig:chap4-aws-secret-manager})
+
+\end{itemize}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-vpc.png}
+    \caption{Kết quả triển khai VPC}
+    \label{fig:chap4-aws-console-vpc}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-subnet.png}
+    \caption{Kết quả triển khai subnet}
+    \label{fig:chap4-aws-console-subnet}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-igw.png}
+    \caption{Kết quả triển khai Internet gateway}
+    \label{fig:chap4-aws-igw}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-ngw.png}
+    \caption{Kết quả triển khai NAT gateway}
+    \label{fig:chap4-aws-ngw}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-rtb.png}
+    \caption{Kết quả triển khai bảng định tuyến}
+    \label{fig:chap4-aws-rtb}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-rds.png}
+    \caption{Kết quả triển khai RDS}
+    \label{fig:chap4-aws-rds}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-dynamodb.png}
+    \caption{Kết quả triển khai DynamoDB}
+    \label{fig:chap4-aws-dynamodb}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-cluster.png}
+    \caption{Kết quả triển khai cụm EKS}
+    \label{fig:chap4-aws-eks}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-ec2.png}
+    \caption{Kết quả triển khai EKS node}
+    \label{fig:chap4-aws-eks-node}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-iam-all.png}
+    \caption{Kết quả triển khai IAM}
+    \label{fig:chap4-aws-iam}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-s3-bucket.png}
+    \caption{Kết quả triển khai S3}
+    \label{fig:chap4-aws-s3}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-ecr.png}
+    \caption{Kết quả triển khai ECR}
+    \label{fig:chap4-aws-ecr}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-route53.png}
+    \caption{Kết quả triển khai Route53}
+    \label{fig:chap4-aws-route53}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter4/aws-console-secret-manager.png}
+    \caption{Kết quả triển khai Secret Manager}
+    \label{fig:chap4-aws-secret-manager}
+\end{figure}
+
+%TODO
+\subsection{Xây dựng hạ tầng ứng dụng và dịch vụ trên cụm Kubernetes}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.22]{img/chapter3/chap3-argocd-1.png}
+    \caption{Kết quả triển khai ứng dụng với ArgoCD}
+    \label{fig:chap3-argocd-1.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.6]{img/chapter3/chap3-argocd-2.png}
+    \caption{Tên miền được cấp chứng chỉ TLS}
+    \label{fig:chap3-argocd-2.png}
+\end{figure}
+
+\subsection{Xây dựng và đóng gói mã nguồn cho hệ thống}
+
+Nhằm phục vụ cho các bước trong các luồng pipeline ở các giai đoạn tiếp theo, chúng tôi xây dựng một tập hợp các Docker image cho mã nguồn của hệ thống. Toàn bộ các image này được xây dựng từ Python, với đầy đủ thư viện và các dependency cần thiết đã được cấu hình sẵn. Chức năng cụ thể của từng image được mô tả như sau:
+
+\subsubsection{fetch\_prod\_data}
+Mục tiêu: Thu thập dữ liệu phát sinh mới từ môi trường production để phục vụ việc huấn luyện lại mô hình (retraining) dựa trên dữ liệu thực tế.
+
+\textbf{Đầu vào:}
+\begin{itemize}
+    \item max-items: Số lượng điểm dữ liệu tối đa cần thu thập
+    \item dynamodb-table: Tên bảng DynamoDB chứa dữ liệu production
+    \item s3-artifact-bucket: S3 bucket để lưu trữ artifacts của workflow
+\end{itemize}
+
+\textbf{Quy trình xử lý:}
+\begin{itemize}
+    \item Thiết lập kết nối đến DynamoDB table chứa dữ liệu production sử dụng AWS SDK (boto3)
+    \item Thực hiện scan operation trên DynamoDB table, áp dụng giới hạn số lượng records theo tham số max-items nếu được chỉ định và xử lý pagination tự động để đảm bảo thu thập đầy đủ dữ liệu theo giới hạn
+    \item Ánh xạ các cột từ DynamoDB table về cấu trúc chuẩn và sắp xếp lại thứ tự các cột theo schema mong đợi.
+    \item Xuất dữ liệu ra định dạng CSV và đẩy lên S3 bucket được chỉ định
+\end{itemize}
+
+\textbf{Đầu ra:}
+\begin{itemize}
+    \item File CSV chứa dữ liệu mới từ DynamoDB Table
+\end{itemize}
+
+\subsubsection{merge\_data}
+Mục tiêu: Kết hợp dữ liệu mới từ production với dữ liệu huấn luyện cũ theo tỷ lệ replay nhằm cân bằng giữa kiến thức mới và kiến thức đã học trước đó.
+
+\textbf{Đầu vào:}
+\begin{itemize}
+    \item replay-ratio: Tỷ lệ phần trăm dữ liệu cũ được lấy mẫu để kết hợp với dữ liệu mới
+    \item Base\_new.csv: File CSV chứa dữ liệu mới từ production
+    \item Base.csv: File CSV chứa dữ liệu huấn luyện cũ
+\end{itemize}
+
+\textbf{Quy trình xử lý:}
+\begin{itemize}
+    \item Đọc dữ liệu mới từ production và dữ liệu huấn luyện cũ
+    \item Lấy mẫu từ dữ liệu cũ theo tỷ lệ replay-ratio
+    \item Gắn nhãn data\_source cho từng nguồn dữ liệu để theo dõi, sau đó kết hợp các records thành bộ dữ liệu mới
+    \item Tạo báo cáo thống kê bao gồm số lượng records, tỷ lệ fraud, và phân bố nguồn dữ liệu
+\end{itemize}
+
+\textbf{Đầu ra:}
+\begin{itemize}
+    \item File CSV chứa dữ liệu đã được merge
+    \item Báo cáo thống kê về quá trình merge
+\end{itemize}
+
+\subsubsection{security\_check}
+Mục tiêu: Phát hiện các mẫu dữ liệu nghi ngờ bị tấn công lật nhãn nhằm đảm bảo chất lượng dữ liệu trước khi huấn luyện.
+
+\textbf{Đầu vào:}
+\begin{itemize}
+    \item File CSV chứa dữ liệu đã được merge
+    \item Các mô hình ensemble được tải từ S3
+\end{itemize}
+
+\textbf{Quy trình xử lý:} Thực hiện các bước xử lý phát hiện tấn công lật nhãn được mô tả chi tiết tại \ref{subsec:label-flip-detection}
+
+\textbf{Đầu ra:}
+\begin{itemize}
+    \item File CSV chỉ chứa các mẫu dữ liệu nghi ngờ bị label-flip
+    \item Báo cáo số lượng mẫu nghi ngờ được phát hiện
+\end{itemize}
+
+\subsubsection{preprocess\_data}
+Mục tiêu: Tiền xử lý dữ liệu trước khi đưa vào huấn luyện mô hình.
+
+\textbf{Đầu vào:}
+\begin{itemize}
+    \item Base.csv: File CSV chứa dữ liệu chưa được xử lý.
+\end{itemize}
+
+\textbf{Quy trình xử lý:} Thực hiện các bước tiền xử lý dữ liệu được mô tả chi tiết tại \ref{subsec:preprocess-data}
+
+\textbf{Đầu ra:}
+\begin{itemize}
+    \item data\_preprocessed.csv: File CSV chứa dữ liệu đã được tiền xử lý
+    \item label\_encoders.pkl: Các encoder đã được fit cho categorical features
+    \item scaler.pkl: Scaler đã được fit cho numerical features
+    \item preprocessing\_report.json: Báo cáo thống kê quá trình tiền xử lý
+\end{itemize}
+
+\subsubsection{train\_xgb}
+Mục tiêu: Huấn luyện mô hình XGBoost trên dữ liệu đã tiền xử lý để phát hiện giao dịch gian lận.
+
+\textbf{Đầu vào:}
+\begin{itemize}
+    \item data\_preprocessed.csv: File CSV chứa dữ liệu đã được tiền xử lý
+\end{itemize}
+
+\textbf{Quy trình xử lý:}
+\begin{itemize}
+    \item Thiết lập kết nối MLflow để theo dõi quá trình huấn luyện
+    \item Thực hiên các bước huấn luyện mô hình được mô tả chi tiết tại \ref{subsubsec:train-xgb}
+    \item Dự đoán trên tập test, tính toán các metrics đánh giá hiệu năng mô hình và thời gian huấn luyện/dự đoán.
+    \item Tạo metadata chứa thông tin về mô hình, số lượng đặc trưng và kích thước dataset.
+    \item Log metrics, parameters, và model artifact vào MLflow với signature và input example
+\end{itemize}
+
+\textbf{Đầu ra:}
+\begin{itemize}
+    \item xgb\_model\_bundle.pkl: File pickle chứa mô hình XGBoost và metadata
+    \item training\_report\_xgb.json: Báo cáo chi tiết về quá trình huấn luyện
+    \item MLflow artifacts: Model, metrics, và parameters được log vào MLflow tracking server
+\end{itemize}
+
+\subsubsection{train\_brf}
+Mục tiêu: Huấn luyện mô hình Balanced Random Forest trên dữ liệu đã tiền xử lý để phát hiện giao dịch gian lận.
+
+\textbf{Đầu vào:}
+\begin{itemize}
+    \item data\_preprocessed.csv: File CSV chứa dữ liệu đã được tiền xử lý
+\end{itemize}
+
+\textbf{Quy trình xử lý:}
+\begin{itemize}
+    \item Thiết lập kết nối MLflow để theo dõi quá trình huấn luyện
+    \item Thực hiên các bước huấn luyện mô hình được mô tả chi tiết tại \ref{subsubsec:train-brf}
+    \item Dự đoán trên tập test, tính toán các metrics đánh giá hiệu năng mô hình và thời gian huấn luyện/dự đoán.
+    \item Tạo metadata chứa thông tin về mô hình, số lượng đặc trưng và kích thước dataset.
+    \item Log metrics, parameters, và model artifact vào MLflow với signature và input example
+\end{itemize}
+
+\textbf{Đầu ra:}
+\begin{itemize}
+    \item brf\_model\_bundle.pkl: File pickle chứa mô hình \ac{brf} và metadata
+    \item training\_report\_brf.json: Báo cáo chi tiết về quá trình huấn luyện
+    \item MLflow artifacts: Model, metrics, và parameters được log vào MLflow tracking server
+\end{itemize}
+
+\subsubsection{compare\_models}
+\label{subsubsec:compare-models}
+
+Mục tiêu: So sánh hai mô hình \ac{brf} và XGBoost để lựa chọn mô hình tốt nhất dựa trên aggregate score và đăng ký vào Model Registry.
+
+\textbf{Đầu vào:}
+\begin{itemize}
+    \item MLflow runs của hai mô hình \ac{brf} và XGBoost từ experiment mlsecops-fraud-detection
+\end{itemize}
+
+\textbf{Quy trình xử lý (Bảng~\ref{tab:pseudocode_compare_models}):}
+
+\begin{itemize}
+    \item Truy vấn MLflow tracking server để lấy hai run mới nhất 
+    ($Run_{BRF}$, $Run_{XGB}$) của \ac{brf} và XGBoost.
+
+    \item Trích xuất các metrics chính từ mỗi run: recall ($recall_M$), 
+    ROC-AUC ($auc_M$), precision ($prec_M$) với $M \in \{BRF, XGB\}$.
+
+    \item Chuẩn hóa các metrics về scale $[0,1]$ bằng min-max normalization 
+    nhằm đảm bảo tính công bằng khi so sánh:
+    \[
+        m_M^{norm} =
+        \frac{m_M - \min(m_{BRF}, m_{XGB})}
+        {\max(m_{BRF}, m_{XGB}) - \min(m_{BRF}, m_{XGB})}
+    \]
+
+    \item Tính aggregate score theo weighted average với trọng số 
+    $w_{recall}=0.4$, $w_{auc}=0.4$, $w_{prec}=0.2$. Việc đặt trọng số này
+    phản ánh mức độ ưu tiên cao cho recall và AUC trong bài toán phát hiện gian lận:
+    \[
+        Score_M =
+        w_{recall} \cdot recall_M^{norm}
+        + w_{auc} \cdot auc_M^{norm}
+        + w_{prec} \cdot prec_M^{norm}
+    \]
+
+    \item So sánh $Score_{BRF}$ và $Score_{XGB}$, chọn mô hình có score cao hơn
+    làm winner và đăng ký vào MLflow Model Registry.
+\end{itemize}
+
+\begin{table}[!htbp]
+\centering
+\caption{Pseudo-code so sánh và lựa chọn mô hình}
+\label{tab:pseudocode_compare_models}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.9\textwidth}}
+    \toprule
+    \textbf{Input:} $Run_{\text{BRF}}, Run_{\text{XGB}}$; $w_{\text{recall}}=0.4, w_{\text{auc}}=0.4, w_{\text{prec}}=0.2$ \\
+    \midrule
+    \textbf{Output:} Model version trong MLflow Registry \\
+    \midrule
+    
+    \textbf{for each} model $M \in \{BRF, XGB\}$ \\
+    \quad Trích xuất $recall_M, auc_M, prec_M$ từ $Run_M$ \\
+    \textbf{end for} \\
+    
+    \midrule
+    \textbf{for each} metric $m \in \{recall, auc, prec\}$ \\
+    \quad $m_{BRF}^{norm} \leftarrow \dfrac{m_{BRF} - \min(m_{BRF}, m_{XGB})}{\max(m_{BRF}, m_{XGB}) - \min(m_{BRF}, m_{XGB})}$ \\
+    \addlinespace[4pt] % Thêm khoảng trống nhỏ giữa các công thức phức tạp
+    \quad $m_{XGB}^{norm} \leftarrow \dfrac{m_{XGB} - \min(m_{BRF}, m_{XGB})}{\max(m_{BRF}, m_{XGB}) - \min(m_{BRF}, m_{XGB})}$ \\
+    \textbf{end for} \\
+    
+    \midrule
+    $Score_{BRF} \leftarrow w_{recall} \cdot recall_{BRF}^{norm} + w_{auc} \cdot auc_{BRF}^{norm} + w_{prec} \cdot prec_{BRF}^{norm}$ \\
+    \addlinespace[2pt]
+    $Score_{XGB} \leftarrow w_{recall} \cdot recall_{XGB}^{norm} + w_{auc} \cdot auc_{XGB}^{norm} + w_{prec} \cdot prec_{XGB}^{norm}$ \\
+    
+    \midrule
+    \textbf{if} $Score_{BRF} > Score_{XGB}$ \textbf{then} $Winner \leftarrow Run_{BRF}$ \\
+    \textbf{else} $Winner \leftarrow Run_{XGB}$ \\
+    
+    \midrule
+    \textbf{return} \texttt{mlflow.register\_model}($Winner$, "fraud-detection-model") \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Đầu ra:}
+\begin{itemize}
+    \item Model version được đăng ký trong MLflow Model Registry với tên fraud-detection-model
+    \item Báo cáo so sánh chi tiết về metrics và aggregate score của hai mô hình
+\end{itemize}
+
+\subsubsection{deploy\_model}
+Mục tiêu: Triển khai model đã được đăng ký trong MLflow Model Registry lên cụm \ac{eks} để phục vụ dự đoán trong môi trường production.
+
+\textbf{Đầu vào:}
+\begin{itemize}
+    \item MODEL\_VERSION: Số version của model cần triển khai từ MLflow Registry
+    \item MODEL\_NAME: Tên model trong registry ("fraud-detection-model")
+    \item model-serving.yaml: Kubernetes manifest template cho deployment
+\end{itemize}
+
+\textbf{Quy trình xử lý:}
+\begin{itemize}
+    \item Xác thực model version tồn tại trong MLflow Registry và kiểm tra trạng thái READY
+    \item Đọc Kubernetes manifest template và thay thế các placeholders (MODEL\_VERSION, DEPLOYMENT\_NAME, CONTAINER\_IMAGE) bằng giá trị thực tế
+    \item Áp dụng manifest lên cụm \ac{eks} sử dụng kubectl apply và theo dõi trạng thái rollout deployment với timeout 300 giây
+    \item Thực hiện health check endpoint để đảm bảo model server hoạt động bình thường, tự động cleanup nếu deployment thất bại
+\end{itemize}
+
+\textbf{Đầu ra:}
+\begin{itemize}
+    \item Kubernetes deployment và service đang chạy trong namespace mlflow
+    \item Model serving endpoint sẵn sàng nhận requests tại endpoint \texttt{/invocations} thông qua \ac{dns} nội bộ của pod \texttt{fraud-detection-model-svc.mlflow.svc.cluster.local}.
+
+\end{itemize}
+
+\subsubsection{mlflow\_serving}
+Mục tiêu: Cung cấp image chứa MLflow model serving runtime để triển khai và phục vụ các mô hình trong production.
+
+\textbf{Đầu vào:}
+\begin{itemize}
+    \item Base image Python slim
+    \item MLflow và các dependencies (boto3, imbalanced-learn, xgboost)
+\end{itemize}
+
+\textbf{Quy trình xử lý:}
+\begin{itemize}
+    \item Cài đặt MLflow và các thư viện cần thiết để load và serve model
+    \item Thiết lập ENTRYPOINT là lệnh mlflow để container có thể chạy MLflow commands trực tiếp
+    \item Khi deploy, container sẽ chạy lệnh mlflow models serve với model URI từ Model Registry và expose HTTP endpoint trên port 8080
+    \item Cung cấp health check endpoint tại /health và prediction endpoint tại /invocations để nhận requests dự đoán
+\end{itemize}
+
+\textbf{Đầu ra:}
+\begin{itemize}
+    \item Docker image chứa MLflow serving runtime
+    \item HTTP server phục vụ model predictions với RESTful API
+\end{itemize}
+
+\subsection{Tích hợp liên tục cho hạ tầng và mã nguồn}
+Trong phạm vi khóa luận này, nhóm sinh viên lựa chọn GitHub Actions làm nền tảng tích hợp liên tục cho triển khai mã nguồn MLSecOps, triển khai ứng dụng và hạ tầng.
+
+\subsubsection{Tích hợp liên tục trong quy trình triển khai mã nguồn MLSecOps}
+
+Hình \ref{fig:chap3-ci-mlsecops.png} mô tả quy trình triển khai mã nguồn MLSecOps, gồm 2 workflow chính: Build Image Workflow và Create Release Workflow.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.28]{img/chapter3/chap3-ci-mlsecops.png}
+    \caption{Tích hợp liên tục trong quy trình triển khai mã nguồn MLSecOps}
+    \label{fig:chap3-ci-mlsecops.png}
+\end{figure}
+
+\paragraph{a. Build Image Workflow}
+Đây là workflow phục vụ trong giai đoạn phát triển và kiểm tra mã nguồn MLSecOps. Workflow này thực hiện việc xây dựng các Docker image cho từng thành phần cụ thể, từ tiền xử lý dữ liệu đến huấn luyện mô hình, dựa trên mã nguồn Python.
+
+Chi tiết về workflow:
+\begin{itemize}
+    \item Điều kiện kích hoạt: Được kích hoạt thủ công thông qua cơ chế \textit{workflow\_dispatch} của GitHub Actions. Người dùng lựa chọn thành phần MLSecOps cần xây dựng (ví dụ: \texttt{preprocess\_data}, \texttt{train\_brf}, \texttt{train\_xgb}), phiên bản dữ liệu tương ứng thông qua tệp \texttt{data.dvc}, và chỉ định việc có cập nhật dữ liệu mới hay không.
+    \item Mô tả các bước:
+    \begin{itemize}
+        \item Thiết lập môi trường (Set up environment): Khởi tạo môi trường cho quá trình thực thi xử lý dữ liệu và huấn luyện mô hình.
+        \item Kiểm tra mã nguồn Python (Check Python code): Mã nguồn Python được kiểm tra thông qua quá trình xây dựng và thực thi các Docker container nhằm phát hiện sớm các lỗi cú pháp, lỗi phụ thuộc hoặc lỗi thực thi.
+        \item Kiểm tra sự thay đổi dữ liệu (Data changes): Sau khi các container thực thi thành công, workflow sẽ kiểm tra thư mục được \ac{dvc} quản lý nhằm xác định liệu quá trình xử lý có làm phát sinh thay đổi dữ liệu hay không.
+        \item Quản lý phiên bản dữ liệu (Data versioning): Nếu dữ liệu có sự thay đổi và tham số \texttt{dvc\_push} được bật, thì workflow sẽ thực hiện ghi nhận dữ liệu mới thông qua \ac{dvc}.
+        \item Tạo Pull Request cập nhật dữ liệu (Create Pull Request): Sau khi dữ liệu mới được ghi nhận, workflow tự động tạo một Pull Request chứa phiên bản dữ liệu mới.
+        \item Xây dựng Docker image (Build image): Docker image của các thành phần MLSecOps được xây dựng dựa trên mã nguồn và phiên bản dữ liệu đã được xác định từ các bước trên.
+        \item Lưu trữ kết quả (Archive artifacts): Các artifact sinh ra trong quá trình thực thi, bao gồm dữ liệu xử lý trung gian, mô hình huấn luyện và Docker image, được lưu trữ nhằm phục vụ cho việc đánh giá, tái sử dụng và triển khai ở các giai đoạn sau.
+    \end{itemize}
+    \item Hình \ref{fig:chap3-ci-build-image.png} cho thấy các bước trong workflow đã được thực thi thành công.
+\end{itemize}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.38]{img/chapter3/chap3-ci-build-image.png}
+    \caption{Kết quả workflow Build Image trên Github Action}
+    \label{fig:chap3-ci-build-image.png}
+\end{figure}
+
+\paragraph{b. Create Release Workflow}
+Đây là workflow phục vụ quá trình xây dựng chính thức các thành phần của hệ thống MLSecOps. Mục đích của workflow này là xây dựng các Docker image theo một phiên bản phát hành (release) xác định, kiểm tra an toàn bảo mật của các image và đưa các image lên \ac{ecr} để sẵn sàng cho quá trình triển khai trên cụm \ac{eks}.
+
+Chi tiết về workflow:
+\begin{itemize}
+    \item Điều kiện kích hoạt: Được kích hoạt thủ công thông qua cơ chế \textit{workflow\_dispatch}. Người dùng chỉ định nhánh (branch) mã nguồn cần phát hành và gán tag phiên bản cho bản release mới.
+    \item Mô tả các bước:
+    \begin{itemize}
+        \item Thiết lập môi trường (Set up environment): Khởi tạo môi trường thực thi và chuẩn bị các công cụ cần thiết cho quá trình xây dựng và phát hành Docker image.
+        \item Xây dựng Docker image (Build images):
+        Các Docker image tương ứng với từng thành phần trong hệ thống MLSecOps được xây dựng song song (matrix) dựa trên cùng một nhánh mã nguồn và tag phát hành.
+        \item Quét bảo mật Docker image (Security scanning):
+        Các Docker image được quét lỗ hổng bảo mật để phát hiện các vấn đề nghiêm trọng trước khi phát hành.
+        \item Đẩy Docker image lên container registry (Push image): Các Docker image sau khi qua bước kiểm tra bảo mật sẽ được gắn tag theo phiên bản phát hành và đẩy lên \ac{ecr}, sẵn sàng cho quá trình triển khai.
+    \end{itemize}
+    \item Hình \ref{fig:chap3-ci-create-release.png} cho thấy các bước trong workflow đã được thực thi thành công.
+    \item Hình \ref{fig:chap3-ci-trivy.png} cho thấy một phần kết quả quét bảo mật sử dụng Trivy. Theo đó, không có lỗ hổng hay rủi ro bảo mật nào được tìm thấy trong Docker image tại thời điểm quét.
+\end{itemize}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.38]{img/chapter3/chap3-ci-create-release.png}
+    \caption{Kết quả workflow Create Release trên Github Action}
+    \label{fig:chap3-ci-create-release.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.38]{img/chapter3/chap3-ci-trivy.png}
+    \caption{Kết quả quét bảo mật sử dụng Trivy}
+    \label{fig:chap3-ci-trivy.png}
+\end{figure}
+
+
+\subsubsection{Tích hợp liên tục trong quy trình triển khai ứng dụng trên EKS}
+Hình \ref{fig:chap3-ci-charts.png} mô tả quy trình triển khai mô tả quy trình tích hợp liên tục để triển khai các thành phần ứng dụng trên cụm \ac{eks} theo mô hình GitOps, gồm 1 workflow là Set Up EKS. Cụ thể, workflow chịu trách nhiệm triển khai các thành phần: ArgoCD, Argo Workflows, MLflow, Prometheus, Grafana, Ingress Controller, Cert-Manager và chứng chỉ TLS được cấu hình nhằm quản lý truy cập từ bên ngoài vào các dịch vụ trong cụm \ac{eks}.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-ci-charts.png}
+    \caption{Tích hợp liên tục trong quy trình triển khai ứng dụng trên EKS}
+    \label{fig:chap3-ci-charts.png}
+\end{figure}
+
+Chi tiết về workflow:
+\begin{itemize}
+    \item Điều kiện kích hoạt: Được kích hoạt thủ công thông qua cơ chế \textit{workflow\_dispatch} của GitHub Actions.
+    \item Mô tả các bước:
+    \begin{itemize}
+        \item Thiết lập môi trường (Set up environment): Workflow khởi tạo môi trường thực thi bằng cách cài đặt các công cụ cần thiết để tương tác với cụm EKS, chẳng hạn như \texttt{kubectl}, \texttt{Helm} và Argo CD CLI.
+        \item Cài đặt ArgoCD (Install ArgoCD): Argo CD được triển khai lên cụm EKS, đóng vai trò là thành phần trung tâm của mô hình GitOps, chịu trách nhiệm theo dõi và đồng bộ trạng thái các ứng dụng từ Git đến cụm EKS.
+        \item Tạo cấu hình ban đầu cho các ứng dụng (Create pre-configurations for Apps): Các secret và cấu hình cần thiết cho hệ thống (ví dụ: thông tin kết nối MLflow) được khởi tạo nhằm đảm bảo các ứng dụng MLSecOps có thể hoạt động đúng ngay từ khi được triển khai.
+        \item Khởi tạo Argo CD Applications (Bootstrap ArgoCD Applications):
+        Workflow áp dụng tệp \texttt{bootstrap.yaml} để tạo các Argo CD Application. Sau đó, Argo CD bắt đầu theo dõi repository GitHub và tự động đồng bộ các Helm chart và manifest Kubernetes tương ứng với trạng thái mong muốn của hệ thống.
+        \item Áp dụng cấu hình Kubernetes (Apply Kubernetes configurations): Các manifest Kubernetes còn lại được áp dụng lên cụm EKS để hoàn tất quá trình khởi tạo hệ thống. Sau bước này, trạng thái thực tế của cụm EKS được đảm bảo đồng bộ với cấu hình được định nghĩa trong Git, đúng theo nguyên tắc GitOps.
+    \end{itemize}
+    \item Hình \ref{fig:chap3-gh-chart.png} cho thấy các bước trong workflow đã được thực thi thành công.
+\end{itemize}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-ci-gh-chart.png}
+    \caption{Kết quả workflow GitHub Actions triển khai các thành phần trên cụm EKS}
+    \label{fig:chap3-gh-chart.png}
+\end{figure}
+
+\subsubsection{Tích hợp liên tục trong quy trình triển khai hạ tầng}
+Hình \ref{fig:chap3-ci-iac.png} mô tả quy trình tích hợp liên tục để triển khai hạ tầng đám mây trên nền tảng AWS. Trong hệ thống đề xuất, quy trình tích hợp liên tục cho hạ tầng được chia thành hai workflow chính: Terraform Plan Workflow và Terraform Apply Workflow. 
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.27]{img/chapter3/chap3-ci-iac.png}
+    \caption{Tích hợp liên tục trong quy trình triển khai hạ tầng}
+    \label{fig:chap3-ci-iac.png}
+\end{figure}
+
+\paragraph{a. Terraform Plan Workflow}: Đây là workflow được sử dụng để kiểm tra các thay đổi về Terraform khi có Pull Request gộp vào nhánh \texttt{master}. Mục tiêu của workflow là phát hiện sớm các thay đổi không mong muốn, đánh giá tác động của thay đổo và kiểm tra các rủi ro bảo mật trước khi triển khai lên AWS.
+
+Chi tiết về workflow:
+\begin{itemize}
+    \item Điều kiện kích hoạt: Được kích hoạt tự động khi có Pull Request gộp vào nhánh \texttt{master}. 
+    \item Mô tả các bước:
+    \begin{itemize}
+        \item Thiết lập quyền truy cập AWS (Configure AWS Credentials): Cấu hình thông tin xác thực AWS thông qua cơ chế assume role.
+        \item Thiết lập môi trường (Set up environment): Cài đặt Terraform CLI và cấu hình backend từ xa (Terraform Cloud) để quản lý trạng thái của hạ tầng.
+        \item Quét bảo mật hạ tầng dưới dạng mã (IaC Security Scan): Sử dụng Checkov để quét mã nguồn Terraform, nhằm phát hiện sớm các rủi ro về bảo mật.
+        \item Xác định phạm vi thay đổi hạ tầng (IaC changes): Workflow kiểm tra các thay đổi liên quan đến thư mục triển khai EKS để quyết định việc thực thi các bước Terraform tiếp theo, tránh chạy không cần thiết.
+        \item Khởi tạo Terraform (Terraform Init): Tải provider, module và kết nối với backend để lưu trữ state.
+        \item Lập kế hoạch triển khai (Terraform Plan): Tạo bản kế hoạch mô tả chi tiết các tài nguyên sẽ được tạo mới, cập nhật hoặc huỷ bỏ. Kết quả này được sử dụng làm cơ sở cho quá trình review và phê duyệt Pull Request.
+    \end{itemize}
+    \item Hình \ref{fig:chap3-ci-terraform-plan.png} cho thấy các bước trong workflow đã được thực thi thành công.
+    \item Hình \ref{fig:chap3-ci-checkov.png} cho thấy một phần kết quả quét bảo mật sử dụng Checkov trên mã nguồn Terraform. Kết quả quét phát hiện một số khuyến nghị (recommendations) liên quan đến cấu hình bảo mật. Tuy nhiên, các khuyến nghị này chủ yếu thuộc nhóm cải thiện cấu hình, không phát hiện các lỗ hổng nghiêm trọng như rò rỉ thông tin nhạy cảm (credentials, passwords) hay các lỗi bảo mật có mức độ rủi ro cao. Do đó, trong phạm vi khóa luận tốt nghiệp, nhóm tập trung ưu tiên xử lý các vấn đề có ảnh hưởng trực tiếp đến an toàn hệ thống, còn các khuyến nghị có mức độ rủi ro thấp sẽ được xem xét và cải thiện trong các giai đoạn tiếp theo.
+
+\end{itemize}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-ci-terraform-plan.png}
+    \caption{Kết quả workflow Terraform Plan trên Github Actions}
+    \label{fig:chap3-ci-terraform-plan.png}
+\end{figure}
+
+\end{itemize}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-ci-checkov.png}
+    \caption{Kết quả quét bảo mật sử dụng Checkov}
+    \label{fig:chap3-ci-checkov.png}
+\end{figure}
+
+\paragraph{b. Terraform Apply Workflow} Đây là workflow đảm nhiệm vai trò áp dụng các thay đổi hạ tầng đã được phê duyệt lên môi trường AWS. Workflow này chỉ được kích hoạt khi Pull Request vào nhánh \texttt{master} đã được hợp nhất thành công.
+
+Chi tiết về workflow:
+\begin{itemize}
+    \item Điều kiện kích hoạt: Được kích hoạt khi Pull Request ở trạng thái \textit{closed} và đã gộp nhánh feature vào nhánh chính. Cơ chế này đảm bảo Terraform Apply chỉ được thực thi sau khi các thay đổi hạ tầng đã được phê duyệt.
+    \item Mô tả các bước:
+    \begin{itemize}
+        \item Thiết lập quyền truy cập AWS (Configure AWS Credentials): Cấu hình thông tin xác thực AWS thông qua cơ chế assume role.
+        \item Thiết lập môi trường (Set up environment): Cài đặt Terraform CLI và cấu hình backend từ xa (Terraform Cloud) để quản lý trạng thái của hạ tầng.
+        \item Khởi tạo Terraform (Terraform Init): Tải provider, module và kết nối với backend để lưu trữ state.
+        \item Lập kế hoạch triển khai (Terraform Plan): Tạo lại bản kế hoạch triển khai dựa trên mã nguồn sau khi được gộp vào nhánh chính.
+        \item Áp dụng thay đổi hạ tầng (Terraform Apply): Lệnh \texttt{terraform apply} được thực thi với tuỳ chọn tự động phê duyệt, từ đó triển khai các dịch vụ lên nền tảng AWS. Các dịch vụ này đã được mô tả trong phần \ref{section-deploy-iac}.
+    \end{itemize}
+    \item Hình \ref{fig:chap3-ci-terraform-apply.png} cho thấy các bước trong workflow đã được thực thi thành công.
+\end{itemize}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-ci-terraform-apply.png}
+    \caption{Kết quả workflow Terraform Apply trên Github Actions}
+    \label{fig:chap3-ci-terraform-apply.png}
+\end{figure}
+
+\subsection{Triển khai liên tục DAG trên nền tảng điều phối container}
+Hệ thống MLSecOps sử dụng Argo Workflows làm công cụ điều phối các workflow trên nền tảng Kubernetes. Kiến trúc được thiết kế theo mô hình \ac{dag} với ba pipeline chính:
+
+\begin{enumerate}
+    \item Training Pipeline - Huấn luyện mô hình từ dữ liệu gốc
+    \item Retraining Pipeline - Huấn luyện lại mô hình với dữ liệu production
+    \item Serving Deployment Pipeline - Triển khai mô hình lên môi trường serving
+\end{enumerate}
+
+\subsubsection{Template-based Architecture}
+
+Để hiện thực các pipeline trên Argo Workflows, chúng tôi sử dụng kiến trúc dựa trên template (Template-based Architecture). Trong kiến trúc này, mỗi bước trong \ac{dag} được định nghĩa bởi một template độc lập, giúp tối ưu việc quản lý, tái sử dụng và mở rộng cho từng bước đơn lẻ trong pipeline.
+
+Nhằm phục vụ cho cả ba pipeline DAG đã nêu, chúng tôi xây dựng sẵn các template sau, trong đó mỗi template sử dụng container image tương ứng đã được container hóa và lưu trữ trên \ac{ecr}:
+
+\begin{itemize}
+    \item \textbf{tp-get-base-data.yaml}: Sử dụng image amazon/aws-cli để trích xuất dữ liệu huấn luyện gốc (base training data) từ S3 production bucket về workspace artifact bucket. Template này thực thi các lệnh AWS CLI để tải xuống file Base.csv từ S3 path được chỉ định và tải lên artifact bucket dùng chung của workflow.
+    
+    \item \textbf{tp-fetch-prod-data.yaml}: Sử dụng image fetch\_prod\_data chứa Python script và dependencies cần thiết để kết nối DynamoDB, truy xuất dữ liệu production mới theo tham số max-items, và xuất ra file CSV. Container chạy script fetch\_prod\_data.py với các biến môi trường được cấu hình từ workflow parameters.
+    
+    \item \textbf{tp-merge-data.yaml}: Sử dụng image merge\_data để thực thi logic hợp nhất dữ liệu. Container tải cả dữ liệu cũ và mới từ S3 artifact bucket, chạy script merge\_data.py với tham số replay-ratio được truyền qua biến môi trường, sau đó tải kết quả merge trở lại S3.
+    
+    \item \textbf{tp-security-check.yaml}: Sử dụng image security\_check chứa các mô hình pre-trained và logic phát hiện label-flip. Container tải dữ liệu đã gộp từ S3, chạy security\_check.py để phát hiện các mẫu nghi ngờ, và tải danh sách các mẫu nghi ngờ trở lại artifact bucket.
+    
+    \item \textbf{tp-preprocess-data.yaml}: Sử dụng image preprocess\_data để thực hiện tiền xử lý. Container tải download dữ liệu thô, chạy script preprocess\_data.py để làm sạch, mã hóa và chuẩn hóa dữ liệu, sau đó tải encoders, scalers và dữ liệu đã xử lý lên S3.
+    
+    \item \textbf{tp-train-xgb.yaml}: Sử dụng image train\_xgb chứa XGBoost library và MLflow client. Container tải dữ liệu preprocessed, thực thi train\_xgb.py để huấn luyện model với kết nối MLflow tracking URI, log metrics/parameters, và upload model artifacts về S3.
+    
+    \item \textbf{tp-train-brf.yaml}: Sử dụng image train\_brf tương tự train\_xgb nhưng chứa thư viện imblearn. Container thực thi train\_brf.py để huấn luyện Balanced Random Forest model, kết nối MLflow tracking URI, log metrics/parameters, và upload model artifacts về S3.
+    
+    \item \textbf{tp-compare-models.yaml}: Sử dụng image compare\_models chứa MLflow client để truy vấn experiment runs. Container chạy compare\_models.py kết nối tới MLflow tracking server, so sánh metrics của các models, tính aggregate score và đăng ký winner model vào Model Registry.
+    
+    \item \textbf{tp-deploy-model.yaml}: Sử dụng image deploy\_model chứa kubectl CLI và Python SDK. Container chạy deploy\_model.py để generate Kubernetes manifest với model version cụ thể, apply manifest lên cluster, và triển khai model server sử dụng image mlflow\_serving đã được xây dựng trước đó.
+\end{itemize}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.36]{img/chapter3/chap3-workflows1.png}
+    \caption{Kết quả apply Templates trên Argo Workflows}
+    \label{fig:chap3-workflows1.png}
+\end{figure}
+
+\subsubsection{Training Pipeline}
+
+Quy trình Training Pipeline được chúng tôi đề xuất được mô tả trong Hình \ref{fig:chap3-training-pipeline.png}. Trong đó, các bước của \ac{dag} lần lượt được ánh xạ tới những template tương ứng đã trình bày ở mục trước. Với các bước cần thực thi trong container, image sẽ được lấy về từ \ac{ecr} thông qua các tham số cấu hình (ecr-registry, image-tag). Các artifact sau mỗi bước được lưu trữ vào S3 artifact bucket dùng chung, được tổ chức theo ID của workflow, nhằm phục vụ cho các bước tiếp theo và đảm bảo khả năng truy vết, tái lập toàn bộ quá trình huấn luyện.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.29]{img/chapter3/chap3-training-pipeline.png}
+    \caption{Luồng xử lý Training Pipeline}
+    \label{fig:chap3-training-pipeline.png}
+\end{figure}
+
+Training Pipeline bao gồm các bước xử lý tuần tự và song song được mô tả trong Bảng \ref{tab:training_pipeline_steps}. Trong đó, điểm đặc biệt ở Bước 4 là việc vận dụng cơ chế đồ thị có hướng không chu trình (\ac{dag}), cho phép thực thi song song hai template huấn luyện với \textbf{parallelism=2}, từ đó tối ưu hóa đáng kể thời gian thực thi của toàn bộ hệ thống.
+
+\begin{table}[!htbp]
+\centering
+\caption{Các bước trong Training Pipeline và template tương ứng}
+\label{tab:training_pipeline_steps}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} >{\centering\arraybackslash}p{0.1\textwidth} >{\raggedright\arraybackslash}p{0.35\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
+    \toprule
+    \textbf{STT} & \textbf{Tên bước} & \textbf{Template} \\
+    \midrule
+    1 & Get Base Data & \texttt{tp-get-base-data.yaml} \\
+    \addlinespace
+    2 & Data Security Check & \texttt{tp-security-check.yaml} \\
+    \addlinespace
+    3 & Data Preprocessing & \texttt{tp-preprocess-data.yaml} \\
+    \addlinespace
+    4 & \textbf{Model Training} & \\
+      & \hspace{3mm} Train XGBoost & \texttt{tp-train-xgb.yaml} \\
+      & \hspace{3mm} Train Balanced RF & \texttt{tp-train-brf.yaml} \\
+    \addlinespace
+    5 & Compare Models & \texttt{tp-compare-models.yaml} \\
+    \bottomrule
+\end{tabular*}
+\end{table}
+
+Hình \ref{fig:chap3r-training-pipeline.png} là kết quả pipeline chạy thành công, Hình \ref{fig:chap3r-compare-models-log.png} là log của bước Compare Model, chi tiết về Compare Model đã được mô tả tại \ref{subsubsec:compare-models}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.36]{img/chapter3/chap3r-training-pipeline.png}
+    \caption{Kết quả chạy Training Pipeline trên Argo Workflows}
+    \label{fig:chap3r-training-pipeline.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.65]{img/chapter3/chap3r-compare-models-log.png}
+    \caption{Log của container tại bước Compare Models}
+    \label{fig:chap3r-compare-models-log.png}
+\end{figure}
+
+\subsubsection{Retraining Pipeline}
+
+Quy trình Retraining Pipeline được chúng tôi đề xuất được mô tả trong Hình \ref{fig:chap3-retraining-pipeline.png}. So với Training Pipeline, Retraining Pipeline bổ sung thêm các bước thu thập và hợp nhất dữ liệu production mới, cho phép mô hình cập nhật kiến thức dựa trên dữ liệu thực tế phát sinh từ môi trường vận hành. Tương tự Training Pipeline, các bước của \ac{dag} được ánh xạ tới những template tương ứng, image được lấy từ \ac{dag}, và artifacts được lưu trữ vào S3 artifact bucket theo workflow ID để đảm bảo khả năng truy vết.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.25]{img/chapter3/chap3-retraining-pipeline.png}
+    \caption{Luồng xử lý Retraining Pipeline}
+    \label{fig:chap3-retraining-pipeline.png}
+\end{figure}
+
+Retraining Pipeline bao gồm các bước xử lý tuần tự và song song được mô tả trong Bảng \ref{tab:retraining_pipeline_steps}. Pipeline này có hai điểm đặc biệt: (1) Bước 1 thực thi song song việc thu thập dữ liệu mới từ DynamoDB và trích xuất dữ liệu huấn luyện gốc từ S3, tối ưu thời gian chuẩn bị dữ liệu; (2) Bước 5 vận dụng cơ chế DAG để huấn luyện song song hai mô hình với \textbf{parallelism=2}, tương tự Training Pipeline.
+
+\begin{table}[!htbp]
+\centering
+\caption{Các bước trong Retraining Pipeline và template tương ứng}
+\label{tab:retraining_pipeline_steps}
+\begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} >{\centering\arraybackslash}p{0.1\textwidth} >{\raggedright\arraybackslash}p{0.35\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
+    \toprule
+    \textbf{STT} & \textbf{Tên bước} & \textbf{Template} \\
+    \midrule
+    1 & \textbf{Prepare Data} & \\
+      & \hspace{3mm} Fetch Production Data & \texttt{tp-fetch-prod-data.yaml} \\
+      & \hspace{3mm} Get Base Data & \texttt{tp-get-base-data.yaml} \\
+    \addlinespace
+    2 & Merge Data & \texttt{tp-merge-data.yaml} \\
+    \addlinespace
+    3 & Data Security Check & \texttt{tp-security-check.yaml} \\
+    \addlinespace
+    4 & Data Preprocessing & \texttt{tp-preprocess-data.yaml} \\
+    \addlinespace
+    5 & \textbf{Model Retraining} & \\
+      & \hspace{3mm} Retrain XGBoost & \texttt{tp-train-xgb.yaml} \\
+      & \hspace{3mm} Retrain Balanced RF & \texttt{tp-train-brf.yaml} \\
+    \addlinespace
+    6 & Compare Models & \texttt{tp-compare-models.yaml} \\
+    \bottomrule
+\end{tabular*}
+\end{table}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.35]{img/chapter3/chap3r-retraining-pipeline.png}
+    \caption{Kết quả chạy Retraining Pipeline trên Argo Workflows}
+    \label{fig:chap3r-retraining-pipeline.png}
+\end{figure}
+
+\subsubsection{Serving Pipeline}
+
+Quy trình Serving Pipeline được chúng tôi đề xuất được mô tả trong Hình \ref{fig:chap3-serving-pipeline.png}. Pipeline này chỉ có một bước là Deploy Model, sử dụng template \textbf{tp-deploy-model.yaml}. Nó đóng vai trò quan trọng trong việc triển khai mô hình đã được chọn từ MLflow Model Registry lên môi trường production.
+
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-serving-pipeline.png}
+    \caption{Luồng xử lý Serving Pipeline}
+    \label{fig:chap3-serving-pipeline.png}
+\end{figure}
+
+Quá trình deployment được thực hiện thông qua 3 bước tuần tự như sau:
+
+\begin{enumerate}
+    \item \textbf{Validate Model}: Kết nối tới MLflow Tracking Server để xác thực model version tồn tại trong registry, kiểm tra trạng thái model là READY trước khi tiến hành deployment.
+    
+    \item \textbf{Deploy to Kubernetes}: Đọc cấu hình manifest cho deployment (k8s/model-serving.yaml), thay thế các placeholders MODEL\_VERSION, DEPLOYMENT\_NAME, CONTAINER\_IMAGE bằng giá trị thực tế, sau đó thực thi lệnh \textbf{kubectl apply} để tạo Deployment với số replicas chỉ định và Service trong namespace mlflow. Mỗi pod sẽ sử dụng image \textbf{mlflow\_serving} và chạy lệnh \textbf{mlflow models serve} để load model từ MLflow Model Registry.
+    
+    \item \textbf{Health Check}: Theo dõi trạng thái rollout của deployment sử dụng \textbf{kubectl rollout status} với timeout 300 giây để đảm bảo tất cả replicas đã sẵn sàng, sau đó gửi HTTP GET request tới endpoint \textbf{/health} để xác nhận model server hoạt động bình thường. Nếu deployment thất bại ở bất kỳ bước nào, hệ thống sẽ báo lỗi và tự động cleanup các resources đã tạo.
+\end{enumerate}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.35]{img/chapter3/chap3r-serving-pipeline.png}
+    \caption{Kết quả chạy Serving Pipeline trên Argo Workflows}
+    \label{fig:chap3r-serving-pipeline.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.5]{img/chapter3/chap3r-deployment.png}
+    \caption{Deployment được tạo thành công}
+    \label{fig:chap3r-deployment.png}
+\end{figure}
+
+\subsection{Triển khai quản lý vòng đời mô hình}
+
+Hệ thống sử dụng MLflow làm nền tảng quản lý vòng đời mô hình, tích hợp chặt chẽ với các pipeline đã trình bày ở phần trước. Trong quá trình Training Pipeline và Retraining Pipeline chạy, MLflow Tracking Server tự động ghi nhận toàn bộ thông tin từ các bước huấn luyện mô hình, bao gồm các siêu tham số, chỉ số đánh giá như accuracy, precision, recall, F1-score, cùng với model artifacts (Hình~\ref{fig:chap3r-mlflow-run.png}). 
+
+Sau khi bước Compare Models tại pipeline hoàn tất, nó tự động đăng ký mô hình tốt nhất vào MLflow Model Registry (Hình~\ref{fig:chap3r-mlflow-run-2.png}, Hình~\ref{fig:chap3r-mlflow-run-3.png}). MLflow Model Registry quản lý các phiên bản mô hình Fraud Detection (Hình~\ref{fig:chap3r-mlflow-run-4.png}) và cung cấp tính năng so sánh hiệu năng giữa các phiên bản (Hình~\ref{fig:chap3r-mlflow-run-5.png}), cho phép người vận hành lựa chọn phiên bản tốt nhất làm cơ sở cho deployment. Đây là điểm kiểm soát quan trọng có sự tham gia của con người (human-in-the-loop), đảm bảo chỉ những mô hình đã được xác thực kỹ lưỡng mới được triển khai.
+
+Sau khi người vận hành chọn phiên bản mô hình phù hợp, Serving Pipeline được trigger để thực hiện deployment lên cụm EKS, hoàn thiện vòng đời quản lý mô hình từ huấn luyện đến triển khai production.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3r-mlflow-run.png}
+    \caption{Quản lý các Run trên MLflow}
+    \label{fig:chap3r-mlflow-run.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3r-mlflow-run-2.png}
+    \caption{So sánh kết quả các Run trên MLflow}
+    \label{fig:chap3r-mlflow-run-2.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3r-mlflow-run-3.png}
+    \caption{Kết quả mô hình hiển thị trên MLflow}
+    \label{fig:chap3r-mlflow-run-3.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3r-mlflow-run-4.png}
+    \caption{Quản lý phiên bản các mô hình Fraud Detection}
+    \label{fig:chap3r-mlflow-run-4.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3r-mlflow-run-5.png}
+    \caption{So sánh hiệu năng giữa các phiên bản mô hình trên MLflow}
+    \label{fig:chap3r-mlflow-run-5.png}
+\end{figure}
+\subsection{Ứng dụng người dùng, dữ liệu mới và tái huấn luyện mô hình}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-app-flow.png}
+    \caption{Luồng xử lý ứng dụng người dùng}
+    \label{fig:chap3-app-flow.png}
+\end{figure}
+
+Để minh họa hoạt động của hệ thống MLSecOps trong môi trường thực tế, chúng tôi xây dựng ứng dụng web mô phỏng quy trình đăng ký tài khoản và phát hiện gian lận. Luồng xử lý của ứng dụng được mô tả trong Hình~\ref{fig:chap3-app-flow.png}, bao gồm các bước sau:
+
+\begin{enumerate}
+    \item Người dùng truy cập ứng dụng (Hình~\ref{fig:chap3-app-1.png}), nhập thông tin cá nhân, gửi yêu cầu tạo tài khoản đến endpoint /register
+    \item Backend của ứng dụng sẽ có một \textbf{Data Handler} được viết bằng Python. Nó sẽ nhận data từ người dùng, sẽ đó tiền xử lý dữ liệu và gọi Model Endpoint
+    \item Nếu mô hình dự đoán người dùng không có dấu hiệu gian lận, hệ thống hiển thị thông báo đăng ký thành công (Hình~\ref{fig:chap3-app-2.png}). Ngược lại, nếu phát hiện nghi vấn gian lận, ứng dụng hiển thị cảnh báo và yêu cầu người dùng chờ xác minh từ hệ thống (Hình~\ref{fig:chap3-app-3.png}).
+    \item Dữ liệu mới, bao gồm dữ liệu từ người dùng và kết quả dự đoán của mô hình sẽ được \textbf{Data Handler} đưa vào DynamoDB Table.
+    \item Hệ thống tích hợp giao diện Admin (Hình~\ref{fig:chap3-app-4.png}) cho phép người quản trị đánh giá và xác nhận thủ công các trường hợp nghi ngờ. Admin có thể xem chi tiết thông tin người dùng, kết quả dự đoán từ mô hình, và quyết định xác nhận hoặc từ chối tài khoản.
+    \item Nếu xác nhận là gian lận, hệ thống hiển thị cảnh báo phát hiện gian lận cho người dùng (Hình~\ref{fig:chap3-app-5.png}) và cập nhật nhãn xác thực vào DynamoDB. Dữ liệu production này đã được gắn nhãn bởi Admin, và được xem là ground truth phục vụ tái huấn luyện mô hình.
+    \item Khi Retraining Pipeline được kích hoạt, nó sẽ trích xuất dữ liệu từ DynamoDB Table và thực hiện toàn bộ quy trình tái huấn luyện như đã trình bày ở phần trước. Cơ chế này tạo nên vòng phản hồi liên tục (feedback loop), cho phép mô hình học hỏi từ dữ liệu thực tế và cải thiện hiệu năng theo thời gian, đáp ứng yêu cầu của MLSecOps về khả năng thích ứng với môi trường production thay đổi.
+
+\end{enumerate}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-app-1.png}
+    \caption{Giao diện ứng dụng người dùng}
+    \label{fig:chap3-app-1.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-app-2.png}
+    \caption{Kết quả đăng kí người dùng thành công}
+    \label{fig:chap3-app-2.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-app-3.png}
+    \caption{Người dùng có thông tin đăng kí bị nghi ngờ là gian lận}
+    \label{fig:chap3-app-3.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-app-4.png}
+    \caption{Giao diện Admin xác nhận thông tin người dùng}
+    \label{fig:chap3-app-4.png}
+\end{figure}
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.33]{img/chapter3/chap3-app-5.png}
+    \caption{Giao diện cảnh báo người dùng bị phát hiện là gian lận}
+    \label{fig:chap3-app-5.png}
+\end{figure}
+
+\section{Triển khai giám sát hiệu năng hệ thống }
+
+Prometheus và Grafana được nhóm sinh viên triển khai Helm và được quản lý bởi ArgoCD, chạy dưới dạng các pod trong cụm EKS. Theo đó, Prometheus Server định kỳ thu thập các chỉ số từ các thành phần trong cụm thông qua các endpoint được cung cấp bởi các exporter và các dịch vụ nội bộ của EKS.
+
+Grafana được cấu hình kết nối trực tiếp đến Prometheus Server làm nguồn dữ liệu (data source), cho phép truy vấn và hiển thị các chỉ số liên quan đến hiệu năng hệ thống theo thời gian thực.
+
+Hình \ref{fig:prometheus-home} thể hiện giao diện chính của Prometheus sau khi triển khai. Có thể thấy, giao diện này không quá thân thiện với người dùng trong việc theo dõi các chỉ số hệ thống theo thời gian thực. Đó cũng là lý do cần có Grafana trực quan hóa dữ liệu.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter3/prometheus-home.png}
+    \caption{Giao diện chính của Prometheus}
+    \label{fig:prometheus-home}
+\end{figure}
+
+Hình \ref{fig:grafana-login} thể hiện giao diện đăng nhập của Grafana. Trong đó, mật khẩu mặc định của Grafana được trong cụm EKS dưới dạng tài nguyên là Kubernetes Secret.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter3/grafana-login.png}
+    \caption{Giao diện đăng nhập của Grafana}
+    \label{fig:grafana-login}
+\end{figure}
+
+Sau khi đăng nhập thành công vào Grafana, chúng ta có thể thấy được giao diện chính của nền tảng này, minh họa qua hình \ref{fig:grafana-home}.
+
+\begin{figure}[!htbp]
+    \centering
+    \includegraphics[scale=0.3]{img/chapter3/grafana-home.png}
+    \caption{Giao diện chính của Grafana}
+    \label{fig:grafana-home}
+\end{figure}
+
+Trong hệ thống giám sát mà nhóm triển khai, có hai dashboard chính được xây dựng nhằm theo dõi hiệu năng vận hành của hệ thống MLSecOps, bao gồm dashboard giám sát mức sử dụng CPU và bộ nhớ của các pod trong cụm Kubernetes. Chi tiết về những chỉ số thu thập được sẽ được mô tả chi tiết trong phần \ref{sec:2.2.1}.
