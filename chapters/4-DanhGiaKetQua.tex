@@ -351,31 +351,39 @@ Tập dữ liệu huấn luyện mô hình bao gồm toàn bộ tập \textbf{Tr
     
     \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} ll ccccc cc c}
         \toprule
-        \multirow{2.5}{*}{\textbf{Pipe.}} & \multirow{2.5}{*}{\textbf{Metrics}} & \multicolumn{2}{c}{\textbf{prepare}} & \multirow{2}{*}{\makecell{\textbf{merge}\\\textbf{data}}} & \multirow{2}{*}{\makecell{\textbf{sec.}\\\textbf{check}}} & \multirow{2}{*}{\makecell{\textbf{pre-}\\\textbf{process}}} & \multicolumn{2}{c}{\textbf{train}} & \multirow{2}{*}{\makecell{\textbf{com-}\\\textbf{pare}}} \\
+        \multirow{2.5}{*}{\textbf{Pipe.}} & \multirow{2.5}{*}{\textbf{Metrics}} 
+        & \multicolumn{2}{c}{\textbf{prepare}} 
+        & \multirow{2}{*}{\makecell{\textbf{merge}\\\textbf{data}}} 
+        & \multirow{2}{*}{\makecell{\textbf{sec.}\\\textbf{check}}} 
+        & \multirow{2}{*}{\makecell{\textbf{pre-}\\\textbf{process}}} 
+        & \multicolumn{2}{c}{\textbf{train}} 
+        & \multirow{2}{*}{\makecell{\textbf{com-}\\\textbf{pare}}} \\
         \cmidrule(lr){3-4} \cmidrule(lr){8-9}
         & & fetch & base & & & & brf & xgb & \\
         \midrule
         
         % --- TRAINING ---
         \multirow{5}{*}{\rotatebox[origin=c]{90}{\textbf{Training}}} 
-        & Duration (s) & --- & 16 & --- & 103 & 111 & 101 & 82 & 27 \\
-        & Avg. CPU (c) & --- & 0,05 & --- & 0,26 & 0,19 & 0,23 & 0,05 & 0,05 \\
-        & Peak CPU (c) & --- & 0,07 & --- & 0,31 & 0,25 & 0,27 & 0,06 & 0,05 \\
-        & Avg. Mem (MB) & --- & 20 & --- & 1.350 & 500 & 750 & 400 & 40 \\
-        & Peak Mem (MB) & --- & 30 & --- & 1.600 & 600 & 850 & 430 & 50 \\
+        & Duration (s)      & --- & 8    & --- & 139 & 113 & 86  & 69  & 27 \\
+        & Avg. CPU (c)      & --- & N/A  & --- & 0.1313 & 0.1304 & 0.0715 & 0.0498 & N/A \\
+        & Peak CPU (c)     & --- & N/A  & --- & 0.1690 & 0.1750 & 0.1460 & 0.0967 & N/A \\
+        & Avg. Mem (MB)    & --- & 7.96 & --- & 1381.93 & 587.96 & 701.79 & 587.37 & 20.50 \\
+        & Peak Mem (MB)   & --- & 7.96 & --- & 1638.40 & 991.00 & 821.00 & 702.00 & 21.50 \\
         
         \midrule
         
         % --- RETRAINING ---
         \multirow{5}{*}{\rotatebox[origin=c]{90}{\textbf{Retraining}}} 
-        & Duration (s) & 37 & 16 & 83 & 138 & 129 & 110 & 89 & 27 \\
-        & Avg. CPU (c) & 0,11 & 0,05 & 0,27 & 0,29 & 0,31 & 0,25 & 0,06 & 0,05 \\
-        & Peak CPU (c) & 0,15 & 0,07 & 0,35 & 0,35 & 0,38 & 0,3 & 0,06 & 0,05 \\
-        & Avg. Mem (MB) & 80 & 20 & 750 & 1.450 & 580 & 820 & 420 & 40 \\
-        & Peak Mem (MB) & 100 & 30 & 900 & 1.700 & 680 & 950 & 440 & 50 \\
+        & Duration (s)     & 9    & 9    & 62  & 131 & 124 & 90  & 73  & 26 \\
+        & Avg. CPU (c)     & N/A  & N/A  & 0.0889 & 0.1213 & 0.1506 & 0.1169 & 0.0872 & 0.0005 \\
+        & Peak CPU (c)    & N/A  & N/A  & 0.0957 & 0.1600 & 0.2010 & 0.1430 & 0.1020 & 0.0005 \\
+        & Avg. Mem (MB)   & 6.74 & 7.87 & 730.17 & 1423.78 & 316.13 & 408.59 & 420.29 & 3.55 \\
+        & Peak Mem (MB)  & 6.74 & 7.87 & 763.00 & 1648.64 & 1095.68 & 811.00 & 903.00 & 3.55 \\
+        
         \bottomrule
     \end{tabular*}
 \end{table}
+
 
 
 Hai chỉ số hiệu năng trong lúc quy trình MLSecOps thực thi mà nhóm theo dõi là CPU và memory. Các chỉ số này được Prometheus thu thập trong quá trình thực thi quy trình huấn luyện mô hình, và được trực quan hóa bằng Grafana. Cụ thể hai chỉ số được theo dõi là rate container cpu usage seconds - cho biết mức nhân CPU mà pod đang sử dụng trung bình, và container memory working set bytes - đo lường bộ nhớ 
