@@ -344,7 +344,9 @@ Trong phần này, nhóm tiến hành đánh giá hiệu năng hệ thống MLSe
 
 Hai chỉ số hiệu năng chính được theo dõi là mức sử dụng CPU và bộ nhớ của các pod trong hệ thống. Các chỉ số này được Prometheus thu thập trong suốt quá trình thực thi pipeline và được trực quan hóa thông qua các dashboard Grafana, cho phép quan sát trực tiếp sự biến động tài nguyên theo thời gian.
 
-Cụ thể, mức sử dụng CPU được đo bằng chỉ số container_cpu_usage_rate, phản ánh số nhân CPU mà mỗi pod sử dụng trung bình tại một thời điểm. Trong khi đó, mức sử dụng bộ nhớ được đo bằng container_memory_working_set, đại diện cho lượng bộ nhớ thực tế mà pod đang chiếm giữ trong quá trình xử lý. Việc lựa chọn hai chỉ số này giúp phản ánh chính xác cường độ tính toán và nhu cầu lưu trữ dữ liệu của từng bước trong pipeline MLSecOps.
+Cụ thể, mức sử dụng CPU được đo bằng chỉ số container\_cpu\_usage\_rate, phản ánh số nhân CPU mà mỗi pod sử dụng trung bình tại một thời điểm. Trong khi đó, mức sử dụng bộ nhớ được đo bằng container\_memory\_working\_set, đại diện cho lượng bộ nhớ thực tế mà pod đang chiếm giữ trong quá trình xử lý. Việc lựa chọn hai chỉ số này giúp phản ánh chính xác cường độ tính toán và nhu cầu lưu trữ dữ liệu của từng bước trong pipeline MLSecOps.
+
+Bảng \ref{tab:detailed_resource_metrics} cung cấp cái nhìn tổng hợp về thời gian thực thi và mức tiêu thụ tài nguyên của từng bước trong pipeline MLSecOps cho cả hai kịch bản huấn luyện và tái huấn luyện mô hình.
 
 \label{sec:4.2.1}
 %TODO
