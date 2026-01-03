@@ -57,38 +57,37 @@ Trong bài toán phát hiện gian lận, việc giảm thiểu False Negative c
 
 \subsubsection{AUC-ROC}
 
-ROC-AUC được sử dụng để đánh giá khả năng phân biệt giữa hai lớp của mô hình phân loại thông qua mối quan hệ giữa tỷ lệ dương tính thật (TPR) và tỷ lệ dương tính giả (FPR). Các khái niệm và tiêu chí liên quan được tóm tắt trong Bảng~\ref{tab:roc-auc-metrics}.
+AUC-ROC được sử dụng để đánh giá khả năng phân biệt giữa hai lớp của mô hình phân loại thông qua mối quan hệ giữa tỷ lệ dương tính thật (TPR) và tỷ lệ dương tính giả (FPR). Các khái niệm và tiêu chí liên quan được tóm tắt trong Bảng~\ref{tab:roc-auc-metrics}.
 
 \begin{table}[!htbp]
 \centering
-\caption{Các khái niệm và tiêu chí đánh giá dựa trên ROC-AUC}
+\caption{Các khái niệm và tiêu chí đánh giá dựa trên AUC-ROC}
 \label{tab:roc-auc-metrics}
 \renewcommand{\arraystretch}{1.2}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} l l p{7cm}}
 \toprule
-\textbf{Metric} & \textbf{Công thức / Định nghĩa} & \textbf{Mô tả} \\
+\textbf{Metric} & \textbf{Công thức} & \textbf{Mô tả} \\
 \midrule
-
-ROC Curve &
--- &
-Đường cong biểu diễn mối quan hệ giữa TPR và FPR khi thay đổi ngưỡng phân loại của mô hình. \\
 
 True Positive Rate (TPR) &
 $\displaystyle \frac{TP}{TP + FN}$ &
-Tỷ lệ giao dịch gian lận được mô hình phát hiện đúng tại một ngưỡng phân loại cụ thể. \\
+Tỷ lệ mẫu dương tính (gian lận) được dự đoán đúng trên tổng số mẫu thực tế dương tính. Còn gọi là Recall/Sensitivity. \\
 
 False Positive Rate (FPR) &
 $\displaystyle \frac{FP}{FP + TN}$ &
-Tỷ lệ giao dịch hợp lệ bị mô hình dự đoán nhầm là gian lận tại một ngưỡng phân loại cụ thể. \\
+Tỷ lệ mẫu âm tính (hợp lệ) bị dự đoán sai thành dương tính trên tổng số mẫu thực tế âm tính. \\
 
-\addlinespace
-AUC (Area Under the Curve) &
-$\displaystyle \int_{0}^{1} \text{ROC}(x)\,dx$ &
-Diện tích dưới đường cong ROC, có giá trị trong khoảng [0, 1], phản ánh khả năng phân biệt tổng quát giữa hai lớp. \\
+ROC Curve &
+Đồ thị (FPR, TPR) &
+Đường cong biểu diễn sự đánh đổi giữa TPR và FPR tại các ngưỡng phân loại (threshold) khác nhau. \\
 
 AUC-ROC &
--- &
-Chỉ số tổng hợp dùng để đánh giá hiệu suất phân loại; AUC gần 1 thể hiện mô hình hoạt động tốt, trong khi AUC xấp xỉ 0.5 tương đương với dự đoán ngẫu nhiên. \\
+$\displaystyle \int_{0}^{1} \text{ROC}(x)\,dx$ &
+Diện tích dưới đường cong ROC. Phản ánh khả năng phân biệt tổng quát giữa hai lớp:
+\begin{itemize}[leftmargin=*, nosep]
+    \item AUC $\approx 1$: Mô hình phân loại hoàn hảo.
+    \item AUC $\approx 0.5$: Mô hình dự đoán ngẫu nhiên.
+\end{itemize} \\
 
 \bottomrule
 \end{tabular*}
@@ -97,7 +96,7 @@ Chỉ số tổng hợp dùng để đánh giá hiệu suất phân loại; AUC 
 
 \subsection{Kết quả mô hình phát hiện gian lận}
 
-Mô hình thực nghiệm được triển khai dựa trên các phương pháp đã nêu ở phần trước. Trong đó, dữ liệu thực nghiệm và quy trình xử lý dữ liệu được mô tả trong phần \label{subsec:introduce-dataset}, cấu hình mô hình được mô tả trong phần \label{subsec:train-model}.
+Mô hình thực nghiệm được triển khai dựa trên các phương pháp đã nêu ở phần trước. Trong đó, dữ liệu thực nghiệm và quy trình xử lý dữ liệu được mô tả trong phần \ref{subsec:introduce-dataset}, cấu hình mô hình được mô tả trong phần \ref{subsec:train-model}.
 
 Bảng \ref{tab:model_performance} tóm tắt hiệu suất của hai mô hình XGBoost và \ac{brf} trên tập kiểm thử (Test). Hình \ref{fig:chap4-model-auc.png} minh họa đường cong ROC và Hình \ref{fig:chap4-xgb-brf-cm.png} chi tiết hóa các kết quả dự đoán thông qua Confusion Matrix.
 
@@ -118,7 +117,7 @@ Bảng \ref{tab:model_performance} tóm tắt hiệu suất của hai mô hình 
 
 Quan sát kết quả thực nghiệm, cả hai mô hình đều thể hiện khả năng phân tách tốt giữa hai lớp dữ liệu với chỉ số AUC đều đạt mức xấp xỉ 0.87. Tuy nhiên, khi đi sâu vào chi tiết hiệu năng phân loại, chúng ta có thể thấy một số khác biệt trong chiến lược của từng mô hình.
 
-Mô hình \ac{brf} cho thấy sự vượt trội trong khả năng bắt các trường hợp dương tính (Positive) với chỉ số Recall đạt 79.94\%, cao hơn đáng kể so với mức 66.12\% của XGBoost. Điều này đồng nghĩa với việc mô hình đã nhận diện chính xác gần 80\% số trường hợp thực tế cần quan tâm. Tuy nhiên, việc tối ưu hóa Recall đã dẫn đến sự đánh đổi mạnh mẽ về độ chính xác (Precision), khi chỉ số này giảm xuống mức rất thấp là 4.17\%. 
+Mô hình \ac{brf} cho thấy sự vượt trội trong khả năng bắt các trường hợp dương tính (Positive) với chỉ số Recall đạt 79.94\%, cao hơn đáng kể so với mức 66.12\% của XGBoost. Điều này đồng nghĩa với việc mô hình đã nhận diện chính xác gần 80\% số trường hợp thực tế cần quan tâm. Tuy nhiên, việc tối ưu hóa Recall đã dẫn đến sự đánh đổi mạnh mẽ về độ chính xác (Precision), khi chỉ số này giảm xuống mức 4.17\%. 
 
 Với các thách thức đã biết trong bài toán phát hiện gian lận, mức Precision thấp này cảnh báo rằng phần lớn các trường hợp được mô hình dán nhãn là "Dương tính" thực chất là báo động giả (False Positive). Mặc dù tỷ lệ báo động giả cao có thể gây lãng phí tài nguyên kiểm tra lại, nhưng trong bối cảnh bài toán ưu tiên giảm thiểu rủi ro bỏ sót (False Negative) để tránh các hậu quả nghiêm trọng, kết quả của 2 mô hình có thể xem là phù hợp và an toàn.
 
@@ -151,6 +150,7 @@ Với các thách thức đã biết trong bài toán phát hiện gian lận, m
 \end{figure}
 
 \subsection{Đánh giá tác động của tấn công lật nhãn đến hiệu quả mô hình}
+\label{subsec:label-attack-to-model}
 
 Để đánh giá mức độ ảnh hưởng của tấn công lật nhãn đến hiệu quả của các mô hình phát hiện gian lận, chúng tôi xây dựng một kịch bản mô phỏng trong đó nhãn của một phần dữ liệu huấn luyện bị thay đổi có chủ đích. Cụ thể, tập dữ liệu huấn luyện bị lật lần lượt 5\,000, 10\,000 và 20\,000 nhãn nhằm mô phỏng các mức độ tấn công khác nhau, từ nhẹ đến nghiêm trọng.
 
@@ -162,29 +162,24 @@ Trong quá trình tạo dữ liệu bị tấn công, việc lật nhãn hoàn t
 
 Gọi $N_{org}$ là số lượng gian lận ban đầu trong tập huấn luyện, $N_{F \to N}$ là số lượng nhãn gian lận bị lật thành bình thường, và $N_{N \to F}$ là số lượng nhãn bình thường bị lật thành gian lận. Khi đó, số lượng gian lận quan sát được sau tấn công $N_{new}$ được xác định như sau:
 
-\[
+\begin{equation}
 N_{\text{new}} = N_{\text{org}} - N_{F \to N} + N_{N \to F}
-\]
+\label{eq:population-update}
+\end{equation}
 
-Dựa trên đó, tỷ lệ biến động của số lượng gian lận \emph{quan sát được} sau tấn công được tính bằng:
+Dựa trên đó, tỷ lệ biến động của số lượng gian lận quan sát được sau tấn công được tính bằng:
 
-\[
-\Delta_{\text{new}} (\%) =
-\left(
-    \frac{N_{\text{new}} - N_{\text{org}}}{N_{\text{org}}}
-\right)
-\times 100
-\]
+\begin{equation}
+\Delta_{\text{new}} (\%) = \left( \frac{N_{\text{new}} - N_{\text{org}}}{N_{\text{org}}} \right) \times 100
+\label{eq:percentage-change}
+\end{equation}
 
 Mặt khác, để phản ánh trực tiếp mức độ suy giảm của tín hiệu học tập từ các mẫu gian lận thật, chúng tôi định nghĩa tỷ lệ suy giảm gian lận thật còn lại trong dữ liệu huấn luyện như sau:
 
-\[
-\Delta_{\text{true}} (\%) =
-\left(
-    -\,\frac{N_{F \to N}}{N_{\text{org}}}
-\right)
-\times 100
-\]
+\begin{equation}
+\Delta_{\text{true}} (\%) = \left( - \frac{N_{F \to N}}{N_{\text{org}}} \right) \times 100
+\label{eq:delta-true}
+\end{equation}
 
 Trong đó, $\Delta_{\text{true}}$ biểu thị mức độ mất mát các mẫu gian lận thực mà mô hình có thể học được, trong khi $\Delta_{\text{new}}$ phản ánh sự biến động về mặt thống kê của nhãn gian lận quan sát được sau tấn công. Hai đại lượng này cho phép phân tích rõ ràng sự khác biệt giữa nhiễu nhãn do tấn công gây ra và sự suy giảm thực chất của thông tin huấn luyện.
 
@@ -194,6 +189,7 @@ Chi tiết phân bổ số lượng nhãn bị lật và mức độ biến đ�
     \centering
     \caption{Phân bổ số lượng nhãn bị lật và mức độ biến động của gian lận}
     \label{tab:dataset_split_flip}
+    \renewcommand{\arraystretch}{0.9}
     \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} ccccccc}
         \toprule
         \textbf{Số nhãn bị lật} &
@@ -281,20 +277,20 @@ Bảng \ref{tab:model_performance_flipped} trình bày hiệu năng của hai m�
 \end{figure}
 
 
-Kết quả cho thấy khi số lượng nhãn bị lật tăng lên, hiệu năng của các mô hình đều suy giảm rõ rệt, thể hiện chủ yếu qua sự sụt giảm của chỉ số AUC-ROC trên cả tập Test và tập OOT. Khi mức độ nhiễu nhãn gia tăng, tương ứng với việc giá trị $\Delta_{\text{true}}$ ngày càng giảm mạnh, khả năng phân biệt giữa các giao dịch gian lận và không gian lận của mô hình suy giảm rõ rệt. Điều này thể hiện qua việc các đường cong ROC có xu hướng tiến gần hơn đến đường chéo của bộ phân loại ngẫu nhiên.
+Trên tập dữ liệu kiểm tra (Test), kết quả cho thấy khi số lượng nhãn bị lật tăng lên, hiệu năng của các mô hình suy giảm rõ rệt, thể hiện qua sự sụt giảm của chỉ số AUC-ROC. Khi mức độ nhiễu nhãn gia tăng, tương ứng với việc giá trị $\Delta_{\text{true}}$ ngày càng giảm mạnh, mô hình không còn đủ thông tin để học các đặc trưng phân biệt giữa giao dịch gian lận và không gian lận. Điều này cho thấy ngay cả trên tập Test, vốn được chia trực tiếp từ dữ liệu đã bị lật nhãn và có cùng phân bố với tập Train, khả năng phân lớp của mô hình vẫn bị ảnh hưởng nghiêm trọng.
 
-Sự suy giảm này phản ánh tác động tiêu cực của việc giảm số lượng nhãn gian lận thực trong dữ liệu huấn luyện, khiến mô hình không còn đủ thông tin để học các đặc trưng của mẫu gian lận. Điều đó cho thấy tấn công lật nhãn gây ảnh hưởng tiêu cực đáng kể đến hiệu quả phát hiện gian lận của mô hình, đặc biệt làm suy giảm khả năng phân lớp của chúng.
+Trên tập dữ liệu mô phỏng dữ liệu thực tế (OOT Test), đại diện cho kịch bản triển khai thực tế, sự suy giảm hiệu năng của các mô hình còn rõ rệt hơn. Mặc dù tập OOT không trực tiếp chịu tác động của quá trình lật nhãn, hiệu năng thấp trên tập này phản ánh hệ quả gián tiếp của việc mô hình đã học được các ranh giới phân lớp sai lệch từ dữ liệu huấn luyện bị nhiễu nhãn. Điều này thể hiện qua việc các đường cong ROC trên tập OOT có xu hướng tiến gần hơn đến đường chéo của bộ phân loại ngẫu nhiên (Hình \ref{fig:chap4-roc-curves-oot}).
 
 Những kết quả này cho thấy các mô hình phát hiện gian lận dễ bị tổn thương trước tấn công lật nhãn, từ đó cho thấy sự cần thiết phải có các phương pháp phát hiện và giảm thiểu tác động của tấn công lật nhãn trong dữ liệu huấn luyện.
 
 
 \subsection{Đánh giá kết quả phương pháp phát hiện tấn công lật nhãn}
 
-Nhóm sinh viên đã triển khai các kịch bản phát hiện lật nhãn, phương pháp được triển khai với tập trọng số được lựa chọn cố định, trong đó chỉ số PLE, Disagreement và Boundary lần lượt có trọng số $w_1 = 0.65$, $w_2 = 0.25$ và $w_3 = 0.10$. Việc ưu tiên trọng số lớn hơn cho PLE nhằm nhấn mạnh mức độ mâu thuẫn giữa nhãn quan sát và dự đoán của mô hình, trong khi hai chỉ số còn lại đóng vai trò bổ trợ để phản ánh tính không ổn định và độ khó phân loại của dữ liệu.
+Để đánh giá kết quả của phương pháp phát hiện tấn công lật nhãn đề xuất, nhóm sinh viên đã triển khai các kịch bản phát hiện lật nhãn, phương pháp được triển khai với tập trọng số được lựa chọn cố định, trong đó chỉ số PLE, Disagreement và Boundary lần lượt có trọng số $w_1 = 0.65$, $w_2 = 0.25$ và $w_3 = 0.10$. Việc ưu tiên trọng số lớn hơn cho PLE nhằm nhấn mạnh mức độ mâu thuẫn giữa nhãn quan sát và dự đoán của mô hình, trong khi hai chỉ số còn lại đóng vai trò bổ trợ để phản ánh tính không ổn định và độ khó phân loại của dữ liệu.
 
 Bên cạnh đó, tham số tỷ lệ lựa chọn $r$ được thiết lập ở mức $6\%$, tức là sau khi xếp hạng các điểm dữ liệu theo mức độ nghi ngờ lật nhãn, thuật toán chỉ giữ lại $6\%$ số điểm dữ liệu có điểm nghi ngờ cao nhất để đưa vào tập cần kiểm tra thủ công.
 
-Trong thí nghiệm kiểm tra này, nhãn của một phần dữ liệu được lật ngẫu nhiên với quy mô lần lượt là 5\,000, 10\,000 và 20\,000 điểm dữ liệu. Thuật toán phát hiện lật nhãn được áp dụng trên các tập dữ liệu này nhằm đánh giá mức độ bao phủ các nhãn bị lật, được đo lường thông qua chỉ số Recall.
+Trong thí nghiệm kiểm tra này, nhãn của một phần dữ liệu được lật ngẫu nhiên với quy mô lần lượt là 5\,000, 10\,000 và 20\,000 điểm dữ liệu (tương tự \ref{subsec:label-attack-to-model}). Thuật toán phát hiện lật nhãn được áp dụng trên các tập dữ liệu này nhằm đánh giá mức độ bao phủ các nhãn bị lật, được đo lường thông qua chỉ số Recall.
 
 Bảng \ref{tab:label_flip_detection_result} cho thấy phương pháp có khả năng phát hiện tốt các nhãn bị lật trong cả ba kịch
 bản thử nghiệm. Cụ thể, khi số lượng nhãn bị lật là 5\,000, phương pháp phát hiện đúng
@@ -323,12 +319,13 @@ Các kết quả trên được thu được trong điều kiện tham số tỷ
 Trong thực tế, nếu mục tiêu là tăng khả năng phát hiện nhãn bị lật và giảm thiểu số lượng nhãn sai bị bỏ sót, tham số $r$ có thể được mở rộng để tăng phạm vi kiểm tra. Tuy nhiên, việc này đồng nghĩa với việc gia tăng chi phí kiểm tra thủ công, tạo ra sự đánh đổi giữa hiệu quả phát hiện và khả năng vận hành của đội ngũ dữ liệu trong quy trình human-in-the-loop.
 
 \section{Thực nghiệm hệ thống MLSecOps}
+\subsection{Môi trường thực nghiệm}
 
-Các kết quả thực nghiệm sau được thực hiện trên cụm Kubernetes được deploy trên EKS với cấu hình:
+Các kết quả thực nghiệm trong phần này được thực hiện trên cụm Kubernetes được triển khai trên \ac{EKS} với cấu hình:
 \begin{itemize}
-    \item \textbf{Nodes}: 3 × t3.large
+    \item \textbf{Nodes}: 4 × t3.large
     \item \textbf{Cấu hình mỗi Node}: 2 vCPUs, 8 GB RAM
-    \item \textbf{Capacity của cluster}: 6 vCPUs, 24 GB RAM
+    \item \textbf{Capacity của cluster}: 8 vCPUs, 32 GB RAM
 \end{itemize}
 
 Cấu hình của Retrain Pipeline được thực thi với các tham số sau:
@@ -394,110 +391,77 @@ Bảng \ref{tab:detailed_resource_metrics} cung cấp cái nhìn tổng hợp v�
 
 
 \subsubsection{Mức nhân CPU pod sử dụng}
+
+\begin{figure}[!htbp]
+    \centering
+    
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{img/chapter4/grafana-cpu-time-series.png}
+        \caption{Huấn luyện mô hình}
+        \label{fig:chap4-grafana-cpu-1}
+    \end{subfigure}
+    
+    \vspace{1cm}
+
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{img/chapter4/cpu-retrain.png}
+        \caption{Tái huấn luyện mô hình}
+        \label{fig:chap4-grafana-cpu-2}
+    \end{subfigure}
+    
+    \caption{Biểu đồ mức nhân CPU pod sử dụng trung bình trong từng quy trình}
+    \label{fig:chap4-grafana-cpu}
+\end{figure}
+
 \paragraph{Huấn luyện mô hình}
 
-Hình \ref{fig:chap4-grafana-cpu} minh họa mức sử dụng CPU của các pod trong quá trình huấn luyện mô hình. Biểu đồ cho thấy mức tiêu thụ CPU thay đổi rõ rệt giữa các bước trong pipeline, phản ánh sự khác biệt về cường độ tính toán của từng tác vụ.
+Hình \ref{fig:chap4-grafana-cpu-1} minh họa mức sử dụng CPU của các pod trong quá trình huấn luyện mô hình. Biểu đồ cho thấy mức tiêu thụ CPU thay đổi rõ rệt giữa các bước trong pipeline, phản ánh sự khác biệt về cường độ tính toán của từng tác vụ.
 
 Quan sát từ biểu đồ cho thấy các bước liên quan đến kiểm tra tấn công lật nhãn (security check) và huấn luyện mô hình có mức sử dụng CPU cao hơn đáng kể so với các bước còn lại. Đặc biệt, bước security check thể hiện mức sử dụng CPU cao và duy trì ổn định trong suốt thời gian thực thi, cho thấy đây là bước có cường độ xử lý lớn và có khả năng trở thành nút thắt hiệu năng của pipeline nếu không được cấp phát tài nguyên phù hợp.
 
 Ngược lại, các bước như chuẩn bị dữ liệu hoặc so sánh mô hình có mức sử dụng CPU thấp và thời gian thực thi ngắn, cho thấy các bước này không tạo áp lực đáng kể lên tài nguyên tính toán của hệ thống.
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[scale=0.6]{img/chapter4/grafana-cpu-time-series.png}
-    \caption{Biểu đồ mức nhân CPU pod sử dụng trung bình khi huấn luyện mô hình}
-    \label{fig:chap4-grafana-cpu}
-\end{figure}
-
 \paragraph{Tái huấn luyện mô hình}
-Hình \ref{fig:chap4-grafana-cpu} minh họa mức sử dụng CPU của các pod trong hệ thống MLSecOps trong kịch bản tái huấn luyện mô hình. Nhìn chung, xu hướng sử dụng CPU cũng tương tự như quá trình huấn luyện ban đầu, tuy nhiên có sự thay đổi nhẹ về mức độ tiêu thụ tài nguyên giữa các bước. Một số bước thể hiện mức sử dụng CPU thấp hơn do dữ liệu đầu vào phần lớn đã có sẵn, trong khi các bước huấn luyện mô hình và tiền xử lý vẫn duy trì mức sử dụng CPU đáng kể.
+Hình \ref{fig:chap4-grafana-cpu-2} minh họa mức sử dụng CPU của các pod trong hệ thống MLSecOps trong kịch bản tái huấn luyện mô hình. Nhìn chung, xu hướng sử dụng CPU cũng tương tự như quá trình huấn luyện ban đầu, tuy nhiên có sự thay đổi nhẹ về mức độ tiêu thụ tài nguyên giữa các bước. Một số bước thể hiện mức sử dụng CPU thấp hơn do dữ liệu đầu vào phần lớn đã có sẵn, trong khi các bước huấn luyện mô hình và tiền xử lý vẫn duy trì mức sử dụng CPU đáng kể.
 
 Kết quả này cho thấy pipeline MLSecOps có khả năng tận dụng lại các thành phần đã được xử lý trước đó, giúp giảm chi phí tính toán trong các lần tái huấn luyện, đồng thời vẫn đảm bảo tính toàn vẹn và an toàn của quy trình.
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[scale=0.6]{img/chapter4/cpu-retrain.png}
-    \caption{Biểu đồ mức nhân CPU pod sử dụng trung bình khi tái huấn luyện mô hình}
-    \label{fig:chap4-grafana-cpu}
-\end{figure}
-
-% \begin{table}[h!]
-% \centering
-% \caption{Phân tích mức sử dụng CPU của mỗi pod}
-% \label{tab:cpu_usage_per_pod}
-% \renewcommand{\arraystretch}{1.25}
-% \begin{tabular}{|
-% >{\centering\arraybackslash}p{4.5cm}|
-% >{\centering\arraybackslash}p{4cm}|
-% >{\centering\arraybackslash}p{4cm}|
-% }
-% \hline
-% \textbf{Pod} & \textbf{CPU trung bình (nhân)} & \textbf{CPU cao nhất (nhân)} \\
-% \hline
-% get base data & 0.05 & 0.07 \\
-% \hline
-% preprocess data & 0.19 & 0.25 \\
-% \hline
-% security check & 0.26 & 0.31 \\
-% \hline
-% train brf & 0.23 & 0.27 \\
-% \hline
-% train-xgb & 0.05 & 0.06 \\
-% \hline
-% \end{tabular}
-% \end{table}
-
 \subsubsection{Bộ nhớ pod sử dụng}
-\paragraph{Huấn luyện mô hình}
-Hình \ref{fig:chap4-mem-train} minh họa mức sử dụng bộ nhớ của các pod trong kịch bản huấn luyện mô hình. Biểu đồ cho thấy mức tiêu thụ bộ nhớ có sự khác biệt rõ rệt giữa các bước trong pipeline, phản ánh đặc điểm về xử lý và lượng dữ liệu được nạp vào bộ nhớ của từng tác vụ.
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.6]{img/chapter4/mem-train.png}
-    \caption{Biểu đồ bộ nhớ pod tiêu thụ trong quá trình huấn luyện mô hình}
-    \label{fig:chap4-mem-train}
+    
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{img/chapter4/mem-train.png}
+        \caption{Huấn luyện mô hình}
+        \label{fig:chap4-grafana-mem-1}
+    \end{subfigure}
+    
+    \vspace{1cm}
+
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{img/chapter4/mem-retrain.png}
+        \caption{Tái huấn luyện mô hình}
+        \label{fig:chap4-grafana-mem-2}
+    \end{subfigure}
+    
+    \caption{Biểu đồ bộ nhớ pod tiêu thụ trong từng quy trình}
+    \label{fig:chap4-grafana-mem}
 \end{figure}
+
+\paragraph{Huấn luyện mô hình}
+Hình \ref{fig:chap4-grafana-mem-1} minh họa mức sử dụng bộ nhớ của các pod trong kịch bản huấn luyện mô hình. Biểu đồ cho thấy mức tiêu thụ bộ nhớ có sự khác biệt rõ rệt giữa các bước trong pipeline, phản ánh đặc điểm về xử lý và lượng dữ liệu được nạp vào bộ nhớ của từng tác vụ.
 
 Ta có thể thấy, bước security check và huấn luyện mô hình yêu cầu lượng bộ nhớ đáng kể và duy trì mức sử dụng cao trong suốt thời gian thực thi.
 
 \paragraph{Tái huấn luyện mô hình}
-Hình \ref{fig:chap4-mem-retrain} cho thấy mức sử dụng bộ nhớ của các pod trong kịch bản tái huấn luyện mô hình. Nhìn chung, xu hướng tiêu thụ bộ nhớ trong giai đoạn này tương tự quá trình huấn luyện ban đầu, tuy nhiên mức sử dụng bộ nhớ ở một số bước có sự thay đổi nhẹ.
-
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[scale=0.6]{img/chapter4/mem-retrain.png}
-    \caption{Biểu đồ bộ nhớ pod tiêu thụ trong quá trình tái huấn luyện mô hình}
-    \label{fig:chap4-mem-retrain}
-\end{figure}
+Hình \ref{fig:chap4-grafana-mem-2} cho thấy mức sử dụng bộ nhớ của các pod trong kịch bản tái huấn luyện mô hình. Nhìn chung, xu hướng tiêu thụ bộ nhớ trong giai đoạn này tương tự quá trình huấn luyện ban đầu, tuy nhiên mức sử dụng bộ nhớ ở một số bước có sự thay đổi nhẹ.
 
 Cụ thể, các bước chuẩn bị dữ liệu thể hiện mức sử dụng bộ nhớ thấp và ổn định, do phần lớn dữ liệu đầu vào đã được xử lý và lưu trữ từ các lần huấn luyện trước. Ngược lại, bước security check tiếp tục là bước tiêu thụ bộ nhớ lớn nhất trong pipeline, với mức sử dụng bộ nhớ cao và duy trì ổn định trong suốt thời gian thực thi.
-
-% \begin{table}[h!]
-% \centering
-% \caption{Phân tích mức sử dụng bộ nhớ của mỗi pod}
-% \label{tab:memory_usage_per_pod}
-% \renewcommand{\arraystretch}{1.25}
-% \begin{tabular}{|
-% >{\centering\arraybackslash}p{4.5cm}|
-% >{\centering\arraybackslash}p{4cm}|
-% >{\centering\arraybackslash}p{4cm}|
-% }
-% \hline
-% \textbf{Pod} & \textbf{Bộ nhớ trung bình (MB)} & \textbf{Bộ nhớ cao nhất (MB)} \\
-% \hline
-% get base data & $\sim$20 & $\sim$30 \\
-% \hline
-% preprocess data & $\sim$500 & $\sim$600 \\
-% \hline
-% security check & $\sim$1350 & \textbf{$\sim$1600} \\
-% \hline
-% train brf & $\sim$750 & $\sim$850 \\
-% \hline
-% train-xgb & $\sim$400 & $\sim$430 \\
-% \hline
-% \end{tabular}
-% \end{table}
-
 
 \subsection{Đánh giá hiệu quả của \ac{dag} trong hệ thống MLSecOps}
 
@@ -510,7 +474,7 @@ Cụ thể, các bước chuẩn bị dữ liệu thể hiện mức sử dụng
 
 \subsubsection{Phương pháp đánh giá}
 
-Thực nghiệm sử dụng 2 metrics để đánh giá Machine Learning Workflow được đề cập trong nghiên cứu \cite{???}:
+Thực nghiệm sử dụng 2 metrics để đánh giá quy trình học máy được đề cập trong nghiên cứu \cite{???}:
 
 1. Pipeline Execution Time (tổng thời gian thực thi pipeline), được tính bằng công thức:
 
@@ -534,107 +498,132 @@ Trong đó $T_i$ là thời gian thực thi của từng stage trong pipeline.
 
 \subsubsection{Kết quả đánh giá}
 
-Bảng~\ref{tab:compare_training_pipeline} và Bảng~\ref{tab:compare_retraining_pipeline} trình bày kết quả so sánh thời gian thực thi giữa hai cấu hình pipeline: thực thi tuần tự (parallelism = 1) và thực thi song song (parallelism = 2) đối với Training Pipeline và Retraining Pipeline.
+Bảng~\ref{tab:compare_training_pipeline} và Bảng~\ref{tab:compare_retraining_pipeline} trình bày kết quả so sánh thời gian thực thi giữa hai cấu hình pipeline: thực thi tuần tự (parallelism = 1) và thực thi song song (parallelism = 2) đối với quy trình huấn luyện mô hình và tái huấn luyện mô hình. Hình \ref{fig:chap4-workflow-retrain-time} minh hoạ sự khác biệt về trình tự thực thi giữa 2 cấu hình.
 
-\paragraph{a. Đánh giá thời gian thực thi Training Pipeline.}
+\begin{figure}[!htbp]
+    \centering
+    
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{img/chapter4/workflow-retrain-time-1.png}
+        \caption{Thực thi tuần tự (parallelism = 1)}
+        \label{fig:chap4-workflow-retrain-time-1}
+    \end{subfigure}
+    
+    \vspace{1cm}
 
-Bảng~\ref{tab:compare_training_pipeline} cho thấy việc áp dụng kiến trúc DAG với khả năng song song hóa giúp giảm đáng kể tổng thời gian thực thi Training Pipeline. Cụ thể, \textbf{Pipeline Execution Time} \eqref{eq:pipeline_time} giảm từ 484 giây xuống còn 393 giây, tương đương mức cải thiện \textbf{18.8\%}.
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{img/chapter4/workflow-retrain-time-2.png}
+        \caption{Thực thi song song (parallelism = 2)}
+        \label{fig:chap4-workflow-retrain-time-2}
+    \end{subfigure}
+    
+    \caption{Trình tự thực thi giữa 2 cấu hình trên quy trình tái huấn luyện mô hình}
+    \label{fig:chap4-workflow-retrain-time}
+\end{figure}
 
-Mức cải thiện chủ yếu đến từ stage \textbf{train models}, các mô hình \textbf{brf} và \textbf{xgb} có thể được huấn luyện song song. Trong khi thời gian huấn luyện \textbf{brf} không thay đổi (101 giây), tổng thời gian của stage này giảm từ 183 giây xuống còn 101 giây trong cấu hình song song. Ngược lại, các bước mang tính tuần tự như get base data, security check, preprocess data và compare models hầu như không có sự khác biệt về thời gian thực thi giữa hai cấu hình.
+\paragraph{a. Đánh giá thời gian thực thi huấn luyện mô hình.}
 
-Overhead time trong thực nghiệm được hiểu là phần thời gian không trực tiếp thuộc về các tác vụ xử lý chính của pipeline, bao gồm chi phí điều phối workflow (lập lịch DAG, đồng bộ phụ thuộc giữa các stage), tạo/khởi chạy pod và container, tải image, thiết lập môi trường chạy và các thao tác I/O trung gian. Khi tổng thời gian pipeline được rút ngắn nhờ song song hóa, số lượng khoảng chờ đồng bộ và thời gian chờ tài nguyên giảm, dẫn đến overhead time giảm từ 44 giây xuống còn 35 giây.
-
-\paragraph{b. Đánh giá thời gian thực thi Retraining Pipeline.}
-
-Kết quả tương tự được quan sát trong Bảng~\ref{tab:compare_retraining_pipeline}, khi tổng thời gian thực thi Retraining Pipeline giảm từ 695 giây xuống còn 578 giây, tương ứng mức cải thiện \textbf{16.8\%}.
-
-Ở giai đoạn \textbf{prepare data}, việc song song hóa các bước fetch production data và get base data giúp giảm thời gian từ 53 giây xuống 37 giây. Stage \textbf{train models} tiếp tục là thành phần đóng góp chính vào việc rút ngắn thời gian thực thi, với tổng thời gian giảm từ 199 giây xuống 110 giây. Các stage còn lại như merge data, security check, preprocess data và compare models gần như không thay đổi.
+Bảng~\ref{tab:compare_training_pipeline} cho thấy việc áp dụng kiến trúc DAG với khả năng song song hóa giúp giảm tổng thời gian thực thi quy trình huấn luyện mô hình. Cụ thể, \textbf{Pipeline Execution Time} \eqref{eq:pipeline_time} giảm từ 438 giây xuống còn 408 giây, tương đương mức cải thiện khoảng \textbf{6.8\%}.
 
 \begin{table}[!htbp]
 \centering
-\caption{So sánh thời gian thực thi Training Pipeline}
+\caption{So sánh thời gian thực thi huấn luyện mô hình}
 \label{tab:compare_training_pipeline}
 \renewcommand{\arraystretch}{0.9}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} lcc}
     \toprule
     \textbf{Stage} & \textbf{Sequential (s)} & \textbf{Parallel (s)} \\
     \midrule
-    get base data & 16 & 16 \\
-    security check & 103 & 103 \\
-    preprocess data & 111 & 111 \\
+    get base data & 14 & 8 \\
+    security check & 124 & 139 \\
+    preprocess data & 113 & 113 \\
     \addlinespace
-    \textbf{train models} & 183 & \textbf{101} \\
-    \hspace{3mm} train brf & 101 & 101 \\
-    \hspace{3mm} train xgb & 82 & 82 \\
+    \textbf{train models} & 101 & \textbf{86} \\
+    \hspace{3mm} train brf & 59 & 86 \\
+    \hspace{3mm} train xgb & 42 & 69 \\
     \addlinespace
-    compare models & 27 & 27 \\
-    Overhead time & 44 & \textbf{35} \\
+    compare models & 29 & 27 \\
+    Overhead time & 57 & \textbf{35} \\
     \midrule
-    \textbf{Pipeline Execution Time} & 484 & \textbf{393} \\
+    \textbf{Pipeline Execution Time} & 438 & \textbf{408} \\
     \bottomrule
 \end{tabular*}
 \end{table}
 
+Mức cải thiện chủ yếu đến từ stage \textbf{train models}, nơi các mô hình \textbf{brf} và \textbf{xgb} được huấn luyện song song thay vì tuần tự. Tổng thời gian của stage này giảm từ 101 giây xuống còn 86 giây trong cấu hình song song. Cần lưu ý rằng trong thực nghiệm này, thời gian thực thi của từng tác vụ riêng lẻ (như train brf, train xgb, security check) có sự biến động nhẹ giữa hai lần chạy do điều kiện hạ tầng, nhưng cấu trúc song song vẫn giúp tối ưu tổng thời gian của cả cụm tác vụ. Các bước như preprocess data và compare models duy trì sự ổn định về thời gian thực thi giữa hai cấu hình.
+
+Overhead time trong thực nghiệm được hiểu là phần thời gian không trực tiếp thuộc về các tác vụ xử lý chính của pipeline, bao gồm chi phí điều phối workflow (lập lịch DAG, đồng bộ phụ thuộc giữa các stage), tạo/khởi chạy pod và container, tải image, thiết lập môi trường chạy và các thao tác I/O trung gian. Trong cấu hình song song, nhờ việc tối ưu hóa luồng công việc, overhead time đã giảm từ 57 giây xuống còn 35 giây.
+
+\paragraph{b. Đánh giá thời gian thực thi tái huấn luyện mô hình.}
+
+Kết quả tương tự được quan sát trong Bảng~\ref{tab:compare_retraining_pipeline}, khi tổng thời gian thực thi quy trình tái huấn luyện giảm từ 695 giây xuống còn 578 giây, tương ứng mức cải thiện \textbf{16.8\%}.
+
+Ở giai đoạn \textbf{prepare data}, việc song song hóa các bước fetch production data và get base data giúp giảm thời gian từ 49 giây xuống chỉ còn 9 giây. Stage \textbf{train models} tiếp tục là thành phần đóng góp chính vào việc rút ngắn thời gian thực thi, với tổng thời gian giảm từ 165 giây xuống còn 90 giây khi hai mô hình được huấn luyện đồng thời. Các stage còn lại như merge data, security check, preprocess data và compare models không chịu ảnh hưởng của cấu hình thực thi song song nên gần như không thay đổi.
+
 \begin{table}[!htbp]
 \centering
-\caption{So sánh thời gian thực thi Retraining Pipeline}
+\caption{So sánh thời gian thực thi tái huấn luyện mô hình}
 \label{tab:compare_retraining_pipeline}
 \renewcommand{\arraystretch}{0.9}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} lcc}
     \toprule
     \textbf{Stage} & \textbf{Sequential (s)} & \textbf{Parallel (s)} \\
     \midrule
-    \textbf{prepare data} & 53 & \textbf{37} \\
-    \hspace{3mm} fetch production data & 37 & 37 \\
-    \hspace{3mm} get base data & 16 & 16 \\
+    \textbf{prepare data} & 49 & \textbf{9} \\
+    \hspace{3mm} fetch production data & 35 & 9 \\
+    \hspace{3mm} get base data & 14 & 9 \\
     \addlinespace
-    merge data & 83 & 83 \\
-    security check & 138 & 138 \\
-    preprocess data & 129 & 129 \\
+    merge data & 86 & 62 \\
+    security check & 145 & 131 \\
+    preprocess data & 114 & 124 \\
     \addlinespace
-    \textbf{train models} & 199 & \textbf{110} \\
-    \hspace{3mm} train brf & 110 & 110 \\
-    \hspace{3mm} train xgb & 89 & 89 \\
+    \textbf{train models} & 165 & \textbf{90} \\
+    \hspace{3mm} train brf & 90 & 90 \\
+    \hspace{3mm} train xgb & 75 & 73 \\
     \addlinespace
-    compare models & 27 & 27 \\
-    Overhead time & 66 & \textbf{54} \\
+    compare models & 28 & 26 \\
+    Overhead time & 80 & \textbf{54} \\
     \midrule
-    \textbf{Pipeline Execution Time} & 695 & \textbf{578} \\
+    \textbf{Pipeline Execution Time} & 667 & \textbf{496} \\
     \bottomrule
 \end{tabular*}
 \end{table}
 
 \paragraph{c. Đánh giá mức sử dụng tài nguyên.}
 
-Bảng~\ref{tab:resource_utilization} trình bày mức sử dụng tài nguyên cao nhất trong quá trình thực thi Training Pipeline đối với hai cấu hình thực thi tuần tự và song song.
+Nhằm đánh giá tác động của cấu hình thực thi song song lên mức sử dụng tài nguyên hệ thống, chúng tôi tiến hành thực nghiệm và so sánh kết quả tại stage \textbf{Train Models} của quy trình huấn luyện mô hình. Bảng~\ref{tab:resource_utilization} trình bày mức sử dụng tài nguyên trung bình và mức sử dụng tài nguyên cao nhất trong quá trình huấn luyện hai mô hình đối với hai cấu hình thực thi tuần tự và song song.
 
-Cụm \ac{eks} có tổng capacity là 6 vCPUs và 24 GB RAM. Tuy nhiên, do một phần tài nguyên được hệ thống Kubernetes và các thành phần nền tảng (kubelet, system daemons, applications) dự trữ và chiếm dụng, lượng tài nguyên thực tế có thể cấp phát cho workload chỉ còn \textbf{5.79 vCPUs và 21 GB RAM}. Tương ứng, mỗi node trong cluster có khoảng \textbf{1.93 vCPUs và 7 GB RAM allocatable}. 
+Cụm \ac{eks} có tổng capacity là 8 vCPUs và 32 GB RAM. Tuy nhiên, do một phần tài nguyên được hệ thống Kubernetes và các thành phần nền tảng (kubelet, system daemons, applications) dự trữ và chiếm dụng, lượng tài nguyên thực tế có thể cấp phát cho workload chỉ còn \textbf{7.79 vCPUs và 29 GB RAM}. Tương ứng, mỗi node trong cụm có khoảng \textbf{1.9475 vCPUs và 7.25 GB RAM khả dụng}. 
 
-Các chỉ số sử dụng CPU và bộ nhớ trong thực nghiệm được đo dựa trên phần tài nguyên allocatable này, phản ánh chính xác mức độ khai thác tài nguyên khả dụng của cluster trong quá trình thực thi pipeline.
-
-Mức sử dụng tài nguyên được tính theo công thức \eqref{eq:resource_utilization}, kết quả cho thấy khi chuyển từ thực thi tuần tự sang thực thi song song, mức sử dụng tài nguyên tăng lên đáng kể. Cụ thể, \textbf{Peak CPU Utilization} tăng từ 15.5\% lên 31.1\%, trong khi \textbf{Peak Memory Utilization} tăng từ 14.6\% lên 21.9\%. Điều này cho thấy cơ chế song song hóa trong kiến trúc DAG đã tận dụng hiệu quả hơn tài nguyên khả dụng của cluster.
-
-Mặc dù mức tiêu thụ CPU và bộ nhớ cao hơn, các giá trị này vẫn nằm trong giới hạn an toàn của tài nguyên (allocatable), cho phép pipeline đạt được sự cải thiện rõ rệt về thời gian thực thi mà không gây quá tải hệ thống.
-
+Các chỉ số sử dụng CPU và bộ nhớ trong thực nghiệm được đo dựa trên phần tài nguyên khả dụng này, phản ánh chính xác mức độ khai thác tài nguyên khả dụng trong quá trình thực thi pipeline.
 
 \begin{table}[!htbp]
 \centering
-\caption{So sánh mức sử dụng tài nguyên cao nhất khi thực thi Training Pipeline}
+\caption{So sánh mức sử dụng tài nguyên tại stage Train Models của quy trình huấn luyện mô hình}
 \label{tab:resource_utilization}
 \renewcommand{\arraystretch}{0.9}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} lcc}
     \toprule
-    \textbf{Execution mode} & \textbf{Sequential} & \textbf{Parallel} \\
+    \textbf{Metrics} & \textbf{Sequential} & \textbf{Parallel} \\
     \midrule
-    Peak CPU Utilization & 15,50\% & 31,10\% \\
+    Avg. CPU Utilization & 5.31\% & 6.23\% \\
+    Peak CPU Utilization & 7.14\% & 12.46\% \\
     \addlinespace
-    Peak Mem Utilization & 14,60\% & 21,90\% \\
+    Avg. Mem Utilization & 7.70\% & 17.78\% \\
+    Peak Mem Utilization & 12.07\% & 21.01\% \\
     \bottomrule
 \end{tabular*}
 \end{table}
 
+Mức sử dụng tài nguyên được tính theo công thức \eqref{eq:resource_utilization}, kết quả cho thấy khi chuyển từ thực thi tuần tự sang thực thi song song, mức sử dụng tài nguyên tăng lên rõ rệt nhằm đánh đổi lấy tốc độ xử lý. Cụ thể, \textbf{Peak CPU Utilization} (mức tiêu thụ CPU cao nhất) tăng từ 7.14\% lên 12.46\%, trong khi \textbf{Peak Memory Utilization} (mức tiêu thụ bộ nhớ cao nhất) tăng từ 12.07\% lên 21.01\%. Bên cạnh đó, \textbf{Avg. Mem Utilization} (mức tiêu thụ bộ nhớ trung bình) cũng ghi nhận mức tăng đáng kể từ 7.70\% lên 17.78\%. Điều này cho thấy cơ chế song song hóa trong kiến trúc DAG đã tận dụng hiệu quả hơn tài nguyên khả dụng của cụm Kubernetes.
+
+Mặc dù mức tiêu thụ CPU và bộ nhớ cao hơn, các giá trị này vẫn nằm trong giới hạn an toàn của tài nguyên, cho phép pipeline đạt được sự cải thiện rõ rệt về thời gian thực thi mà không gây quá tải hệ thống.
+
+
 \paragraph{d. Kết luận.}
 
-Các kết quả thực nghiệm cho thấy tồn tại sự đánh đổi rõ ràng giữa mức tiêu thụ tài nguyên và thời gian thực thi pipeline (Pipeline Execution Time). Việc tăng mức song song hóa giúp giảm đáng kể thời gian thực thi pipeline, nhưng đồng thời yêu cầu mức sử dụng tài nguyên cao hơn. Tuy nhiên, trong bối cảnh hệ thống MLSecOps triển khai trên nền tảng cloud-native với khả năng mở rộng linh hoạt, sự đánh đổi này là chấp nhận được và mang lại lợi ích rõ rệt về hiệu năng.
+Các kết quả thực nghiệm cho thấy tồn tại sự đánh đổi rõ ràng giữa mức tiêu thụ tài nguyên và thời gian thực thi pipeline. Việc tăng mức song song hóa giúp giảm đáng kể thời gian thực thi pipeline, nhưng đồng thời yêu cầu mức sử dụng tài nguyên cao hơn. Tuy nhiên, trong bối cảnh hệ thống MLSecOps triển khai trên nền tảng cloud-native với khả năng mở rộng linh hoạt, sự đánh đổi này là chấp nhận được và mang lại lợi ích rõ rệt về hiệu năng.
 
 Từ các kết quả thực nghiệm, có thể kết luận rằng kiến trúc DAG đóng vai trò quan trọng trong việc nâng cao hiệu suất của hệ thống MLSecOps. Việc cho phép thực thi song song các stage độc lập giúp rút ngắn đáng kể thời gian thực thi pipeline, đồng thời khai thác hiệu quả tài nguyên của cụm \ac{eks}. Điều này đặc biệt quan trọng đối với các workflow huấn luyện và tái huấn luyện mô hình trong môi trường sản xuất, nơi yêu cầu cao về tính linh hoạt, khả năng mở rộng và thời gian phản hồi.
