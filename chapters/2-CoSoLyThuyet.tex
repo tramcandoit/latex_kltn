@@ -16,7 +16,7 @@ Trong đó, giả mạo danh tính để tạo tài khoản ngân hàng có mứ
 \subsection{Các phương pháp phát hiện gian lận}
 Với mục tiêu nhận diện và phát hiện các gian lận trong lĩnh vực tài chính, cụ thể là thanh toán điện tử, đã có nhiều kỹ thuật được nghiên cứu và áp dụng. Nhìn chung, đây là một quá trình không hề dễ dàng đối với các ngân hàng và tổ chức tài chính, đòi hỏi sự phối hợp chặt chẽ giữa yếu tố con người và yếu tố công nghệ.
 
-Con người đóng vai trò đánh giá và xử lý các ngoại lệ trong quá trình phân tích, phát hiện gian lận. Trong các tình huống mà công nghệ không thể đánh giá một cách chắc chắn, hệ thống sẽ tạo ra các ngoại lệ mà cần con người can thiệp để ra quyết định. Con người cũng chính là yếu tố tạo nên công nghệ.
+Con người đóng vai trò đánh giá và xử lý các ngoại lệ trong quá trình phân tích, phát hiện gian lận. Trong các tình huống mà công nghệ không thể đánh giá một cách chắc chắn, hệ thống sẽ tạo ra các ngoại lệ mà cần con người can thiệp để ra quyết định.
 
 Công nghệ là một yếu tố mạnh mẽ giúp các tổ chức tài chính và ngân hàng phát hiện gian lận một cách tự động, nhanh chóng và ở quy mô lớn. Một số thành phần của yếu tố công nghệ như:
 
@@ -92,13 +92,13 @@ Dựa trên chức năng của thuật toán và mục tiêu của bài toán, c
 
 Ensemble Learning là hướng tiếp cận trong học máy nhằm kết hợp nhiều mô hình học máy cơ sở (base learners) để tạo ra một mô hình tổng hợp có hiệu suất tốt hơn so với từng mô hình riêng lẻ. Ý tưởng chính của Ensemble Learning là tận dụng sự đa dạng giữa các mô hình để giảm sai số, tăng độ ổn định và cải thiện khả năng tổng quát hóa.
 
-Trong thực tế, các mô hình cơ sở thường được sử dụng trong ensemble learning là các mô hình đơn giản, dễ huấn luyện và có khả năng biểu diễn phi tuyến. Trong đó, \textbf{decision tree} (cây quyết định) là một trong những mô hình được sử dụng phổ biến nhất nhờ cấu trúc linh hoạt, khả năng diễn giải tốt và chi phí tính toán thấp.
+Trong thực tế, các mô hình cơ sở thường được sử dụng trong Ensemble Learning là các mô hình đơn giản, dễ huấn luyện và có khả năng biểu diễn phi tuyến. Trong đó, decision tree (cây quyết định) là một trong những mô hình được sử dụng phổ biến nhất nhờ cấu trúc linh hoạt, khả năng diễn giải tốt và chi phí tính toán thấp.
 
-Các phương pháp ensemble learning phổ biến có thể được chia thành ba nhóm chính: Bagging, Boosting và Stacking.
+Các phương pháp Ensemble Learning phổ biến có thể được chia thành ba nhóm chính: Bagging, Boosting và Stacking.
 
 \paragraph{b. XGBoost}
 
-Extreme Gradient Boosting (XGBoost) là một thuật toán ensemble learning mạnh mẽ dựa trên phương pháp boosting, trong đó các mô hình cơ sở là các \textbf{decision tree}. XGBoost xây dựng một chuỗi các decision tree theo cách tuần tự, sao cho mỗi mô hình mới được huấn luyện nhằm khắc phục các lỗi của các mô hình trước đó.
+Extreme Gradient Boosting (XGBoost) là một thuật toán ensemble learning mạnh mẽ dựa trên phương pháp Boosting, trong đó các mô hình cơ sở là các decision tree. XGBoost xây dựng một chuỗi các decision tree theo cách tuần tự, sao cho mỗi mô hình mới được huấn luyện nhằm khắc phục các lỗi của các mô hình trước đó.
 
 Quy trình xây dựng mô hình XGBoost có thể được mô tả như sau:
 \begin{itemize}
@@ -112,7 +112,7 @@ Nhờ cơ chế học tuần tự này, XGBoost có khả năng học được c
 
 \paragraph{c. Random Forest}
 
-Random Forest là một thuật toán ensemble learning dựa trên phương pháp bagging, trong đó nhiều \textbf{decision tree} được huấn luyện độc lập với nhau. Mỗi decision tree được xây dựng từ một tập dữ liệu huấn luyện được lấy mẫu ngẫu nhiên có hoàn lại từ tập dữ liệu ban đầu.
+Random Forest là một thuật toán Ensemble Learning dựa trên phương pháp bagging, trong đó nhiều decision tree được huấn luyện độc lập với nhau. Mỗi decision tree được xây dựng từ một tập dữ liệu huấn luyện được lấy mẫu ngẫu nhiên có hoàn lại từ tập dữ liệu ban đầu.
 
 Quy trình hoạt động của Random Forest bao gồm các bước chính sau:
 \begin{itemize}
@@ -126,7 +126,7 @@ Cách tiếp cận này giúp Random Forest giảm phương sai so với decisio
 
 \paragraph{d. Balanced Random Forest}
 
-Balanced Random Forest là một biến thể của Random Forest được đề xuất nhằm cải thiện hiệu suất trong các bài toán phân loại với dữ liệu mất cân bằng. Phương pháp này vẫn sử dụng \textbf{decision tree} làm mô hình cơ sở, nhưng có sự điều chỉnh trong quá trình lấy mẫu dữ liệu huấn luyện cho từng decision tree.
+Balanced Random Forest là một biến thể của Random Forest được đề xuất nhằm cải thiện hiệu suất trong các bài toán phân loại với dữ liệu mất cân bằng. Phương pháp này vẫn sử dụng decision tree làm mô hình cơ sở, nhưng có sự điều chỉnh trong quá trình lấy mẫu dữ liệu huấn luyện cho từng decision tree.
 
 Cụ thể, Balanced Random Forest hoạt động theo nguyên tắc:
 \begin{itemize}
@@ -170,15 +170,6 @@ Trước khi có sự xuất hiện của container, các ứng dụng thường
 
 Container là một đơn vị phần mềm tiêu chuẩn, trong đó, mã nguồn và các phụ thuộc (dependencies) được đóng gói để thuận tiện cho việc phát triển, vận chuyển và triển khai. Container đảm bảo với một ứng dụng đã được đóng gói, nó sẽ luôn được chạy giống hệt nhau ở mọi môi trường mà không cần quan tâm đến hạ tầng. 
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.8]{img/chapter2/container-architecture.png}
-    \caption{Kiến trúc của ứng dụng container \cite{what_is_container} }
-    \label{fig:chap2-container-architecture}
-\end{figure}
-
-Hình \ref{fig:chap2-container-architecture} thể hiện kiến trúc của nhiều ứng dụng container. Trong đó, mỗi ứng dụng A, B, C,... cùng được đóng gói dưới dạng một container riêng biệt và cùng chạy trên một hạ tầng với cùng một hệ điều hành. Mỗi container không chứa toàn bộ hệ điều hành, mà chỉ cùng chia sẻ nhân (kernel). Do đó, container được xem là nhẹ hơn nhiều so với máy ảo. Một container runtime đóng vai trò trung gian giao tiếp giúp các container chạy được trên hệ điều hành của máy chủ. Đây là thành phần có vai trò tạo, thực thi, cung cấp API để quản lý container. Một vài container runtime phổ biến như: Docker, CRI-O, containerd,...
-
 Tóm lại, khái niệm container ra đời đã tạo nên bước tiến mới trong việc phát triển và triển khai ứng dụng. Container giúp đảm bảo nguyên tắc "Build once, run anywhere" - Tức là chỉ xây dựng một lần và có thể chạy trên bất kỳ hạ tầng nào, từ môi trường cục bộ như máy tính cá nhân của lập trình viên đến môi trường thực tế mà khách hàng tương tác. Container góp phần còn xây dựng nên kiến trúc của hạ tầng hiện đại, đặc biệt là trong ngữ cảnh ứng dụng vi dịch vụ (microservice).
 
 \paragraph{b. Docker}
@@ -190,15 +181,6 @@ Một vài khái niệm liên quan đến Docker:
     \item Docker image: Là một mẫu (template) đóng gói toàn bộ môi trường chạy ứng dụng, bao gồm mã nguồn, thư viện, cấu hình và các phụ thuộc cần thiết khác để tạo nên Docker container.
     \item Docker container: Là phiên bản đang chạy của một Docker Image.
 \end{itemize}
-
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.3]{img/chapter2/docker-flow.png}
-    \caption{Mối quan hệ giữa Dockerfile, Docker image và Docker container}
-    \label{fig:chap2-docker-flow}
-\end{figure}
-
-Hình \ref{fig:chap2-docker-flow} mô tả mối quan hệ giữa Dockerfile, Docker image và Docker container. Theo đó, Dockerfile xây dựng nên Docker image, Docker image sau đó được chạy để tạo thành Docker container, cũng chính là môi trường thực thi của ứng dụng.
 
 \begin{figure}
     \centering
@@ -218,7 +200,7 @@ Bên cạnh đó, Docker còn có một hệ sinh thái phần mềm vô cùng �
 
 \subsection{Điều phối Container}
 \paragraph{a. Giới thiệu}
-Khi ứng dụng được triển khai ở phạm vi nhỏ và vừa, container có thể đáp ứng tốt với nhu cầu vận hành. Tuy nhiên, khi quy mô của ứng dụng ngày càng được mở rộng, số lượng container lên đến hàng chục nghìn, thậm chí là hàng trăm nghìn container, thì việc quản lý một cách thủ công trở nên không khả thi. Lúc này, hệ thống cần đến một nền tảng điều phối container để đảm bảo cho việc triển khai, giám sát, mở rộng được hoạt động một cách tự động và hiệu quả.
+Khi ứng dụng được triển khai ở phạm vi nhỏ và vừa, container có thể đáp ứng tốt với nhu cầu vận hành. Tuy nhiên, khi quy mô của ứng dụng ngày càng được mở rộng, số lượng container lên đến hàng chục nghìn, thì việc quản lý một cách thủ công trở nên không khả thi. Lúc này, hệ thống cần đến một nền tảng điều phối container để đảm bảo cho việc triển khai, giám sát, mở rộng được hoạt động một cách tự động và hiệu quả.
 
 Nền tảng điều phối container là một hệ thống giúp tự động hóa toàn bộ vòng đời vận hành của container. Việc này bao gồm triển khai, phân bổ tài nguyên vào các container, cân bằng tải, mở rộng hoặc thu hẹp theo nhu cầu, giám sát trạng thái và tự phục hồi khi xảy ra lỗi.
 
@@ -521,18 +503,17 @@ MLSecOps được đề xuất như một bước phát triển tiếp theo củ
 
 MLSecOps đóng vai trò quan trọng trong việc:
 \begin{itemize}
-    \item Bảo vệ dữ liệu huấn luyện khỏi các hành vi thao túng hoặc xâm nhập trái phép
+    \item Bảo vệ dữ liệu huấn luyện khỏi các hành vi tấn công
     \item Giám sát tính toàn vẹn của mô hình trong quá trình huấn luyện và vận hành
     \item Phát hiện và cảnh báo các hành vi bất thường trong hệ thống học máy
     \item Nâng cao độ tin cậy và an toàn của các hệ thống học máy trong môi trường thực tế
 \end{itemize}
 
-Trong bối cảnh các mô hình học máy ngày càng được triển khai rộng rãi, MLSecOps góp phần đảm bảo rằng hệ thống không chỉ hoạt động hiệu quả mà còn an toàn trước các mối đe dọa an ninh.
+Trong bối cảnh các mô hình học máy ngày càng được triển khai rộng rãi, MLSecOps góp phần đảm bảo rằng hệ thống không chỉ hoạt động hiệu quả mà còn an toàn trước các mối đe dọa về bảo mật.
 
 \paragraph{c. Thách thức}
 
-Các hệ thống học máy hiện nay phải đối mặt với nhiều rủi ro bảo mật, trong đó có các hình thức tấn công như tấn công đầu độc dữ liệu (data poisoning attack)~[3], tấn công adversarial examples
-hay khai thác mô hình (model extraction). Những mối đe dọa này có thể làm suy giảm nghiêm trọng hiệu suất và độ tin cậy của mô hình.
+Các hệ thống học máy hiện nay phải đối mặt với nhiều rủi ro liên quan đến bảo mật, trong đó có các hình thức tấn công như tấn công đầu độc dữ liệu, tấn công bằng mẫu đối kháng,... Những mối đe dọa này có thể làm suy giảm nghiêm trọng hiệu suất và độ tin cậy của mô hình.
 
 Mặc dù MLSecOps đã nhận được sự quan tâm trong một số lĩnh vực như y tế, an ninh mạng hay \ac{iot}, các nghiên cứu và ứng dụng thực tế vẫn còn hạn chế và chưa hình thành một khuôn khổ toàn
 diện. Điều này cho thấy MLSecOps vẫn là một lĩnh vực đang phát triển và cần được nghiên cứu sâu hơn trong thời gian tới.
