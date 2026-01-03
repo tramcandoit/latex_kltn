@@ -36,7 +36,7 @@ Phần tiếp theo của bài báo cáo sẽ trình bày về một số phươn
 
 \subsection{Khái niệm}
 
-Học máy (\ac{ml}) là một lĩnh vực con của trí tuệ nhân tạo, tập trung vào việc nghiên cứu và phát triển các thuật toán cho phép máy tính tự động học các quy luật từ dữ liệu mà không cần được lập trình một cách tường minh. Thông qua quá trình huấn luyện trên dữ liệu lịch sử, mô hình học máy có khả năng đưa ra dự đoán hoặc quyết định đối với các dữ liệu mới.
+Học máy (\ac{ml}) là một lĩnh vực con của trí tuệ nhân tạo, tập trung vào việc nghiên cứu và phát triển các thuật toán cho phép máy tính tự động học các quy luật từ dữ liệu mà không cần được lập trình một cách tường minh \cite{Mitchell1997MachineLearning}. Thông qua quá trình huấn luyện trên dữ liệu lịch sử, mô hình học máy có khả năng đưa ra dự đoán hoặc quyết định đối với các dữ liệu mới.
 
 Mục tiêu cốt lõi của học máy là xây dựng các mô hình có khả năng tổng quát hóa tốt, tức là đạt hiệu suất cao không chỉ trên tập dữ liệu huấn luyện mà còn trên các dữ liệu chưa từng xuất hiện trước đó. Học máy hiện nay được ứng dụng rộng rãi trong nhiều lĩnh vực như nhận dạng mẫu, xử lý ngôn ngữ tự nhiên, thị giác máy tính, tài chính, y tế,...
 
@@ -143,7 +143,7 @@ Nhờ chiến lược này, Balanced Random Forest giúp cải thiện khả nă
 \subsection{Giới thiệu}
 Sự thành công của một mô hình học máy phụ thuộc phần lớn vào chất lượng nguồn dữ liệu đầu vào. Do đó, dữ liệu luôn là mục tiêu mà các đối tượng tấn công nhắm đến.
 
-Tấn công đầu độc dữ liệu là dạng tấn công nhắm vào tập dữ liệu huấn luyện của mô hình học máy. Trong đó, dữ liệu gốc có thể bị thêm, sửa, xóa, dẫn đến sự sai lệch trong kết quả đầu ra của mô hình.
+Tấn công đầu độc dữ liệu là dạng tấn công nhắm vào tập dữ liệu huấn luyện của mô hình học máy. Trong đó, dữ liệu gốc có thể bị thêm, sửa, xóa, dẫn đến sự sai lệch trong kết quả đầu ra của mô hình \cite{IBMDataPoisoning2025}.
 
 \subsection{Phân nhóm}
 \paragraph{a. Có mục tiêu (Targeted):} Tấn công đầu độc dữ liệu có mục tiêu là loại tấn công có chủ đích nhằm điều khiển mô hình cho ra kết quả sai lệch trên một mẫu hoặc một nhóm dữ liệu cụ thể.
@@ -168,12 +168,12 @@ Trong ngữ cảnh tấn công đầu độc dữ liệu của mô hình phát h
 \paragraph{a. Khái niệm}
 Trước khi có sự xuất hiện của container, các ứng dụng thường được triển khai trên các máy ảo. Việc này dễ gây hao phí vì không tận dụng tốt được tài nguyên điện toán. Ngoài ra, việc phát triển ứng dụng giữa nhiều lập trình viên gặp không ít khó khăn, do sự khác biệt về kiến trúc của máy tính, cũng như sự khó đồng nhất về môi trường để khởi chạy ứng dụng.
 
-Container là một đơn vị phần mềm tiêu chuẩn, trong đó, mã nguồn và các phụ thuộc (dependencies) được đóng gói để thuận tiện cho việc phát triển, vận chuyển và triển khai. Container đảm bảo với một ứng dụng đã được đóng gói, nó sẽ luôn được chạy giống hệt nhau ở mọi môi trường mà không cần quan tâm đến hạ tầng. 
+Container là một đơn vị phần mềm tiêu chuẩn, trong đó, mã nguồn và các phụ thuộc (dependencies) được đóng gói để thuận tiện cho việc phát triển, vận chuyển và triển khai. Container đảm bảo với một ứng dụng đã được đóng gói, nó sẽ luôn được chạy giống hệt nhau ở mọi môi trường mà không cần quan tâm đến hạ tầng \cite{what_is_container}. 
 
 Tóm lại, khái niệm container ra đời đã tạo nên bước tiến mới trong việc phát triển và triển khai ứng dụng. Container giúp đảm bảo nguyên tắc "Build once, run anywhere" - Tức là chỉ xây dựng một lần và có thể chạy trên bất kỳ hạ tầng nào, từ môi trường cục bộ như máy tính cá nhân của lập trình viên đến môi trường thực tế mà khách hàng tương tác. Container góp phần còn xây dựng nên kiến trúc của hạ tầng hiện đại, đặc biệt là trong ngữ cảnh ứng dụng vi dịch vụ (microservice).
 
 \paragraph{b. Docker}
-Docker là một nền tảng phần mềm mã nguồn mở, được giới thiệu lần đầu vào năm 2013. Docker đóng gói, phân phối và chạy ứng dụng trong các container.
+Docker là một nền tảng phần mềm mã nguồn mở, được giới thiệu lần đầu vào năm 2013. Docker đóng gói, phân phối và chạy ứng dụng trong các container \cite{docker_overview}.
 
 Một vài khái niệm liên quan đến Docker:
 \begin{itemize}
@@ -207,7 +207,7 @@ Nền tảng điều phối container là một hệ thống giúp tự động 
 Hiện nay có nhiều nền tảng điều phối container được sử dụng trong thực tế, chẳng hạn như Docker Swarm, Apache Mesos hay Kubernetes. Trong đó, Kubernetes đã trở thành nền tảng phổ biến và mạnh mẽ nhất nhờ khả năng mở rộng linh hoạt, tính ổn định cao và hệ sinh thái vô cùng phong phú.
 
 \paragraph{b. Kubernetes}
-Kubernetes là một nền tảng mã nguồn mở do Google phát triển, dùng để điều phối container và hỗ trợ triển khai, quản lý ứng dụng container trong môi trường phân tán. Kubernetes phát huy sức mạnh khi hệ thống phải vận hành số lượng lớn container, giúp đơn giản hoá việc quản lý các ứng dụng phức tạp chạy trên nhiều máy chủ.
+Kubernetes là một nền tảng mã nguồn mở do Google phát triển, dùng để điều phối container và hỗ trợ triển khai, quản lý ứng dụng container trong môi trường phân tán \cite{k8s_overview}. Kubernetes phát huy sức mạnh khi hệ thống phải vận hành số lượng lớn container, giúp đơn giản hoá việc quản lý các ứng dụng phức tạp chạy trên nhiều máy chủ.
 
 \begin{figure}
     \centering
@@ -268,7 +268,7 @@ Nếu như ở phương pháp truyền thống, cá nhân hay doanh nghiệp ph�
 
 \subsection{Amazon Web Service}
 \paragraph{a. Giới thiệu}
-\ac{aws} là nền tảng điện toán đám mây do Amazon cung cấp, với hơn 200 dịch vụ và là nền tảng được sử dụng rộng rãi nhất thế giới.
+\ac{aws} là nền tảng điện toán đám mây do Amazon cung cấp, với hơn 200 dịch vụ và là nền tảng được sử dụng rộng rãi nhất thế giới \cite{aws_overview}.
 \paragraph{b. Một số dịch vụ}
 Trong phạm vi khóa luận, một số dịch vụ \ac{aws} được sử dụng bao gồm:
 \begin{itemize}
@@ -314,7 +314,7 @@ IaC mang đến nhiều lợi ích:
 \end{itemize}
 
 \subsection{Terraform}
-Terraform là một công cụ \ac{iac} mã nguồn mở do Hashicorp phát triển. Terraform khai báo hạ tầng thông qua một ngôn ngữ gọi là \ac{hcl}. Terraform hỗ trợ triển khai hạ tầng cho rất nhiều nhà cung cấp dịch vụ, trong đó có \ac{aws}.
+Terraform là một công cụ \ac{iac} mã nguồn mở do Hashicorp phát triển. Terraform khai báo hạ tầng thông qua một ngôn ngữ gọi là \ac{hcl}. Terraform hỗ trợ triển khai hạ tầng cho rất nhiều nhà cung cấp dịch vụ, trong đó có \ac{aws} \cite{terraform_overview}.
 
 Một điểm mạnh quan trọng của Terraform chính là khả năng quản lý trạng thái hạ tầng thông qua tệp state, cho phép theo dõi và đồng bộ trạng thái thực tế của hạ tầng hệ thống với cấu hình đã khai báo. Tính năng này còn phát huy tác dụng khi có nhiều thành viên cùng thao tác, giúp tránh xung đột cho hạ tầng.
 
@@ -328,22 +328,22 @@ Quét bảo mật thường được phân thành hai nhóm chính:
 \end{itemize}
 
 \subsection{Checkov}
-Checkov là công cụ quét bảo mật tĩnh mã nguồn mở, được phát triển bởi Bridgecrew. Checkov được thiết kế dành riêng cho \ac{iac} và hỗ trợ nhiều \ac{iac} phổ biến như Terraform, \ac{aws} CloudFormation và Kubernetes manifest. Checkov phân tích các tệp cấu hình hạ tầng và phát hiện các cấu hình không an toàn, vi phạm chính sách bảo mật.
+Checkov là công cụ quét bảo mật tĩnh mã nguồn mở, được phát triển bởi Bridgecrew \cite{checkov_overview}. Checkov được thiết kế dành riêng cho \ac{iac} và hỗ trợ nhiều \ac{iac} phổ biến như Terraform, \ac{aws} CloudFormation và Kubernetes manifest. Checkov phân tích các tệp cấu hình hạ tầng và phát hiện các cấu hình không an toàn, vi phạm chính sách bảo mật.
 
 \subsection{Trivy}
-Trivy là công cụ quét bảo mật tĩnh mã nguồn mở, được phát triển bởi Aqua Security. Ứng dụng chính của Trivy là dùng cho quét bảo mật các container image. Trivy hoạt động bằng cách phân tích các thành phần bên trong container image nhằm phát hiện các lỗ hổng bảo mật đã được công bố (\ac{cve}), các thư viện lỗi thời, cũng như các cấu hình không an toàn.
+Trivy là công cụ quét bảo mật tĩnh mã nguồn mở, được phát triển bởi Aqua Security \cite{trivy_overview}. Một trong những ứng dụng chính của Trivy là dùng cho quét bảo mật các container image. Trivy hoạt động bằng cách phân tích các thành phần bên trong container image nhằm phát hiện các lỗ hổng bảo mật đã được công bố (\ac{cve}), các thư viện lỗi thời, cũng như các cấu hình không an toàn.
 
 
 \section{Giám sát hệ thống và trực quan hóa dữ liệu}
 \subsection{Tổng quan giám sát hệ thống}
 Giám sát hệ thống là quá trình theo dõi, thu thập và phân tích các chỉ số tài nguyên và vận hành của hệ thống nhằm đánh giá trạng thái hiệu năng và mức độ ổn định. Giám sát hệ thống đóng vai trò quan trọng trong việc phát hiện sớm các sự cố, đánh giá khả năng mở rộng và hỗ trợ tối ưu tài nguyên.
 \subsection{Prometheus}
-Prometheus là một công cụ giám sát hệ thống mã nguồn mở, được thiết kế đặc biệt cho các hệ thống phân tán và môi trường container. Prometheus hoạt động theo cơ chế thu thập dữ liệu chủ động (pull-based), trong đó các chỉ số hệ thống được lấy định kỳ thông qua các endpoint.
+Prometheus là một công cụ giám sát hệ thống mã nguồn mở, được thiết kế đặc biệt cho các hệ thống phân tán và môi trường container. Prometheus hoạt động theo cơ chế thu thập dữ liệu chủ động (pull-based), trong đó các chỉ số hệ thống được lấy định kỳ thông qua các endpoint \cite{prometheus_overview}.
 
 Prometheus lưu trữ dữ liệu chỉ số hệ thống dưới dạng chuỗi thời gian (time-series). Ngoài ra, Prometheus còn hỗ trợ ngôn ngữ truy vấn PromQL, qua đó cho phép người dùng truy vấn, phân tích và tổng hợp các chỉ số một cách linh hoạt và nhanh chóng. Nhờ khả năng tích hợp tốt với Kubernetes, Prometheus được sử dụng rộng rãi để giám sát trạng thái của pod, node và các dịch vụ trong cụm.
 
 \subsection{Grafana}
-Grafana là nền tảng trực quan hóa dữ liệu mã nguồn mở. Grafana hỗ trợ kết nối với nhiều nguồn dữ liệu khác nhau, trong đó Prometheus là một trong những nguồn phổ biến nhất. Các chỉ số giám sát được hiển thị dưới dạng biểu đồ và bảng điều khiển (dashboard). Thông qua các dashboard này, người dùng có thể theo dõi trực quan trạng thái và hiệu năng của hệ thống theo thời gian thực.
+Grafana là nền tảng trực quan hóa dữ liệu mã nguồn mở \cite{grafana_overview}. Grafana hỗ trợ kết nối với nhiều nguồn dữ liệu khác nhau, trong đó Prometheus là một trong những nguồn phổ biến nhất. Các chỉ số giám sát được hiển thị dưới dạng biểu đồ và bảng điều khiển (dashboard). Thông qua các dashboard này, người dùng có thể theo dõi trực quan trạng thái và hiệu năng của hệ thống theo thời gian thực.
 
 \section{Tích hợp liên tục và triển khai liên tục}
 
