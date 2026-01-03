@@ -182,14 +182,7 @@ Một vài khái niệm liên quan đến Docker:
     \item Docker container: Là phiên bản đang chạy của một Docker Image.
 \end{itemize}
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.3]{img/chapter2/docker-architecture.png}
-    \caption{Kiến trúc của Docker \cite{docker_overview} }
-    \label{fig:chap2-docker-architecture}
-\end{figure}
-
-Docker được xây dựng theo kiến trúc Client-Server, minh họa trong hình \ref{fig:chap2-docker-architecture}, gồm các thành phần như sau:
+Docker được xây dựng theo kiến trúc Client-Server, gồm các thành phần như sau:
 \begin{itemize}
     \item Docker client: Là nơi mà người dùng tương tác với Docker daemon thông qua các lệnh như docker run, docker build, docker pull.
     \item Docker host: Là nơi chứa Docker daemon, thành phần chịu trách nhiệm quản lý hệ thống container. Docker host thực hiện các nhiệm vụ như nhận và xử lý yêu cầu từ Docker client, lưu trữ các Docker image đã được build hoặc pull về từ Registry, tạo và quản lý các Docker container được chạy từ các image tương ứng.
@@ -209,13 +202,6 @@ Hiện nay có nhiều nền tảng điều phối container được sử dụn
 \paragraph{b. Kubernetes}
 Kubernetes là một nền tảng mã nguồn mở do Google phát triển, dùng để điều phối container và hỗ trợ triển khai, quản lý ứng dụng container trong môi trường phân tán \cite{k8s_overview}. Kubernetes phát huy sức mạnh khi hệ thống phải vận hành số lượng lớn container, giúp đơn giản hoá việc quản lý các ứng dụng phức tạp chạy trên nhiều máy chủ.
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.3]{img/chapter2/k8s-architecture.png}
-    \caption{Kiến trúc của Kubernetes \cite{k8s_architecture} }
-    \label{fig:chap2-k8s-architecture}
-\end{figure}
-
 Một vài khái niệm liên quan đến Kubernetes:
 \begin{itemize}
     \item Pod: Là đơn vị triển khai nhỏ nhất trong Kubernetes. Mỗi pod chứa một hoặc nhiều container, chúng cùng chia sẻ tài nguyên điện toán, thành phần lưu trữ và mạng.
@@ -226,7 +212,7 @@ Một vài khái niệm liên quan đến Kubernetes:
 \end{itemize}
 
 
-Hình \ref{fig:chap2-k8s-architecture} mô tả kiến trúc của Kubernetes, bao gồm hai thành phần chính là Control Plane và Worker Nodes.
+Về kiến trúc, Kubernetes bao gồm hai thành phần chính là Control Plane và Worker Nodes.
 \begin{itemize}
     \item Control Plane:
     \begin{itemize}
@@ -359,7 +345,7 @@ Việc áp dụng \ac{cicd} mang lại nhiều lợi ích như tăng tốc độ
 
 \subsection{GitHub Actions}
 
-GitHub Actions là nền tảng \ac{cicd} được tích hợp trực tiếp vào hệ sinh thái GitHub, cho phép tự động hóa các quy trình phát triển phần mềm dựa trên các sự kiện (events) xảy ra trong kho quản lý phiên bản mã nguồn, chẳng hạn như khi có thay đổi mã, tạo pull request hoặc phát hành phiên bản mới.
+GitHub Actions là nền tảng \ac{cicd} được tích hợp trực tiếp vào hệ sinh thái GitHub, cho phép tự động hóa các quy trình phát triển phần mềm dựa trên các sự kiện (events) xảy ra trong kho quản lý phiên bản mã nguồn, chẳng hạn như khi có thay đổi mã, tạo pull request hoặc phát hành phiên bản mới \cite{github_actions_docs}.
 
 Một số khái niệm phổ biến trong Github Action:
 \begin{itemize}
@@ -380,7 +366,7 @@ Nhờ khả năng tích hợp chặt chẽ với GitHub, GitHub Actions giúp đ
 
 \subsection{Argo Workflows}
 
-Argo Workflows là một công cụ mã nguồn mở dùng để điều phối và tự động hóa các quy trình công việc (workflows) phức tạp trên nền tảng Kubernetes. Argo Workflows cho phép định nghĩa các workflow dưới dạng các đồ thị có hướng không chu trình (\ac{dag}), trong đó mỗi bước được triển khai dưới dạng một container.
+Argo Workflows là một công cụ mã nguồn mở dùng để điều phối và tự động hóa các quy trình công việc (workflows) phức tạp trên nền tảng Kubernetes \cite{argo_workflows_docs}. Argo Workflows cho phép định nghĩa các workflow dưới dạng các đồ thị có hướng không chu trình (\ac{dag}), trong đó mỗi bước được triển khai dưới dạng một container.
 
 Các đặc điểm chính của Argo Workflows bao gồm:
 \begin{itemize}
@@ -416,7 +402,7 @@ Trong bối cảnh các hệ thống học máy ngày càng phức tạp và có
 
 \subsection{MLflow}
 
-MLflow là một nền tảng mã nguồn mở được thiết kế để hỗ trợ quản lý toàn bộ vòng đời của mô hình học máy. MLflow cung cấp các thành phần tiêu chuẩn nhằm theo dõi thí nghiệm, quản lý mô hình và hỗ trợ triển khai trong nhiều môi trường khác nhau.
+MLflow là một nền tảng mã nguồn mở được thiết kế để hỗ trợ quản lý toàn bộ vòng đời của mô hình học máy \cite{mlflow_ml_docs}. MLflow cung cấp các thành phần tiêu chuẩn nhằm theo dõi thí nghiệm, quản lý mô hình và hỗ trợ triển khai trong nhiều môi trường khác nhau.
 
 Các thành phần chính của MLflow:
 \begin{itemize}
@@ -473,7 +459,7 @@ Ngoài ra, con người còn tham gia vào việc phân tích các tình huống
 \paragraph{a. Khái niệm}
 
 MLOps là cách tiếp cận nhằm tự động hóa và chuẩn hóa toàn bộ
-vòng đời mô hình học máy, từ tiền xử lý dữ liệu, huấn luyện, đánh giá cho đến triển khai và giám sát trong môi trường vận hành. MLOps cho phép tích hợp các bước này thành một quy trình liền mạch, giúp rút ngắn thời gian đưa mô hình vào sản xuất và nâng cao tính ổn định của hệ thống~[2].
+vòng đời mô hình học máy, từ tiền xử lý dữ liệu, huấn luyện, đánh giá cho đến triển khai và giám sát trong môi trường vận hành. MLOps cho phép tích hợp các bước này thành một quy trình liền mạch, giúp rút ngắn thời gian đưa mô hình vào sản xuất và nâng cao tính ổn định của hệ thống \cite{Kreuzberger_2023}.
 
 \paragraph{b. Vai trò}
 
@@ -497,7 +483,7 @@ Mặc dù mang lại nhiều lợi ích, MLOps vẫn tồn tại một số hạ
 
 \paragraph{a. Khái niệm}
 
-MLSecOps được đề xuất như một bước phát triển tiếp theo của MLOps, nhằm tích hợp các yếu tố bảo mật xuyên suốt vòng đời mô hình học máy~[4]. MLSecOps mở rộng phạm vi của MLOps bằng cách đưa các biện pháp an ninh mạng vào từng giai đoạn, từ dữ liệu đầu vào cho đến quá trình huấn luyện và triển khai mô hình.
+MLSecOps được đề xuất như một bước phát triển tiếp theo của MLOps, nhằm tích hợp các yếu tố bảo mật xuyên suốt vòng đời mô hình học máy \cite{Saputra_2023}. MLSecOps mở rộng phạm vi của MLOps bằng cách đưa các biện pháp an ninh mạng vào từng giai đoạn, từ dữ liệu đầu vào cho đến quá trình huấn luyện và triển khai mô hình.
 
 \paragraph{b. Vai trò}
 
