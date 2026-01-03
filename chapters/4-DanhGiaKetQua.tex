@@ -337,6 +337,7 @@ Cấu hình của Retrain Pipeline được thực thi với các tham số sau:
 Tập dữ liệu huấn luyện mô hình bao gồm toàn bộ tập \textbf{Train/Test}, dữ liệu mới dùng cho tái huấn luyện mô hình được trích từ tập \textbf{Out-of-time Test Set}. Chi tiết được mô tả tại Bảng \ref{tab:dataset_split}.
 
 \subsection{Đánh giá hiệu năng hệ thống MLSecOps}
+\label{subsec:mlsecops-sys-eval}
 Trong phần này, nhóm tiến hành đánh giá hiệu năng hệ thống MLSecOps trong quá trình thực thi pipeline huấn luyện và tái huấn luyện mô hình. Việc đánh giá tập trung vào mức tiêu thụ tài nguyên hệ thống của từng bước trong pipeline nhằm làm rõ đặc tính tính toán, xác định các bước có nguy cơ trở thành nút thắt hiệu năng, đồng thời cung cấp cơ sở cho việc tối ưu và mở rộng hệ thống trong tương lai.
 
 Hai chỉ số hiệu năng chính được theo dõi là mức sử dụng CPU và bộ nhớ của các pod trong hệ thống. Các chỉ số này được Prometheus thu thập trong suốt quá trình thực thi pipeline và được trực quan hóa thông qua các dashboard Grafana, cho phép quan sát trực tiếp sự biến động tài nguyên theo thời gian.
