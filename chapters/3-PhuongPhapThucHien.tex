@@ -903,7 +903,7 @@ Chi tiết về workflow:
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.3]{img/chapter3/chap3-ci-build-image.png}
+    \includegraphics[scale=0.29]{img/chapter3/chap3-ci-build-image.png}
     \caption{Kết quả workflow Build Image trên Github Action}
     \label{fig:chap3-ci-build-image.png}
 \end{figure}
@@ -936,7 +936,7 @@ Chi tiết về workflow:
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.38]{img/chapter3/chap3-ci-trivy.png}
+    \includegraphics[scale=0.3]{img/chapter3/chap3-ci-trivy.png}
     \caption{Kết quả quét bảo mật sử dụng Trivy}
     \label{fig:chap3-ci-trivy.png}
 \end{figure}
@@ -969,7 +969,7 @@ Chi tiết về workflow:
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.33]{img/chapter3/chap3-ci-gh-chart.png}
+    \includegraphics[scale=0.3]{img/chapter3/chap3-ci-gh-chart.png}
     \caption{Kết quả workflow GitHub Actions triển khai các thành phần trên cụm EKS}
     \label{fig:chap3-gh-chart.png}
 \end{figure}
@@ -1005,16 +1005,14 @@ Chi tiết về workflow:
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.33]{img/chapter3/chap3-ci-terraform-plan.png}
+    \includegraphics[scale=0.3]{img/chapter3/chap3-ci-terraform-plan.png}
     \caption{Kết quả workflow Terraform Plan trên Github Actions}
     \label{fig:chap3-ci-terraform-plan.png}
 \end{figure}
 
-\end{itemize}
-
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.33]{img/chapter3/chap3-ci-checkov.png}
+    \includegraphics[scale=0.3]{img/chapter3/chap3-ci-checkov.png}
     \caption{Kết quả quét bảo mật sử dụng Checkov}
     \label{fig:chap3-ci-checkov.png}
 \end{figure}
@@ -1037,7 +1035,7 @@ Chi tiết về workflow:
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.33]{img/chapter3/chap3-ci-terraform-apply.png}
+    \includegraphics[scale=0.3]{img/chapter3/chap3-ci-terraform-apply.png}
     \caption{Kết quả workflow Terraform Apply trên Github Actions}
     \label{fig:chap3-ci-terraform-apply.png}
 \end{figure}
@@ -1324,11 +1322,11 @@ Prometheus và Grafana được nhóm sinh viên triển khai Helm và được 
 
 Grafana được cấu hình kết nối trực tiếp đến Prometheus Server làm nguồn dữ liệu (data source), cho phép truy vấn và hiển thị các chỉ số liên quan đến hiệu năng hệ thống theo thời gian thực.
 
-Hình \ref{fig:prometheus-home} thể hiện giao diện chính của Prometheus sau khi triển khai. Có thể thấy, giao diện này không quá thân thiện với người dùng trong việc theo dõi các chỉ số hệ thống theo thời gian thực. Đó cũng là lý do cần có Grafana trực quan hóa dữ liệu.
+Hình \ref{fig:prometheus-home} thể hiện giao diện chính của Prometheus sau khi triển khai. Có thể thấy, đây không phải giao diện tối ưu để theo dõi các chỉ số hệ thống theo thời gian thực. Đó cũng là lý do cần có Grafana trực quan hóa dữ liệu.
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.3]{img/chapter3/prometheus-home.png}
+    \includegraphics[scale=0.29]{img/chapter3/prometheus-home.png}
     \caption{Giao diện chính của Prometheus}
     \label{fig:prometheus-home}
 \end{figure}
@@ -1337,7 +1335,7 @@ Hình \ref{fig:grafana-login} thể hiện giao diện đăng nhập của Grafa
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.3]{img/chapter3/grafana-login.png}
+    \includegraphics[scale=0.29]{img/chapter3/grafana-login.png}
     \caption{Giao diện đăng nhập của Grafana}
     \label{fig:grafana-login}
 \end{figure}
@@ -1346,9 +1344,9 @@ Sau khi đăng nhập thành công vào Grafana, chúng ta có thể thấy đư
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.3]{img/chapter3/grafana-home.png}
+    \includegraphics[scale=0.29]{img/chapter3/grafana-home.png}
     \caption{Giao diện chính của Grafana}
     \label{fig:grafana-home}
 \end{figure}
 
-Trong hệ thống giám sát mà nhóm triển khai, có hai dashboard chính được xây dựng nhằm theo dõi hiệu năng vận hành của hệ thống MLSecOps, bao gồm dashboard giám sát mức sử dụng CPU và bộ nhớ của các pod trong cụm Kubernetes. Chi tiết về những chỉ số thu thập được sẽ được mô tả chi tiết trong phần \ref{sec:2.2.1}.
+Trong hệ thống giám sát mà nhóm triển khai, có hai dashboard chính được xây dựng nhằm theo dõi hiệu năng vận hành của hệ thống MLSecOps, bao gồm dashboard giám sát mức sử dụng CPU và bộ nhớ của các pod trong cụm Kubernetes. Chi tiết về những chỉ số thu thập được sẽ được mô tả chi tiết trong phần \ref{subsec:mlsecops-sys-eval}.
