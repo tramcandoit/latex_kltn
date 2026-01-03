@@ -11,7 +11,7 @@
 
 Trong những năm gần đây, sự phát triển mạnh mẽ của công nghệ thông tin đã tạo nên vô số thay đổi trong lĩnh vực tài chính. Sự phổ biến của giao dịch điện tử, thanh toán trực tuyến và ngân hàng số đã mang đến nhiều lợi ích như nâng cao tính tiện lợi và mở rộng khả năng tiếp cận dịch vụ cho khách hàng. Tuy nhiên, đi kèm với đó là sự gia tăng của các hành vi gian lận, gây thiệt hại lớn cho tổ chức tài chính. Vì thế, việc nghiên cứu và phát triển các giải pháp phát hiện gian lận ngày càng trở thành một nhu cầu cấp thiết.
 
-Nhiều hệ thống phát hiện gian lận trong lĩnh vực tài chính đã được xây dựng dựa trên các phương pháp truyền thống, chẳng hạn như hệ thống dựa trên quy tắc (rule-based) hoặc đánh giá một cách thủ công. Tuy nhiên, phương pháp này bộc lộ hạn chế khi phải xử lý khối lượng dữ liệu khổng lồ và các kịch bản gian lận liên tục thay đổi. Vì vậy, việc ứng dụng các kỹ thuật học máy - \ac{ml} vào bài toán phát hiện gian lận đã trở thành một hướng tiếp cận hiệu quả, giúp tự động hóa quá trình phát hiện và nâng cao độ chính xác.
+Nhiều hệ thống phát hiện gian lận trong lĩnh vực tài chính đã được xây dựng dựa trên các phương pháp truyền thống, chẳng hạn như hệ thống dựa trên quy tắc (rule-based) hoặc đánh giá một cách thủ công. Tuy nhiên, các phương pháp này bộc lộ hạn chế khi phải xử lý khối lượng dữ liệu khổng lồ và các kịch bản gian lận liên tục thay đổi. Vì vậy, việc ứng dụng các kỹ thuật học máy - \ac{ml} vào bài toán phát hiện gian lận đã trở thành một hướng tiếp cận hiệu quả, giúp tự động hóa quá trình phát hiện và nâng cao độ chính xác.
 
 Mặc dù mang lại nhiều lợi ích, các mô hình học máy cũng đối mặt với những thách thức về bảo mật, đặc biệt là các hình thức tấn công nhắm vào dữ liệu huấn luyện như tấn công đầu độc dữ liệu và lật nhãn. Bên cạnh đó, quá trình triển khai và vận hành mô hình học máy trong môi trường thực tế đòi hỏi một quy trình quản lý chặt chẽ, tự động và an toàn. 
 
@@ -28,11 +28,11 @@ Từ các nghiên cứu trên có thể nhận thấy rằng, mặc dù học m�
 
 
 \section{Mục tiêu nghiên cứu}
-Mục tiêu tổng quát của khóa luận là xây dựng một hệ thống phát hiện gian lận trong lĩnh vực tài chính, cụ thể là gian lận trong quá trình mở tài khoản ngân hàng, dựa trên các kỹ thuật học máy và được triển khai theo mô hình MLSecOps.
+Mục tiêu tổng quát của khóa luận là thiết kế, xây dựng và triển khai một khung hệ thống MLSecOps cho bài toán phát hiện gian lận trong lĩnh vực tài chính, cụ thể là gian lận trong quá trình mở tài khoản ngân hàng.
 \begin{itemize}
-  \item Nghiên cứu và lựa chọn các mô hình học máy phù hợp cho bài toán phát hiện gian lận với dữ liệu mất cân bằng trong lĩnh vực tài chính.
-  \item Nghiên cứu và tích hợp phương pháp phát hiện tấn công lật nhãn nhằm giảm thiểu tác động của các hình thức tấn công đầu độc dữ liệu trong giai đoạn huấn luyện mô hình.
-  \item Xây dựng quy trình phát hiện gian lận theo hướng MLSecOps, bao phủ toàn bộ vòng đời mô hình học máy từ xử lý dữ liệu, huấn luyện, đánh giá đến triển khai và giám sát.
+  \item Nghiên cứu và sử dụng các mô hình học máy cho bài toán phát hiện gian lận với dữ liệu mất cân bằng nhằm phục vụ việc triển khai, vận hành và đánh giá khung MLSecOps được đề xuất.
+  \item Nghiên cứu và tích hợp phương pháp phát hiện tấn công lật nhãn như một thành phần bảo mật trong khung MLSecOps, nhằm giảm thiểu tác động của tấn công đầu độc dữ liệu trong giai đoạn huấn luyện mô hình.
+  \item Xây dựng quy trình phát hiện gian lận theo hướng MLSecOps, bao phủ toàn bộ vòng đời mô hình học máy từ xử lý dữ liệu, huấn luyện, đánh giá đến triển khai và giám sát vận hành.
   \item Đánh giá hiệu quả của mô hình học máy và hệ thống MLSecOps thông qua các kịch bản mô phỏng.
 \end{itemize}
 
@@ -43,7 +43,7 @@ Mục tiêu tổng quát của khóa luận là xây dựng một hệ thống p
   \item Các mô hình học máy được ứng dụng trong bài toán phát hiện gian lận tài chính.
   \item Các kỹ thuật xử lý dữ liệu và đánh giá mô hình học máy trong bối cảnh dữ liệu mất cân bằng.
   \item Các hình thức tấn công nhắm vào dữ liệu huấn luyện của mô hình học máy, đặc biệt là tấn công đầu độc dữ liệu và tấn công lật nhãn.
-  \item Quy trình MLSecOps nhằm quản lý toàn bộ vòng đời của mô hình học máy, từ thu thập và tiền xử lý dữ liệu, huấn luyện, đánh giá đến triển khai và vận hành.
+  \item Quy trình MLSecOps nhằm quản lý toàn bộ vòng đời của mô hình học máy, từ tiền xử lý dữ liệu, kiểm tra an toàn dữ liệu đến huấn luyện, đánh giá đến triển khai mô hình.
   \item Các công cụ và nền tảng hỗ trợ triển khai hệ thống MLSecOps, bao gồm: 
   \begin{itemize}
     \item Quy trình tích hợp liên tục và triển khai liên tục (\ac{cicd})
@@ -72,7 +72,7 @@ Các đóng góp chính của đề tài bao gồm:
 
 \section{Cấu trúc Khoá luận tốt nghiệp}
 \label{sec:CauTruc}
-Khóa luận với đề tài "XÂY DỰNG HỆ THỐNG PHÁT HIỆN GIAN LẬN TRONG LĨNH VỰC TÀI CHÍNH DỰA TRÊN MLSECOPS" được trình bày bao gồm 6 chương. Nội dung tóm tắt từng chương được trình bày như sau:
+Khóa luận với đề tài "XÂY DỰNG HỆ THỐNG PHÁT HIỆN GIAN LẬN TRONG LĨNH VỰC TÀI CHÍNH DỰA TRÊN MLSECOPS" được trình bày bao gồm 5 chương. Nội dung tóm tắt từng chương được trình bày như sau:
 \begin{itemize}
     \item \textbf{Chương 1: Tổng quan đề tài.}
     \item \textbf{Chương 2: Cơ sở lý thuyết.}
