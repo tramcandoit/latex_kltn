@@ -620,10 +620,3 @@ Các chỉ số sử dụng CPU và bộ nhớ trong thực nghiệm được đ
 Mức sử dụng tài nguyên được tính theo công thức \eqref{eq:resource_utilization}, kết quả cho thấy khi chuyển từ thực thi tuần tự sang thực thi song song, mức sử dụng tài nguyên tăng lên rõ rệt nhằm đánh đổi lấy tốc độ xử lý. Cụ thể, \textbf{Peak CPU Utilization} (mức tiêu thụ CPU cao nhất) tăng từ 7.14\% lên 12.46\%, trong khi \textbf{Peak Memory Utilization} (mức tiêu thụ bộ nhớ cao nhất) tăng từ 12.07\% lên 21.01\%. Bên cạnh đó, \textbf{Avg. Mem Utilization} (mức tiêu thụ bộ nhớ trung bình) cũng ghi nhận mức tăng đáng kể từ 7.70\% lên 17.78\%. Điều này cho thấy cơ chế song song hóa trong kiến trúc DAG đã tận dụng hiệu quả hơn tài nguyên khả dụng của cụm Kubernetes.
 
 Mặc dù mức tiêu thụ CPU và bộ nhớ cao hơn, các giá trị này vẫn nằm trong giới hạn an toàn của tài nguyên, cho phép pipeline đạt được sự cải thiện rõ rệt về thời gian thực thi mà không gây quá tải hệ thống.
-
-
-\paragraph{d. Kết luận.}
-
-Các kết quả thực nghiệm cho thấy tồn tại sự đánh đổi rõ ràng giữa mức tiêu thụ tài nguyên và thời gian thực thi pipeline. Việc tăng mức song song hóa giúp giảm đáng kể thời gian thực thi pipeline, nhưng đồng thời yêu cầu mức sử dụng tài nguyên cao hơn. Tuy nhiên, trong bối cảnh hệ thống MLSecOps triển khai trên nền tảng cloud-native với khả năng mở rộng linh hoạt, sự đánh đổi này là chấp nhận được và mang lại lợi ích rõ rệt về hiệu năng.
-
-Từ các kết quả thực nghiệm, có thể kết luận rằng kiến trúc DAG đóng vai trò quan trọng trong việc nâng cao hiệu suất của hệ thống MLSecOps. Việc cho phép thực thi song song các stage độc lập giúp rút ngắn đáng kể thời gian thực thi pipeline, đồng thời khai thác hiệu quả tài nguyên của cụm \ac{eks}. Điều này đặc biệt quan trọng đối với các workflow huấn luyện và tái huấn luyện mô hình trong môi trường sản xuất, nơi yêu cầu cao về tính linh hoạt, khả năng mở rộng và thời gian phản hồi.
