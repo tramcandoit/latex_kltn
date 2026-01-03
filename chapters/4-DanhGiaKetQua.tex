@@ -152,11 +152,11 @@ Với các thách thức đã biết trong bài toán phát hiện gian lận, m
 \subsection{Đánh giá tác động của tấn công lật nhãn đến hiệu quả mô hình}
 \label{subsec:label-attack-to-model}
 
-Để đánh giá mức độ ảnh hưởng của tấn công lật nhãn đến hiệu quả của các mô hình phát hiện gian lận, chúng tôi xây dựng một kịch bản mô phỏng trong đó nhãn của một phần dữ liệu huấn luyện bị thay đổi có chủ đích. Cụ thể, tập dữ liệu huấn luyện bị lật lần lượt 5\,000, 10\,000 và 20\,000 nhãn nhằm mô phỏng các mức độ tấn công khác nhau, từ nhẹ đến nghiêm trọng.
+Để đánh giá mức độ ảnh hưởng của tấn công lật nhãn đến hiệu quả của các mô hình phát hiện gian lận, nhóm sinh viên xây dựng một kịch bản mô phỏng trong đó nhãn của một phần dữ liệu huấn luyện bị thay đổi có chủ đích. Cụ thể, tập dữ liệu huấn luyện bị lật lần lượt 5\,000, 10\,000 và 20\,000 nhãn nhằm mô phỏng các mức độ tấn công khác nhau, từ nhẹ đến nghiêm trọng.
 
 Trong quá trình tạo dữ liệu bị tấn công, việc lật nhãn hoàn toàn ngẫu nhiên có thể dẫn đến tình trạng phần lớn hoặc toàn bộ các nhãn gian lận ban đầu bị đảo ngược, khiến mô hình không còn đủ mẫu gian lận thực để học và dẫn đến hành vi dự đoán gần như ngẫu nhiên. Do đó, số lượng nhãn gian lận bị lật được kiểm soát nhằm đảm bảo vẫn tồn tại một tỷ lệ nhãn gian lận thực trong dữ liệu huấn luyện, đồng thời phản ánh đúng bản chất của tấn công lật nhãn trong các hệ thống thực tế.
 
-Để định lượng tác động của tấn công lật nhãn, chúng tôi xem xét hai khía cạnh:  
+Để định lượng tác động của tấn công lật nhãn, nhóm sinh viên xem xét hai khía cạnh:  
 (i) sự suy giảm của số lượng gian lận thật còn lại trong dữ liệu huấn luyện, và  
 (ii) sự biến động của số lượng nhãn gian lận quan sát được sau khi bị tấn công.
 
@@ -174,7 +174,7 @@ Dựa trên đó, tỷ lệ biến động của số lượng gian lận quan s
 \label{eq:percentage-change}
 \end{equation}
 
-Mặt khác, để phản ánh trực tiếp mức độ suy giảm của tín hiệu học tập từ các mẫu gian lận thật, chúng tôi định nghĩa tỷ lệ suy giảm gian lận thật còn lại trong dữ liệu huấn luyện như sau:
+Mặt khác, để phản ánh trực tiếp mức độ suy giảm của tín hiệu học tập từ các mẫu gian lận thật, tỷ lệ suy giảm gian lận thật còn lại trong dữ liệu huấn luyện được định nghĩa như sau:
 
 \begin{equation}
 \Delta_{\text{true}} (\%) = \left( - \frac{N_{F \to N}}{N_{\text{org}}} \right) \times 100
@@ -325,10 +325,10 @@ Các kết quả thực nghiệm trong phần này được thực hiện trên 
 \begin{itemize}
     \item \textbf{Nodes}: 4 × t3.large
     \item \textbf{Cấu hình mỗi Node}: 2 vCPUs, 8 GB RAM
-    \item \textbf{Capacity của cluster}: 8 vCPUs, 32 GB RAM
+    \item \textbf{Tổng tài nguyên của cụm}: 8 vCPUs, 32 GB RAM
 \end{itemize}
 
-Cấu hình của Retrain Pipeline được thực thi với các tham số sau:
+Cấu hình của quy trình tái huấn luyện (retrain pipeline) được thực thi với các tham số sau:
 \begin{itemize}
     \item \textbf{Replay Ratio}: 1.0 (sử dụng lại toàn bộ dữ liệu cũ)
     \item \textbf{Max Items}: 10000 (thêm 10.000 điểm dữ liệu mới từ production)
@@ -466,7 +466,7 @@ Cụ thể, các bước chuẩn bị dữ liệu thể hiện mức sử dụng
 
 \subsection{Đánh giá hiệu quả của \ac{dag} trong hệ thống MLSecOps}
 
-Để đánh giá tác động của kiến trúc \ac{dag} với khả năng thực thi song song lên hiệu suất của pipeline MLSecOps, chúng tôi tiến hành thực nghiệm so sánh hai cấu hình:
+Để đánh giá tác động của kiến trúc \ac{dag} với khả năng thực thi song song lên hiệu suất của pipeline MLSecOps, nhóm sinh viên tiến hành thực nghiệm so sánh hai cấu hình:
 
 \begin{itemize}
     \item \textbf{parallelism = 1}: Thực thi tuần tự
@@ -594,7 +594,7 @@ Kết quả tương tự được quan sát trong Bảng~\ref{tab:compare_retrai
 
 \paragraph{c. Đánh giá mức sử dụng tài nguyên.}
 
-Nhằm đánh giá tác động của cấu hình thực thi song song lên mức sử dụng tài nguyên hệ thống, chúng tôi tiến hành thực nghiệm và so sánh kết quả tại stage \textbf{Train Models} của quy trình huấn luyện mô hình. Bảng~\ref{tab:resource_utilization} trình bày mức sử dụng tài nguyên trung bình và mức sử dụng tài nguyên cao nhất trong quá trình huấn luyện hai mô hình đối với hai cấu hình thực thi tuần tự và song song.
+Nhằm đánh giá tác động của cấu hình thực thi song song lên mức sử dụng tài nguyên hệ thống, nhóm sinh viên tiến hành thực nghiệm và so sánh kết quả tại stage \textbf{Train Models} của quy trình huấn luyện mô hình. Bảng~\ref{tab:resource_utilization} trình bày mức sử dụng tài nguyên trung bình và mức sử dụng tài nguyên cao nhất trong quá trình huấn luyện hai mô hình đối với hai cấu hình thực thi tuần tự và song song.
 
 Cụm \ac{eks} có tổng capacity là 8 vCPUs và 32 GB RAM. Tuy nhiên, do một phần tài nguyên được hệ thống Kubernetes và các thành phần nền tảng (kubelet, system daemons, applications) dự trữ và chiếm dụng, lượng tài nguyên thực tế có thể cấp phát cho workload chỉ còn \textbf{7.79 vCPUs và 29 GB RAM}. Tương ứng, mỗi node trong cụm có khoảng \textbf{1.9475 vCPUs và 7.25 GB RAM khả dụng}. 
 
