@@ -186,7 +186,7 @@ Hình \ref{fig:chap3-corr-matrix.png} biểu diễn ma trận tương quan (Corr
 \begin{figure}[!htbp]
     \centering
     \includegraphics[scale=0.3]{img/chapter3/chap3-corr-matrix.png}
-    \caption{Ma trận tương quan}
+    \caption{Ma trận tương quan của tập dữ liệu}
     \label{fig:chap3-corr-matrix.png}
 \end{figure}
 
@@ -195,6 +195,7 @@ Hình \ref{fig:chap3-corr-matrix.png} biểu diễn ma trận tương quan (Corr
 
 Quá trình tiền xử lý dữ liệu đóng vai trò then chốt trong việc xây dựng mô hình học máy hiệu quả. Dựa trên những quan sát từ quá trình Phân tích khám phá dữ liệu (\ac{eda}) và đặc thù của bộ dữ liệu Bank Account Fraud, nhóm sinh viên tiến hành xử lý dữ liệu trước khi đưa vào huấn luyện như sau:
 \begin{itemize}
+    \sloppy
     \item Loại bỏ các đặc trưng chứa nhiều nhiễu, hoặc có độ tương quan cao với các đặc trưng khác: bank\_months\_count, prev\_address\_months\_count, velocity\_4w
     \item Loại bỏ các điểm dữ liệu chứa giá trị thiếu tại các đặc trưng: current\_address\_months\_count, session\_length\_in\_minutes, device\_distinct\_emails\_8w, intended\_balcon\_amount
     \item Mã hoá đặc trưng phân loại: Các đặc trưng phân loại (dạng chuỗi kí tự) được chuyển đổi sang dạng số bằng kỹ thuật Label Encoding. Phương pháp này gán mỗi nhãn phân loại thành một giá trị nguyên, cho phép mô hình tiếp nhận và xử lý các đặc trưng phân loại một cách trực tiếp mà không cần mở rộng chiều dữ liệu, đặc biệt hiệu quả với các đặc trưng có độ đa dạng cao.
@@ -451,7 +452,7 @@ Cấu trúc mã Terraform bao gồm các tệp chính như sau:
     
     \item elb\_controller.tf: Khai báo IAM Role, Policy và cấu hình Pod Identity cho AWS Load Balancer Controller, đồng thời triển khai các thành phần ingress-nginx và cert-manager thông qua Helm.
     
-    \item cluster\_autoscaler.tf: Triển khai metrics-server và cluster-autoscaler bằng Helm nhằm tự động điều chỉnh số lượng node trong cụm EKS dựa trên tải hệ thống.
+    \item cluster\_autoscaler.tf: Triển khai metrics-server và cluster-autoscaler bằng Helm, mục tiêu nhằm tự động điều chỉnh số lượng node trong cụm EKS dựa trên tải hệ thống.
     
     \item AWSLoadBalancerControllerIAMPolicy.json: Chứa định nghĩa policy IAM phục vụ cho AWS Load Balancer Controller và các thành phần liên quan.
 \end{itemize}
@@ -929,7 +930,7 @@ Chi tiết về workflow:
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.3]{img/chapter3/chap3-ci-create-release.png}
+    \includegraphics[scale=0.34]{img/chapter3/chap3-ci-create-release.png}
     \caption{Kết quả workflow Create Release trên Github Action}
     \label{fig:chap3-ci-create-release.png}
 \end{figure}
@@ -1062,7 +1063,7 @@ Nhằm phục vụ cho cả ba pipeline DAG đã nêu, nhóm sinh viên xây d�
     
     \item \textbf{tp-merge-data.yaml}: Sử dụng image merge\_data để thực thi logic hợp nhất dữ liệu. Container tải cả dữ liệu cũ và mới từ S3 artifact bucket, chạy script merge\_data.py với tham số replay-ratio được truyền qua biến môi trường, sau đó tải kết quả merge trở lại S3.
     
-    \item \textbf{tp-security-check.yaml}: Sử dụng image security\_check chứa các mô hình pre-trained và logic phát hiện label-flip. Container tải dữ liệu đã gộp từ S3, chạy security\_check.py để phát hiện các mẫu nghi ngờ, và tải danh sách các mẫu nghi ngờ trở lại artifact bucket.
+    \item \textbf{tp-security-check.yaml}: Sử dụng image security\_check chứa các pre-trained models và logic phát hiện label-flip. Container tải dữ liệu đã gộp từ S3, chạy security\_check.py để phát hiện các mẫu nghi ngờ, và tải danh sách các mẫu nghi ngờ trở lại artifact bucket.
     
     \item \textbf{tp-preprocess-data.yaml}: Sử dụng image preprocess\_data để thực hiện tiền xử lý. Container tải xuống dữ liệu thô, chạy script preprocess\_data.py để làm sạch, mã hóa và chuẩn hóa dữ liệu, sau đó tải encoders, scalers và dữ liệu đã xử lý lên S3.
     
@@ -1099,6 +1100,7 @@ Training Pipeline bao gồm các bước xử lý tuần tự và song song đư
 \centering
 \caption{Các bước trong Training Pipeline và template tương ứng}
 \label{tab:training_pipeline_steps}
+\renewcommand{\arraystretch}{0.9}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} >{\centering\arraybackslash}p{0.1\textwidth} >{\raggedright\arraybackslash}p{0.35\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
     \toprule
     \textbf{STT} & \textbf{Tên bước} & \textbf{Template} \\
@@ -1151,6 +1153,7 @@ Retraining Pipeline bao gồm các bước xử lý tuần tự và song song đ
 \centering
 \caption{Các bước trong Retraining Pipeline và template tương ứng}
 \label{tab:retraining_pipeline_steps}
+\renewcommand{\arraystretch}{0.9}
 \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}} >{\centering\arraybackslash}p{0.1\textwidth} >{\raggedright\arraybackslash}p{0.35\textwidth} >{\raggedright\arraybackslash}p{0.45\textwidth}}
     \toprule
     \textbf{STT} & \textbf{Tên bước} & \textbf{Template} \\
@@ -1198,7 +1201,7 @@ Quá trình deployment được thực hiện thông qua 3 bước tuần tự n
 \begin{enumerate}
     \item \textbf{Validate Model}: Kết nối tới MLflow Tracking Server để xác thực model version tồn tại trong registry, kiểm tra trạng thái model là READY trước khi tiến hành deployment.
     
-    \item \textbf{Deploy to Kubernetes}: Đọc cấu hình manifest cho deployment (k8s/model-serving.yaml), thay thế các placeholders MODEL\_VERSION, DEPLOYMENT\_NAME, và CONTAINER\_IMAGE bằng giá trị thực tế, sau đó thực thi lệnh \textbf{kubectl apply} để tạo Deployment với số replicas chỉ định và Service trong namespace mlflow. Mỗi pod sẽ sử dụng image \textbf{mlflow\_serving} và chạy lệnh \textbf{mlflow models serve} để load model từ MLflow Model Registry.
+    \item \textbf{Deploy to Kubernetes}: Đọc cấu hình manifest (k8s/model-serving.yaml) cho deployment, thay thế các placeholders MODEL\_VERSION, DEPLOYMENT\_NAME, và CONTAINER\_IMAGE bằng giá trị thực tế, sau đó thực thi lệnh \textbf{kubectl apply} để tạo Deployment với số replicas chỉ định và Service trong namespace mlflow. Mỗi pod sẽ sử dụng image \textbf{mlflow\_serving} và chạy lệnh \textbf{mlflow models serve} để load model từ MLflow Model Registry.
     
     \item \textbf{Health Check}: Theo dõi trạng thái rollout của deployment sử dụng \textbf{kubectl rollout status} với timeout 300 giây để đảm bảo tất cả replicas đã sẵn sàng, sau đó gửi HTTP GET request tới endpoint \textbf{/health} để xác nhận model server hoạt động bình thường. Nếu deployment thất bại ở bất kỳ bước nào, hệ thống sẽ báo lỗi và tự động cleanup các resources đã tạo.
 \end{enumerate}
@@ -1263,7 +1266,7 @@ Sau khi người vận hành chọn phiên bản mô hình phù hợp, Serving P
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.33]{img/chapter3/chap3-app-flow.png}
+    \includegraphics[scale=0.34]{img/chapter3/chap3-app-flow.png}
     \caption{Luồng xử lý ứng dụng người dùng}
     \label{fig:chap3-app-flow.png}
 \end{figure}
@@ -1326,7 +1329,7 @@ Hình \ref{fig:prometheus-home} thể hiện giao diện chính của Prometheus
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.29]{img/chapter3/prometheus-home.png}
+    \includegraphics[scale=0.27]{img/chapter3/prometheus-home.png}
     \caption{Giao diện chính của Prometheus}
     \label{fig:prometheus-home}
 \end{figure}
@@ -1335,7 +1338,7 @@ Hình \ref{fig:grafana-login} thể hiện giao diện đăng nhập của Grafa
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.29]{img/chapter3/grafana-login.png}
+    \includegraphics[scale=0.27]{img/chapter3/grafana-login.png}
     \caption{Giao diện đăng nhập của Grafana}
     \label{fig:grafana-login}
 \end{figure}
@@ -1344,7 +1347,7 @@ Sau khi đăng nhập thành công vào Grafana, chúng ta có thể thấy đư
 
 \begin{figure}[!htbp]
     \centering
-    \includegraphics[scale=0.29]{img/chapter3/grafana-home.png}
+    \includegraphics[scale=0.27]{img/chapter3/grafana-home.png}
     \caption{Giao diện chính của Grafana}
     \label{fig:grafana-home}
 \end{figure}
